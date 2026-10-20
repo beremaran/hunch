@@ -1,0 +1,176 @@
+{
+  "params": {
+    "decay_d": 0.5,
+    "min_age_days": 0.0417,
+    "encoding_alpha": 3.0,
+    "spreading_s": 3.0,
+    "min_cue_strength": 0.2,
+    "cue_type_weights": {
+      "person": 1.0,
+      "song": 1.0,
+      "film": 0.8,
+      "place": 0.7,
+      "phrase": 0.6,
+      "date": 0.6,
+      "emotion": 0.4
+    },
+    "mood_mu": 0.5,
+    "noise_s": 0.25,
+    "tau_upper": -0.5,
+    "tau_lower": -1.5,
+    "rehearsal": "refresh",
+    "refresh_strength": 0.9
+  },
+  "max_upper_per_turn": 3,
+  "seed": 2026,
+  "fan": {
+    "person:anna": 27,
+    "person:ben": 23,
+    "emotion:joy": 6,
+    "place:office": 5,
+    "place:flat": 5,
+    "emotion:annoyed": 4,
+    "person:tom": 3,
+    "place:lisbon": 3,
+    "person:lisa": 3,
+    "emotion:tired": 3,
+    "emotion:anger": 3,
+    "place:berlin": 3,
+    "phrase:bike": 3,
+    "place:kitchen": 2,
+    "place:train": 2,
+    "place:park": 2,
+    "film:dune": 2,
+    "emotion:anxious": 2,
+    "song:hallelujah": 1,
+    "emotion:fear": 1,
+    "place:motorway": 1,
+    "song:wonderwall": 1,
+    "place:cafe": 1,
+    "song:bohemian_rhapsody": 1,
+    "song:yellow": 1,
+    "phrase:pottery": 1,
+    "date:2026-05-14": 1,
+    "emotion:sad": 1,
+    "film:amelie": 1,
+    "phrase:sailing": 1,
+    "emotion:worry": 1,
+    "date:2026-06-21": 1,
+    "phrase:spanish": 1,
+    "film:oppenheimer": 1,
+    "phrase:yoga": 1,
+    "phrase:dog": 1
+  },
+  "rehearsals": {
+    "m00": 66,
+    "m01": 48,
+    "m02": 61,
+    "m03": 1,
+    "m04": 4,
+    "m05": 0,
+    "m06": 1,
+    "m07": 46,
+    "m08": 0,
+    "m09": 6,
+    "m10": 7,
+    "m11": 21,
+    "m12": 26,
+    "m13": 5,
+    "m14": 0,
+    "m15": 3,
+    "m16": 0,
+    "m17": 2,
+    "m18": 0,
+    "m19": 7,
+    "m20": 31,
+    "m21": 17,
+    "m22": 4,
+    "m23": 2,
+    "m24": 0,
+    "m25": 3,
+    "m26": 2,
+    "m27": 6,
+    "m28": 2,
+    "m29": 4,
+    "m30": 11,
+    "m31": 3,
+    "m32": 4,
+    "m33": 1,
+    "m34": 1,
+    "m35": 1,
+    "m36": 0,
+    "m37": 2,
+    "m38": 8,
+    "m39": 0,
+    "m40": 0,
+    "m41": 26,
+    "m42": 0,
+    "m43": 4,
+    "m44": 12,
+    "m45": 8,
+    "m46": 4,
+    "m47": 0,
+    "m48": 0,
+    "m49": 2
+  },
+  "checks": {
+    "d_name_in_context": {
+      "pass": true,
+      "memory": "m22",
+      "A_anna_alone": -0.675,
+      "A_anna_and_sailing": 2.725,
+      "rank_among_anna_memories_with_anna_alone": 7,
+      "name_term": {
+        "anna_alone": 0.14,
+        "anna_in_sailing_context": 2.1
+      }
+    },
+    "a_always_recalled": {
+      "pass": true,
+      "memories": [
+        "m00",
+        "m01",
+        "m02",
+        "m20",
+        "m41",
+        "m44"
+      ],
+      "groups": [
+        "flashbulb",
+        "flashbulb",
+        "flashbulb",
+        "everyday",
+        "everyday",
+        "everyday"
+      ]
+    },
+    "b_only_rare_cue": {
+      "pass": true,
+      "memories": [
+        "m03",
+        "m04",
+        "m05"
+      ]
+    },
+    "c_rare_beats_common": {
+      "pass": true,
+      "boosts": [
+        {
+          "memory": "m03",
+          "song": 2.7,
+          "name": 0.1
+        },
+        {
+          "memory": "m04",
+          "song": 2.7,
+          "name": 0.1
+        },
+        {
+          "memory": "m05",
+          "song": 2.7,
+          "name": 0.1
+        }
+      ]
+    }
+  }
+}

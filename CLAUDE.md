@@ -4,7 +4,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 
 **Source of truth:** `docs/design.md` in this repo (Turkish); there is no external live version. Read it before any design-relevant change. The decisions table in that file lists what Berk (owner/admin) decided and what is only a default proposed by Claude.
 
-**Status:** Phase 0 (setup, model check, eval baseline) done. Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
+**Status:** Phases 0–2 done (Phase 2: memory store, activation engine, cue extraction, involuntary recall, reconsolidation; see `reports/phase2/REPORT.md`). Next: Phase 3 (turn pipeline). Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
 
 ## Environment
 

@@ -29,7 +29,10 @@ SRC = Path(__file__).resolve().parents[1] / "src" / "hunch"
 REPO_ROOT = SRC.parents[1]
 CORE_PATH_MODULES = {"values/core.py"}  # the read-only loader
 ENV_PATH_MODULES: set[str] = set()  # nobody names .env yet; a future read-only loader goes here
-FILE_WRITER_MODULES = {"values/amendments.py"}  # each re-checks its target against core/
+FILE_WRITER_MODULES = {
+    "values/amendments.py",  # re-checks every target against core/ at write time
+    "memory/store.py",  # refuses a database inside core/ and anything but .db/.sqlite files
+}
 
 _PATH_WRITE_METHODS = {
     "write_text", "write_bytes", "touch", "mkdir", "unlink", "rmdir", "rename", "replace",
@@ -63,6 +66,11 @@ def _mode_arg(call: ast.Call, position: int) -> str | None:
 
 def _is_write_mode(mode: object) -> bool:
     return not isinstance(mode, str) or mode == "?" or any(c in mode for c in "wax+")
+
+
+def _is_str_replace(f: ast.Attribute, call: ast.Call) -> bool:
+    """str.replace(old, new) takes two arguments; Path.replace(target) only one."""
+    return f.attr == "replace" and (len(call.args) >= 2 or isinstance(f.value, ast.Constant))
 
 
 def _import_aliases(tree: ast.AST) -> tuple[dict[str, str], dict[str, str]]:
@@ -107,7 +115,7 @@ def write_calls(tree: ast.AST) -> list[str]:
                 found.append(f".open() line {line}")
             elif f.attr == "open" and owner == "os":
                 found.append(f"os.open() line {line}")
-            elif f.attr in _PATH_WRITE_METHODS:
+            elif f.attr in _PATH_WRITE_METHODS and not _is_str_replace(f, node):
                 found.append(f".{f.attr}() line {line}")
             elif owner and f.attr in _MODULE_WRITE_FUNCS.get(owner, ()):
                 found.append(f"{owner}.{f.attr}() line {line}")
@@ -180,6 +188,7 @@ def _src_modules() -> list[tuple[str, ast.AST]]:
         "open(p, m)",
         "Path(p).write_text('x')",
         "os.replace(a, b)",
+        "p.replace(target)",
         "import os as o\no.remove(p)",
         "from os import remove\nremove(p)",
         "from shutil import move as mv\nmv(a, b)",
@@ -200,7 +209,11 @@ def test_scanner_detects_writes(code: str) -> None:
     assert write_calls(ast.parse(code)), code
 
 
-@pytest.mark.parametrize("code", ["open(p)", "open(p, 'rb')", "p.read_bytes()", "p.open()"])
+@pytest.mark.parametrize(
+    "code",
+    ["open(p)", "open(p, 'rb')", "p.read_bytes()", "p.open()", "s.replace('a', 'b')",
+     "'x'.replace(a, b)", "text.casefold().replace(\"'\", '')"],
+)  # fmt: skip
 def test_scanner_ignores_reads(code: str) -> None:
     assert write_calls(ast.parse(code)) == []
 

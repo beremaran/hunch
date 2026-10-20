@@ -56,6 +56,16 @@ Temel kararları Berk verdi. "Claude (öneri)" satırları, uygulama için gerek
 | Steering çalıştırma | Hugging Face transformers + PyTorch hook'ları | Claude (öneri) |
 | Çalıştırma ortamı | Native Windows (WSL2 yok); Gated DeltaNet için flash-linear-attention + triton-windows. causal-conv1d Windows'ta yok ama GPU süresinin %0.4'ü (Faz 0 ölçümü, `eval/results/phase0-baseline/REPORT.md`) | Berk |
 | Depolama | SQLite + sqlite-vec (MVP), büyüyünce PostgreSQL + pgvector | Claude (öneri) |
+| Hatırlamada pekiştirme | Her hatırlama anıyı o an için yeni oluşmuş bir anının yaklaşık %90'ı kadar güçlü yapar (`refresh_strength = 0.9`); hatırlamalar üst üste birikmez. Taban aktivasyon sadece en son erişimden bu yana geçen süreyle hesaplanır, anı sonra normal bir anı gibi söner ve ancak çok sonra güçlü bir ipucuyla geri gelir. Formülün ACT-R toplamı (`accumulate`) sadece karşılaştırma için config'te durur. Faz 2 simülasyonunda toplam hâliyle sık hatırlanan anılar sınırsız yükseliyor ve ilk haftaların sıradan anıları kalıcı olarak yer tutuyordu | Berk |
+| Bağ gücü | Yayılan aktivasyonda her ipucu, anının o ipucuna bağ gücüyle çarpılır: W_c · bağ_ic · max(m, S − ln fan_c) | Berk |
+| Bağlamda fan | Bir ipucunun ne kadar yaygın olduğu bağlam içinde sayılır: mesaj bu anıyla başka ipuçlarını da paylaşıyorsa, sadece o ipuçlarından birini de taşıyan anılar sayılır. "Anna" tek başına yaygındır ve yelken anısını getirmez; "Anna ile yelkene gittiğimiz gün" sorusunda isim o anı için tam sayılır | Berk |
+| Yaygın ipucu için asgari bonus | Çok yaygın bir isim de anılarını biraz öne çıkarır: bir ipucu en az m = 0,2 katkı yapar (config) | Berk |
+| Ruh hali uyumu | Kosinüs (valence, arousal − 0,5) üzerinden hesaplanır; aksi halde neredeyse her anı ruh haline uygun görünür | Berk |
+| Bastırılmış anı | Kullanıcı "unut" dediyse anı en fazla alt katmana çıkar: reasoning'e asla girmez, alt izi etkisini sürdürür | Berk |
+| İpucu çıkarımı | LLM JSON döndürür, her ipucu doğrulanır ve normalleştirilir; duygu sabit bir listeden; LLM tarih ifadesini bulur, tarihi kod hesaplar; rol kelimeleri ("annem", "patronum") kişi sayılmaz. Ölçüm: ayrı bir agent'ın körlemesine etiketlediği iki set; biri ayar için, biri sadece bir kez ölçüm için (held-out) | Claude (öneri) |
+| İstemsiz hatırlama ve yeniden konsolidasyon değerleri | Oturum başına en fazla 1 istemsiz hatırlama; her hatırlamada duygu ruh haline doğru %10 kayar (orijinal kodlama `memory_affect_log`'da kalır) | Berk (değerler: Claude önerisi) |
+| Tur başına hatırlama kapasitesi | Bir turda en fazla 3 anı (τ_üst üstündeki en güçlüler) reasoning'e girer ve sadece onlar pekişir (config) | Berk |
+| Aktivasyon parametreleri | d = 0,5; t gün cinsinden, en küçük yaş 1 saat; α = 3,0; S = 3,0; m = 0,2; μ = 0,5; gürültü s = 0,25; τ_üst = −0,5; τ_alt = −1,5; ipucu ağırlıkları kişi = şarkı 1,0, film 0,8, yer 0,7, ifade = tarih 0,6, duygu 0,4. Faz 2 simülasyonuyla seçildi (`reports/phase2/`); hepsi `config/hunch.toml`'da | Berk (değerler: Claude önerisi) |
 | Dil | Doküman Türkçe, kod tanımlayıcıları İngilizce | Claude (öneri) |
 | Çekirdek değerlerin dili | `core/values.yaml` İngilizce (değer kapısı yargıcı okur; modelin en güçlü dili) | Berk |
 | Tasarım dokümanı | Bu repodaki `docs/design.md` tek kaynaktır; harici canlı sürüm yok | Berk |
@@ -125,9 +135,9 @@ Hatırlama, ACT-R bilişsel modelinden uyarlanmış bir aktivasyon skoruyla çal
 A_i = \ln\Big(\sum_j t_j^{-d}\Big) + \alpha \, arousal_i \, salience_i + \sum_c W_c \,(S - \ln fan_c) + \mu \cos(mood, affect_i) + \epsilon
 ```
 
-- **Taban aktivasyon:** Anı ne sık ve ne yakın zamanda hatırlandı. Zamanla kuvvet yasasıyla söner (d ≈ 0.5).
+- **Taban aktivasyon:** Anı en son ne zaman hatırlandı. Zamanla kuvvet yasasıyla söner (d ≈ 0.5). Her hatırlama anıyı yeni oluşmuş gibi tazeler, hatırlamalar birikmez (karar: Berk); sık hatırlanan bir anı bu yüzden sınırsız güçlenmez.
 - **Kodlama gücü:** Duygusal yoğunluğu yüksek anılar güçlü başlar ("flashbulb memory"). Bu yüzden bazı anılar hep hatırlanır.
-- **Yayılan aktivasyon:** Mesajdaki tetikleyiciler anıya bağlıysa ek güç verir. Nadir bir tetikleyici (bir şarkı) güçlü, yaygın bir tetikleyici (sık bir isim) zayıf etki yapar (fan effect).
+- **Yayılan aktivasyon:** Mesajdaki tetikleyiciler anıya bağlıysa ek güç verir. Nadir bir tetikleyici (bir şarkı) güçlü, yaygın bir tetikleyici (sık bir isim) zayıf etki yapar (fan effect); yaygınlık bağlam içinde sayılır, bu yüzden sık bir isim, mesajdaki başka bir ipucuyla birlikte o anıyı işaret ediyorsa tam güç verir. Her ipucu en az küçük bir katkı yapar.
 - **Ruh hali uyumu:** Mevcut ruh haline benzer duygudaki anılar daha kolay gelir.
 - **Gürültü:** Hatırlama deterministik değildir. Aynı ipucu bazen hatırlatır, bazen hatırlatmaz.
 
@@ -398,6 +408,9 @@ Bilinen sorunlar:
   - **Geçici tolerans ve gerekçesi.** Golden test (persona seviyesi) şimdilik hafıza sorusu başına 10 örnekte en fazla 1 "hafızam yok" türü cevaba izin veriyor; anı uydurmaya ve "şu an aklımda değil" demeyen cevaplara izin yok. Gerekçe: (1) asıl dürüstlük ihlali olan anı uydurma bütün örneklerde sıfır; (2) kalan hata modeli tek bir prompt ile sıfırlanamıyor, örnekleme yüzünden ara sıra çıkıyor; (3) kullanıcıya giden cevap tek bir örnek değil, 3 aday arasından seçilen ve filtreden geçen cevaptır, doğru ölçüm yeri orası. Tolerans sadece Faz 3'e kadar geçerli.
   - **Faz 3'teki çözüm.** Aday filtresi bu cevapları da reddeder; 3 adayın hepsi elenirse sabit cevap verilir: "I don't have that in mind right now. Could you tell me again?" Golden test pipeline çıktısını ölçer ve tolerans 0'a iner. Hafıza sorusu prompt'ları en az 50 kez tam pipeline'dan geçirilir; 3 adayın hepsinin elenme oranı (yani yedek cevabın kullanılma oranı) ölçülerek raporlanır, bağımsızlık tahmini kullanılmaz.
 
+- **İpucu çıkarımında tarih ve duygu.** Held-out sette tarihlerin sadece %38'i bulunuyor (bulunanların hepsi doğru); model tarih ifadesini çoğu zaman hiç bildirmiyor. Öneri: LLM'in yanında kural tabanlı bir tarih ifadesi bulucu, yeni bir held-out setle ölçülerek. Duygu: P %73, R %62.
+- **Gecikme bütçesi.** İpucu çıkarımı (~2,6 s) + 3 aday (~4–6 s) + değer kapısı yargıcı 10 s'ye sıkışık; Faz 3'te ölçülecek.
+
 Açık sorular:
 
 - Çekirdek değerlerin son listesi (taslak: Çekirdek değerler modülü bölümü ve `core/values.yaml`).
@@ -411,8 +424,8 @@ Açık sorular:
 
 - [x] Qwen3.5-9B'yi 4-bit yükle, değerlendirme setini koş (Faz 0: TR/DE/EN; Faz 1: önce DE/EN, sonra sadece İngilizce, prompt başına 3 örnek)
 - [x] Çekirdek değer yükleyici: salt okunur YAML, katı biçim, fail-closed, `AmendmentProposal` (imza ertelendi)
-- [ ] Hafıza deposu: epizodik kayıt, `Memory` şeması, embedding
-- [ ] Aktivasyon motoru: formül, iki eşik, tetikleyici çıkarımı; aynı ipucunun farklı anıları nasıl tetiklediğini gösteren küçük bir simülasyon
+- [x] Hafıza deposu: epizodik kayıt (DB tetikleyicileriyle append-only), `Memory` şeması, ham turlar (çalışan bellek için), embedding (CPU) — Faz 2, `reports/phase2/REPORT.md`
+- [x] Aktivasyon motoru: formül, iki eşik, tetikleyici çıkarımı (held-out P %83 / R %69), istemsiz hatırlama, yeniden konsolidasyon; 6 aylık simülasyon — Faz 2
 - [ ] Tur akışı: "girdi İngilizce mi?" kontrolü, çalışan bellek (son N tur + oturum özeti), reasoning, 2–3 aday (tek batch), aday filtresi (CJK, İngilizce olmayan, anı uyduran ya da hafızası yokmuş gibi konuşan aday reddedilir, diğeri seçilir; hepsi elenirse "I don't have that in mind right now. Could you tell me again?", testli; hafıza sorusu prompt'larıyla ≥ 50 pipeline koşusu ve hepsi-elendi oranı raporu), dürtü vektörü, aday seçimi, değer kapısı, tur logu; ≤ 10 s
 - [ ] Hunch ve kademeli yansıtma
 - [ ] Telegram botu, açık döngüler, zamanlayıcı

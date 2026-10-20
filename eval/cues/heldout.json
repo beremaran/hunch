@@ -1,0 +1,22 @@
+{"version": 1, "today": "2026-10-20", "items": [
+{"id": "h01", "text": "Dinner with my aunt this Thursday, she's picking the restaurant and I'm already dreading it.", "cues": ["date:2026-10-22", "emotion:anxious"], "note": "role word; implied emotion"},
+{"id": "h02", "text": "My landlord finally fixed the heater after three weeks, so annoying that it took that long.", "cues": ["emotion:annoyed"], "note": "role word, no person"},
+{"id": "h03", "text": "Rose and I are driving up to Lake Tahoe the day after tomorrow, can't wait!", "cues": ["person:rose", "place:lake_tahoe", "date:2026-10-22", "emotion:excitement"], "note": "name that is a word"},
+{"id": "h04", "text": "I told Hope about the job offer last Monday and she cried happy tears.", "cues": ["person:hope", "date:2026-10-19"], "note": "name that is a word; others' emotion not labelled"},
+{"id": "h05", "text": "Sunny from my pottery class brought homemade dumplings today, that was so sweet of her.", "cues": ["person:sunny", "emotion:gratitude"], "note": "name that is a word"},
+{"id": "h06", "text": "Been listening to Taylor Swift all week, she just gets me.", "cues": [], "note": "artist only, no cue"},
+{"id": "h07", "text": "I keep thinking about Sherlock Holmes, I wish I was half as observant as him.", "cues": [], "note": "fictional character, no cue"},
+{"id": "h08", "text": "Played Vertigo by U2 on repeat all morning and now I want to rewatch the Hitchcock film Vertigo too.", "cues": ["song:vertigo", "film:vertigo"], "note": "song and film same title"},
+{"id": "h09", "text": "Saw Parasite again the other day, that stairs scene still gets me.", "cues": ["film:parasite"], "note": "vague time, no date"},
+{"id": "h10", "text": "I'm moving to Osaka next summer, still can't believe it!", "cues": ["place:osaka", "emotion:excitement"], "note": "vague time, no date"},
+{"id": "h11", "text": "Halloween party at Marcus's place, he's making everyone dress up as 90s cartoon characters.", "cues": ["person:marcus", "date:halloween"], "note": "named holiday"},
+{"id": "h12", "text": "Nobody has texted me all weekend and I just stared at the ceiling for hours.", "cues": ["emotion:lonely"], "note": "implied emotion"},
+{"id": "h13", "text": "Can you remind me to call Dmitri on Feb 14? It's his birthday.", "cues": ["person:dmitri", "date:2027-02-14"], "note": "month and day, next occurrence"},
+{"id": "h14", "text": "Just passed my driving test!!! Finally!", "cues": ["emotion:joy", "emotion:pride"]},
+{"id": "h15", "text": "What's a good way to keep bread from going stale?", "cues": [], "note": "no cues"},
+{"id": "h16", "text": "hold on, someone's at the door", "cues": [], "note": "no cues"},
+{"id": "h17", "text": "My boss moved the deadline to tomorrow and I haven't slept properly in days.", "cues": ["date:2026-10-21", "emotion:stress", "emotion:tired"], "note": "role word"},
+{"id": "h18", "text": "Walked around Lake Geneva with my brother yesterday, it was so peaceful.", "cues": ["place:lake_geneva", "date:2026-10-19", "emotion:calm"]},
+{"id": "h19", "text": "My grandpa used to hum Moon River while cooking. I miss him so much.", "cues": ["song:moon_river", "emotion:sad", "emotion:nostalgia"], "note": "role word"},
+{"id": "h20", "text": "We call our couch the big marshmallow, and Priya and I are binge-watching Succession on it in two days.", "cues": ["phrase:the_big_marshmallow", "person:priya", "film:succession", "date:2026-10-22"], "note": "nickname phrase; TV series"}
+]}

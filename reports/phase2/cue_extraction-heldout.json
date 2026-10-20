@@ -1,0 +1,505 @@
+{
+  "n_messages": 20,
+  "strict": {
+    "overall": {
+      "tp": 25,
+      "fp": 5,
+      "fn": 11,
+      "precision": 0.8333333333333334,
+      "recall": 0.6944444444444444
+    },
+    "per_type": {
+      "person": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "place": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "song": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "film": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.75,
+        "recall": 1.0
+      },
+      "date": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 5,
+        "precision": 1.0,
+        "recall": 0.375
+      },
+      "emotion": {
+        "tp": 8,
+        "fp": 3,
+        "fn": 5,
+        "precision": 0.7272727272727273,
+        "recall": 0.6153846153846154
+      },
+      "phrase": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0
+      }
+    }
+  },
+  "lenient": {
+    "overall": {
+      "tp": 26,
+      "fp": 4,
+      "fn": 10,
+      "precision": 0.8666666666666667,
+      "recall": 0.7222222222222222
+    },
+    "per_type": {
+      "person": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "place": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "song": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "film": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.75,
+        "recall": 1.0
+      },
+      "date": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 5,
+        "precision": 1.0,
+        "recall": 0.375
+      },
+      "emotion": {
+        "tp": 8,
+        "fp": 3,
+        "fn": 5,
+        "precision": 0.7272727272727273,
+        "recall": 0.6153846153846154
+      },
+      "phrase": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    }
+  },
+  "latency_s": {
+    "median": 2.58,
+    "max": 4.99
+  },
+  "retries": 0,
+  "failed": 0,
+  "rows": [
+    {
+      "id": "h01",
+      "text": "Dinner with my aunt this Thursday, she's picking the restaurant and I'm already dreading it.",
+      "gold": [
+        "date:2026-10-22",
+        "emotion:anxious"
+      ],
+      "pred": [
+        "date:2026-10-22",
+        "emotion:anxious"
+      ],
+      "strengths": {
+        "date:2026-10-22": 0.3,
+        "emotion:anxious": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.09
+    },
+    {
+      "id": "h02",
+      "text": "My landlord finally fixed the heater after three weeks, so annoying that it took that long.",
+      "gold": [
+        "emotion:annoyed"
+      ],
+      "pred": [
+        "emotion:annoyed"
+      ],
+      "strengths": {
+        "emotion:annoyed": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.65
+    },
+    {
+      "id": "h03",
+      "text": "Rose and I are driving up to Lake Tahoe the day after tomorrow, can't wait!",
+      "gold": [
+        "date:2026-10-22",
+        "emotion:excitement",
+        "person:rose",
+        "place:lake_tahoe"
+      ],
+      "pred": [
+        "date:2026-10-22",
+        "emotion:excitement",
+        "person:rose",
+        "place:lake_tahoe"
+      ],
+      "strengths": {
+        "person:rose": 0.8,
+        "place:lake_tahoe": 0.9,
+        "date:2026-10-22": 0.7,
+        "emotion:excitement": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.99
+    },
+    {
+      "id": "h04",
+      "text": "I told Hope about the job offer last Monday and she cried happy tears.",
+      "gold": [
+        "date:2026-10-19",
+        "person:hope"
+      ],
+      "pred": [
+        "emotion:joy",
+        "person:hope"
+      ],
+      "strengths": {
+        "person:hope": 0.8,
+        "emotion:joy": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.55
+    },
+    {
+      "id": "h05",
+      "text": "Sunny from my pottery class brought homemade dumplings today, that was so sweet of her.",
+      "gold": [
+        "emotion:gratitude",
+        "person:sunny"
+      ],
+      "pred": [
+        "emotion:gratitude",
+        "person:sunny"
+      ],
+      "strengths": {
+        "person:sunny": 0.8,
+        "emotion:gratitude": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.64
+    },
+    {
+      "id": "h06",
+      "text": "Been listening to Taylor Swift all week, she just gets me.",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.59
+    },
+    {
+      "id": "h07",
+      "text": "I keep thinking about Sherlock Holmes, I wish I was half as observant as him.",
+      "gold": [],
+      "pred": [
+        "film:sherlock_holmes"
+      ],
+      "strengths": {
+        "film:sherlock_holmes": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.74
+    },
+    {
+      "id": "h08",
+      "text": "Played Vertigo by U2 on repeat all morning and now I want to rewatch the Hitchcock film Vertigo too.",
+      "gold": [
+        "film:vertigo",
+        "song:vertigo"
+      ],
+      "pred": [
+        "film:vertigo",
+        "song:vertigo"
+      ],
+      "strengths": {
+        "song:vertigo": 0.8,
+        "film:vertigo": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.64
+    },
+    {
+      "id": "h09",
+      "text": "Saw Parasite again the other day, that stairs scene still gets me.",
+      "gold": [
+        "film:parasite"
+      ],
+      "pred": [
+        "film:parasite"
+      ],
+      "strengths": {
+        "film:parasite": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.58
+    },
+    {
+      "id": "h10",
+      "text": "I'm moving to Osaka next summer, still can't believe it!",
+      "gold": [
+        "emotion:excitement",
+        "place:osaka"
+      ],
+      "pred": [
+        "place:osaka"
+      ],
+      "strengths": {
+        "place:osaka": 1.0
+      },
+      "dropped": [
+        "vague or unresolvable date: 'next_summer'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.68
+    },
+    {
+      "id": "h11",
+      "text": "Halloween party at Marcus's place, he's making everyone dress up as 90s cartoon characters.",
+      "gold": [
+        "date:halloween",
+        "person:marcus"
+      ],
+      "pred": [
+        "person:marcus"
+      ],
+      "strengths": {
+        "person:marcus": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.62
+    },
+    {
+      "id": "h12",
+      "text": "Nobody has texted me all weekend and I just stared at the ceiling for hours.",
+      "gold": [
+        "emotion:lonely"
+      ],
+      "pred": [
+        "emotion:lonely",
+        "emotion:sad"
+      ],
+      "strengths": {
+        "emotion:lonely": 0.9,
+        "emotion:sad": 0.7
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.58
+    },
+    {
+      "id": "h13",
+      "text": "Can you remind me to call Dmitri on Feb 14? It's his birthday.",
+      "gold": [
+        "date:2027-02-14",
+        "person:dmitri"
+      ],
+      "pred": [
+        "person:dmitri"
+      ],
+      "strengths": {
+        "person:dmitri": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.63
+    },
+    {
+      "id": "h14",
+      "text": "Just passed my driving test!!! Finally!",
+      "gold": [
+        "emotion:joy",
+        "emotion:pride"
+      ],
+      "pred": [
+        "emotion:joy"
+      ],
+      "strengths": {
+        "emotion:joy": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.54
+    },
+    {
+      "id": "h15",
+      "text": "What's a good way to keep bread from going stale?",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.58
+    },
+    {
+      "id": "h16",
+      "text": "hold on, someone's at the door",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.59
+    },
+    {
+      "id": "h17",
+      "text": "My boss moved the deadline to tomorrow and I haven't slept properly in days.",
+      "gold": [
+        "date:2026-10-21",
+        "emotion:stress",
+        "emotion:tired"
+      ],
+      "pred": [
+        "date:2026-10-21",
+        "emotion:tired"
+      ],
+      "strengths": {
+        "date:2026-10-21": 0.3,
+        "emotion:tired": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.64
+    },
+    {
+      "id": "h18",
+      "text": "Walked around Lake Geneva with my brother yesterday, it was so peaceful.",
+      "gold": [
+        "date:2026-10-19",
+        "emotion:calm",
+        "place:lake_geneva"
+      ],
+      "pred": [
+        "emotion:calm",
+        "place:lake_geneva"
+      ],
+      "strengths": {
+        "place:lake_geneva": 0.8,
+        "emotion:calm": 0.9
+      },
+      "dropped": [
+        "role, not a name: 'brother'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.74
+    },
+    {
+      "id": "h19",
+      "text": "My grandpa used to hum Moon River while cooking. I miss him so much.",
+      "gold": [
+        "emotion:nostalgia",
+        "emotion:sad",
+        "song:moon_river"
+      ],
+      "pred": [
+        "emotion:grief",
+        "song:moon_river"
+      ],
+      "strengths": {
+        "song:moon_river": 0.5,
+        "emotion:grief": 0.9
+      },
+      "dropped": [
+        "role, not a name: 'grandpa'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.73
+    },
+    {
+      "id": "h20",
+      "text": "We call our couch the big marshmallow, and Priya and I are binge-watching Succession on it in two days.",
+      "gold": [
+        "date:2026-10-22",
+        "film:succession",
+        "person:priya",
+        "phrase:the_big_marshmallow"
+      ],
+      "pred": [
+        "film:succession",
+        "person:priya",
+        "phrase:big_marshmallow"
+      ],
+      "strengths": {
+        "phrase:big_marshmallow": 0.8,
+        "person:priya": 0.9,
+        "film:succession": 0.9
+      },
+      "dropped": [
+        "vague or unresolvable date: 'two_days'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.83
+    }
+  ]
+}

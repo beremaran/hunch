@@ -1,0 +1,688 @@
+{
+  "n_messages": 30,
+  "strict": {
+    "overall": {
+      "tp": 37,
+      "fp": 10,
+      "fn": 17,
+      "precision": 0.7872340425531915,
+      "recall": 0.6851851851851852
+    },
+    "per_type": {
+      "person": {
+        "tp": 7,
+        "fp": 8,
+        "fn": 0,
+        "precision": 0.4666666666666667,
+        "recall": 1.0
+      },
+      "place": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "song": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "film": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.8
+      },
+      "date": {
+        "tp": 4,
+        "fp": 2,
+        "fn": 7,
+        "precision": 0.6666666666666666,
+        "recall": 0.36363636363636365
+      },
+      "emotion": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 9,
+        "precision": 1.0,
+        "recall": 0.5263157894736842
+      },
+      "phrase": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    }
+  },
+  "lenient": {
+    "overall": {
+      "tp": 37,
+      "fp": 10,
+      "fn": 17,
+      "precision": 0.7872340425531915,
+      "recall": 0.6851851851851852
+    },
+    "per_type": {
+      "person": {
+        "tp": 7,
+        "fp": 8,
+        "fn": 0,
+        "precision": 0.4666666666666667,
+        "recall": 1.0
+      },
+      "place": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "song": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "film": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.8
+      },
+      "date": {
+        "tp": 4,
+        "fp": 2,
+        "fn": 7,
+        "precision": 0.6666666666666666,
+        "recall": 0.36363636363636365
+      },
+      "emotion": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 9,
+        "precision": 1.0,
+        "recall": 0.5263157894736842
+      },
+      "phrase": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    }
+  },
+  "latency_s": {
+    "median": 2.56,
+    "max": 5.2
+  },
+  "retries": 0,
+  "failed": 0,
+  "rows": [
+    {
+      "id": "c01",
+      "text": "Just booked flights to Lisbon for Friday! Can't wait to see Anna again.",
+      "gold": [
+        "date:2026-10-23",
+        "emotion:excitement",
+        "person:anna",
+        "place:lisbon"
+      ],
+      "pred": [
+        "person:anna",
+        "place:lisbon"
+      ],
+      "strengths": {
+        "place:lisbon": 0.8,
+        "person:anna": 0.9
+      },
+      "dropped": [
+        "date not ISO or a named day: 'friday'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.77
+    },
+    {
+      "id": "c02",
+      "text": "ugh my boss moved the deadline again. so tired of this.",
+      "gold": [
+        "emotion:annoyed",
+        "emotion:tired"
+      ],
+      "pred": [
+        "emotion:annoyed",
+        "emotion:tired"
+      ],
+      "strengths": {
+        "emotion:annoyed": 0.8,
+        "emotion:tired": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.65
+    },
+    {
+      "id": "c03",
+      "text": "Been listening to Hallelujah on repeat all evening. Makes me think of Grandpa.",
+      "gold": [
+        "emotion:nostalgia",
+        "song:hallelujah"
+      ],
+      "pred": [
+        "person:grandpa",
+        "song:hallelujah"
+      ],
+      "strengths": {
+        "song:hallelujah": 0.9,
+        "person:grandpa": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.7
+    },
+    {
+      "id": "c04",
+      "text": "Watched Dune last night with my mum, she fell asleep in the first twenty minutes lol",
+      "gold": [
+        "film:dune"
+      ],
+      "pred": [
+        "film:dune",
+        "person:mum"
+      ],
+      "strengths": {
+        "film:dune": 1.0,
+        "person:mum": 0.3
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.61
+    },
+    {
+      "id": "c05",
+      "text": "Paris called me about the party tomorrow, she wants us to bring snacks.",
+      "gold": [
+        "date:2026-10-21",
+        "person:paris"
+      ],
+      "pred": [
+        "date:2026-10-21",
+        "person:paris"
+      ],
+      "strengths": {
+        "person:paris": 0.8,
+        "date:2026-10-21": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.01
+    },
+    {
+      "id": "c06",
+      "text": "Thinking of moving to Paris next spring.",
+      "gold": [
+        "place:paris"
+      ],
+      "pred": [
+        "place:paris"
+      ],
+      "strengths": {
+        "place:paris": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.55
+    },
+    {
+      "id": "c07",
+      "text": "I got the job!! Starting Monday at the new place.",
+      "gold": [
+        "date:2026-10-26",
+        "emotion:joy"
+      ],
+      "pred": [
+        "emotion:joy"
+      ],
+      "strengths": {
+        "emotion:joy": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.51
+    },
+    {
+      "id": "c08",
+      "text": "My dad's surgery is tomorrow morning and I can't sleep.",
+      "gold": [
+        "date:2026-10-21",
+        "emotion:anxious",
+        "emotion:tired"
+      ],
+      "pred": [
+        "emotion:anxious",
+        "person:dad"
+      ],
+      "strengths": {
+        "person:dad": 0.8,
+        "emotion:anxious": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.56
+    },
+    {
+      "id": "c09",
+      "text": "Nothing much, just sitting on the couch scrolling my phone.",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.56
+    },
+    {
+      "id": "c10",
+      "text": "Hey, how are you today?",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.55
+    },
+    {
+      "id": "c11",
+      "text": "Do you know Bohemian Rhapsody? Freddy would be proud of my karaoke last night haha",
+      "gold": [
+        "song:bohemian_rhapsody"
+      ],
+      "pred": [
+        "person:freddy",
+        "song:bohemian_rhapsody"
+      ],
+      "strengths": {
+        "song:bohemian_rhapsody": 0.8,
+        "person:freddy": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.8
+    },
+    {
+      "id": "c12",
+      "text": "Is Interstellar on Netflix? I want a movie night with Big Mike on Saturday.",
+      "gold": [
+        "date:2026-10-24",
+        "film:interstellar",
+        "person:big_mike"
+      ],
+      "pred": [
+        "date:2026-10-24",
+        "film:interstellar",
+        "person:big_mike"
+      ],
+      "strengths": {
+        "film:interstellar": 0.8,
+        "person:big_mike": 0.8,
+        "date:2026-10-24": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.1
+    },
+    {
+      "id": "c13",
+      "text": "We always do taco Tuesday at our place, and I burned everything again.",
+      "gold": [
+        "phrase:taco_tuesday"
+      ],
+      "pred": [
+        "phrase:taco_tuesday"
+      ],
+      "strengths": {
+        "phrase:taco_tuesday": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.66
+    },
+    {
+      "id": "c14",
+      "text": "My birthday is on March 3rd and I still haven't planned anything.",
+      "gold": [
+        "date:2027-03-03"
+      ],
+      "pred": [
+        "date:2026-03-03"
+      ],
+      "strengths": {
+        "date:2026-03-03": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.0
+    },
+    {
+      "id": "c15",
+      "text": "I miss the old days at Lake Como with my cousins. Those summers were everything.",
+      "gold": [
+        "emotion:nostalgia",
+        "place:lake_como"
+      ],
+      "pred": [
+        "emotion:nostalgia",
+        "place:lake_como"
+      ],
+      "strengths": {
+        "place:lake_como": 0.8,
+        "emotion:nostalgia": 0.9
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.7
+    },
+    {
+      "id": "c16",
+      "text": "Hallelujah, the printer finally works!",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.55
+    },
+    {
+      "id": "c17",
+      "text": "Grandma passed away last spring and today I found her old recipe book. I just sat on the kitchen floor and cried.",
+      "gold": [
+        "emotion:grief",
+        "emotion:sad"
+      ],
+      "pred": [
+        "emotion:sad"
+      ],
+      "strengths": {
+        "emotion:sad": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.52
+    },
+    {
+      "id": "c18",
+      "text": "Christmas at my sister's again this year, I'm dreading it already.",
+      "gold": [
+        "date:christmas",
+        "emotion:anxious"
+      ],
+      "pred": [],
+      "strengths": {},
+      "dropped": [
+        "emotion not in vocabulary: 'dread'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.56
+    },
+    {
+      "id": "c19",
+      "text": "Sofia and I are going to Central Park on Sunday if it doesn't rain.",
+      "gold": [
+        "date:2026-10-25",
+        "person:sofia",
+        "place:central_park"
+      ],
+      "pred": [
+        "date:2026-10-25",
+        "person:sofia",
+        "place:central_park"
+      ],
+      "strengths": {
+        "person:sofia": 0.8,
+        "place:central_park": 0.8,
+        "date:2026-10-25": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.1
+    },
+    {
+      "id": "c20",
+      "text": "Have you seen The Office? Michael Scott cracks me up. Also Jordan is basically my Dwight lol",
+      "gold": [
+        "film:the_office",
+        "person:jordan"
+      ],
+      "pred": [
+        "film:the_office",
+        "person:dwight",
+        "person:jordan",
+        "person:michael_scott"
+      ],
+      "strengths": {
+        "film:the_office": 0.8,
+        "person:michael_scott": 0.8,
+        "person:jordan": 0.8,
+        "person:dwight": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.81
+    },
+    {
+      "id": "c21",
+      "text": "My doctor said my blood pressure is fine, so that's a relief.",
+      "gold": [
+        "emotion:calm"
+      ],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.56
+    },
+    {
+      "id": "c22",
+      "text": "Thanks for listening yesterday, it really helped.",
+      "gold": [
+        "date:2026-10-19",
+        "emotion:gratitude"
+      ],
+      "pred": [],
+      "strengths": {},
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.56
+    },
+    {
+      "id": "c23",
+      "text": "Sydney, my coworker, keeps stealing my lunch. Honestly furious.",
+      "gold": [
+        "emotion:anger",
+        "person:sydney"
+      ],
+      "pred": [
+        "emotion:anger",
+        "person:sydney"
+      ],
+      "strengths": {
+        "person:sydney": 0.8,
+        "emotion:anger": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.55
+    },
+    {
+      "id": "c24",
+      "text": "Going to Brooklyn this weekend to see Mia.",
+      "gold": [
+        "person:mia",
+        "place:brooklyn"
+      ],
+      "pred": [
+        "person:mia",
+        "place:brooklyn"
+      ],
+      "strengths": {
+        "place:brooklyn": 0.8,
+        "person:mia": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.56
+    },
+    {
+      "id": "c25",
+      "text": "'Locked Out of Heaven' came on at the gym and I got goosebumps. Bruno Mars never misses.",
+      "gold": [
+        "song:locked_out_of_heaven"
+      ],
+      "pred": [
+        "song:locked_out_of_heaven"
+      ],
+      "strengths": {
+        "song:locked_out_of_heaven": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.71
+    },
+    {
+      "id": "c26",
+      "text": "Shaun of the Dead is my comfort film. Watching it again, alone, as usual.",
+      "gold": [
+        "emotion:lonely",
+        "film:shaun_of_the_dead"
+      ],
+      "pred": [
+        "film:shaun_of_the_dead"
+      ],
+      "strengths": {
+        "film:shaun_of_the_dead": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.71
+    },
+    {
+      "id": "c27",
+      "text": "Our group chat is called the Wolfpack and we're meeting at The Rusty Anchor on Thursday.",
+      "gold": [
+        "date:2026-10-22",
+        "phrase:the_wolfpack",
+        "place:the_rusty_anchor"
+      ],
+      "pred": [
+        "date:2026-10-22",
+        "phrase:the_wolfpack",
+        "place:the_rusty_anchor"
+      ],
+      "strengths": {
+        "phrase:the_wolfpack": 0.8,
+        "place:the_rusty_anchor": 0.8,
+        "date:2026-10-22": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.29
+    },
+    {
+      "id": "c28",
+      "text": "I'm so proud of my little brother, he ran his first marathon in Berlin last Sunday!",
+      "gold": [
+        "date:2026-10-18",
+        "emotion:pride",
+        "place:berlin"
+      ],
+      "pred": [
+        "date:2026-10-11",
+        "emotion:pride",
+        "person:little_brother",
+        "place:berlin"
+      ],
+      "strengths": {
+        "person:little_brother": 0.8,
+        "place:berlin": 0.8,
+        "date:2026-10-11": 0.8,
+        "emotion:pride": 1.0
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 5.2
+    },
+    {
+      "id": "c29",
+      "text": "i dont know, everything just feels kind of grey lately",
+      "gold": [
+        "emotion:sad"
+      ],
+      "pred": [
+        "emotion:sad"
+      ],
+      "strengths": {
+        "emotion:sad": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.51
+    },
+    {
+      "id": "c30",
+      "text": "Remember Amelie? I rewatched it and cried at the end, Mum loved it so much.",
+      "gold": [
+        "emotion:nostalgia",
+        "emotion:sad",
+        "film:amelie"
+      ],
+      "pred": [
+        "emotion:sad",
+        "person:amelie"
+      ],
+      "strengths": {
+        "person:amelie": 0.3,
+        "emotion:sad": 0.8
+      },
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.56
+    }
+  ]
+}

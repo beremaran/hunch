@@ -11,8 +11,10 @@ requires-python = ">=3.12,<3.13"
 authors = [{ name = "Berk" }]
 # torch is installed separately from the PyTorch CUDA index, see README.
 dependencies = [
+    "numpy>=2.0",
     "python-dotenv>=1.0",
     "pyyaml>=6.0",
+    "sqlite-vec>=0.1.9",
 ]
 
 [project.optional-dependencies]
@@ -25,6 +27,7 @@ llm = [
     "triton-windows==3.8.0.post29; sys_platform == 'win32'",
 ]
 dev = [
+    "matplotlib>=3.9",  # scripts/simulate_recall.py plots
     "pytest>=8.3",
     "ruff>=0.8",
 ]
@@ -34,10 +37,11 @@ packages = ["src/hunch"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra -m 'not golden'"
+addopts = "-ra -m 'not golden and not slow'"
 markers = [
     "gpu: needs the CUDA GPU (deselect with -m 'not gpu')",
     "golden: behavioural regression tests with the real model; run with -m golden",
+    "slow: needs a downloaded model on CPU (embeddings); run with -m slow",
 ]
 
 [tool.ruff]
@@ -56,6 +60,8 @@ known-first-party = ["hunch", "eval", "scripts"]
 
 [tool.ruff.lint.per-file-ignores]
 "eval/scoring.py" = ["SIM905"]  # whitespace-split word lists read better than list literals
+"scripts/simulate_recall.py" = ["E501"]  # hand-written memory table: one memory per line
+"src/hunch/recall/cues.py" = ["E501"]  # the extraction prompt is model text, one rule per line
 
 [tool.ruff.format]
 quote-style = "double"

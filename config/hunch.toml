@@ -1,4 +1,6 @@
 # All tunable parameters live here (CLAUDE.md). Secrets go in .env, never here.
+# Values not given by design.md were proposed by Claude and approved by Berk (Phase 2);
+# "PROPOSED" marks anything still waiting for approval.
 
 [working_memory]
 # Last N turns of the current conversation, verbatim, always in the reasoning context.
@@ -6,3 +8,48 @@ max_turns = 10
 # Token cap for the verbatim block; when either limit is hit, the oldest turns are folded into
 # the rolling session summary.
 max_tokens = 2000
+
+[memory]
+# SQLite file inside HUNCH_DATA_DIR (.env).
+db_name = "hunch.db"
+
+[embedding]
+model_id = "Qwen/Qwen3-Embedding-0.6B"
+device = "cpu"  # keeps VRAM for the main model
+dim = 1024
+query_instruction = "Given a message from a conversation, retrieve memories of earlier conversations that are relevant to it"
+
+[recall]
+# At most this many memories enter reasoning per turn (the strongest above tau_upper);
+# only those count as recalled and get rehearsed. Without a cap, a frequent name rehearses every
+# memory that mentions it and nothing ever fades.
+max_upper_per_turn = 3
+# Involuntary recalls (a memory that comes up only through a cue, unasked) per session.
+involuntary_per_session = 1
+# On every recall the memory's affect drifts this far toward the current mood.
+reconsolidation_rate = 0.1
+
+[activation]
+decay_d = 0.5          # design.md: d ~ 0.5
+min_age_days = 0.0417  # 1 hour; time unit for t is days
+encoding_alpha = 3.0   # max +3.0 for arousal = salience = 1 (1.5 let a later flashbulb fade)
+spreading_s = 3.0      # S; a cue shared by more than e^3 ~ 20 memories gets only the minimum
+min_cue_strength = 0.2 # Berk: a common name still favours its memories a little
+mood_mu = 0.5          # max +/-0.5 for mood congruence
+noise_s = 0.25         # logistic noise scale (ACT-R typical 0.25)
+tau_upper = -0.5       # above -> content enters reasoning
+tau_lower = -1.5       # above -> only the lower trace acts
+# Berk: each recall makes a memory almost like a newly formed one again (no stacking); it then fades.
+# "accumulate" = ACT-R sum over all recalls (recalled memories keep climbing).
+rehearsal = "refresh"
+refresh_strength = 0.9  # Berk: a recall makes a memory ~90 % of a new one, for that moment
+
+[activation.cue_type_weights]
+# design.md: names and music carry the highest emotional weight ("digital smell").
+person = 1.0
+song = 1.0
+film = 0.8
+place = 0.7
+phrase = 0.6
+date = 0.6
+emotion = 0.4
