@@ -20,4 +20,9 @@ copy .env.example .env
 
 - Tests and lint: `.venv\Scripts\python.exe -m pytest` and `.venv\Scripts\ruff.exe check .`
 - Model benchmark: `.venv\Scripts\python.exe scripts\bench_llm.py --tag <name>`
-- Eval set (TR/DE/EN): `.venv\Scripts\python.exe -m eval.run_eval --tag <name>`; results in `eval/results/<name>/`
+- Eval set (DE/EN, 3 samples per prompt): `.venv\Scripts\python.exe -m eval.run_eval --tag <name>`; results in `eval/results/<name>/`; diff two runs with `python -m eval.compare <old> <new>`
+- Golden tests (GPU + model): `.venv\Scripts\python.exe -m pytest -m golden`
+
+## Core values
+
+`core/values.yaml` is loaded read-only at startup; if it is missing or malformed the system refuses to start. No code in `src/` can write to `core/` or `.env`. The AI can only file proposals in `data/amendments/pending/`. Signing is deferred to a later phase.

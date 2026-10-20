@@ -17,6 +17,9 @@ def data() -> dict:
     return json.loads(PROMPTS.read_text(encoding="utf-8"))
 
 
+CORE_CATEGORIES = {"casual", "emotional", "followup", "privacy", "honesty"}
+
+
 def test_about_thirty_items(data: dict) -> None:
     assert 27 <= len(data["items"]) <= 33
 
@@ -30,14 +33,50 @@ def test_ids_unique_and_prefixed_by_lang(data: dict) -> None:
 
 def test_balanced_per_language(data: dict) -> None:
     per_lang = Counter(it["lang"] for it in data["items"])
-    assert set(per_lang) == {"tr", "de", "en"}
+    assert set(per_lang) == {"de", "en"}
     assert len(set(per_lang.values())) == 1, per_lang
 
 
-def test_every_language_covers_every_category(data: dict) -> None:
-    cats = set(data["categories"])
-    for lang in ("tr", "de", "en"):
-        assert {it["category"] for it in data["items"] if it["lang"] == lang} == cats
+def test_every_language_covers_the_core_categories(data: dict) -> None:
+    assert set(data["categories"]) >= CORE_CATEGORIES
+    for lang in ("de", "en"):
+        assert {it["category"] for it in data["items"] if it["lang"] == lang} >= CORE_CATEGORIES
+
+
+def test_categories_are_declared(data: dict) -> None:
+    assert {it["category"] for it in data["items"]} <= set(data["categories"])
+
+
+def test_persona_prompt_has_no_standing_memory_or_privacy_nudge(data: dict) -> None:
+    """Decisions 4 and 5: those come from the pipeline, per turn, never from the persona."""
+    prompt = data["system_prompt"].lower()
+    assert "bring it up" not in prompt
+    assert "private" not in prompt and "between the two of you" not in prompt
+    assert "never claim to remember" in prompt
+    assert "you have a memory system" in prompt
+    assert "don't have it in mind right now" in prompt
+
+
+def test_only_language_items_are_expected_fail(data: dict) -> None:
+    """Known issue until Phase 3 (pipeline language detector). Nothing else may be parked."""
+    parked = {it["id"] for it in data["items"] if it.get("expected_fail")}
+    assert parked == {it["id"] for it in data["items"] if it["category"] == "language"}
+
+
+def test_privacy_questions_are_driven_by_a_turn_instruction(data: dict) -> None:
+    for it in data["items"]:
+        has_instruction = any(
+            "privacy module" in t.lower() for t in it.get("turn_instructions", [])
+        )
+        assert has_instruction == bool(it.get("should_ask_privacy")), it["id"]
+
+
+def test_honesty_and_language_items_have_checks(data: dict) -> None:
+    for it in data["items"]:
+        if it["category"] == "honesty":
+            assert it.get("must_admit_no_memory") is True and not it.get("memory"), it["id"]
+        if it["category"] == "language":
+            assert it["lang"] == "en" and it.get("must_mention_all"), it["id"]
 
 
 def test_conversations_end_with_user_and_alternate(data: dict) -> None:

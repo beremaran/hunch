@@ -1,0 +1,8 @@
+# All tunable parameters live here (CLAUDE.md). Secrets go in .env, never here.
+
+[working_memory]
+# Last N turns of the current conversation, verbatim, always in the reasoning context.
+max_turns = 10
+# Token cap for the verbatim block; when either limit is hit, the oldest turns are folded into
+# the rolling session summary.
+max_tokens = 2000

@@ -60,6 +60,28 @@ class GenerationResult:
         return self.prompt_tokens / self.prefill_s if self.prefill_s > 0 else 0.0
 
 
+@dataclass(frozen=True)
+class BatchGenerationResult:
+    texts: tuple[str, ...]
+    prompt_tokens: int
+    new_tokens: tuple[int, ...]  # per sequence, up to and including the stop token
+    prefill_s: float
+    total_s: float
+
+    @property
+    def decode_steps_per_s(self) -> float:
+        """Tokens per second each sequence gets (the batch advances one step for all)."""
+        decode_s = self.total_s - self.prefill_s
+        steps = max(self.new_tokens) - 1
+        return steps / decode_s if steps > 0 and decode_s > 0 else 0.0
+
+    @property
+    def aggregate_tok_per_s(self) -> float:
+        decode_s = self.total_s - self.prefill_s
+        toks = sum(t - 1 for t in self.new_tokens)
+        return toks / decode_s if toks > 0 and decode_s > 0 else 0.0
+
+
 @dataclass
 class KernelStatus:
     """Which optional fast-kernel packages for the Gated DeltaNet layers import cleanly."""
@@ -156,13 +178,30 @@ class ChatModel:
             messages, tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking
         )
 
-    @torch.inference_mode()
     def generate(
         self,
         messages: list[dict[str, str]],
         sampling: SamplingSettings | None = None,
         seed: int | None = None,
     ) -> GenerationResult:
+        b = self.generate_batch(messages, 1, sampling, seed)
+        return GenerationResult(
+            text=b.texts[0],
+            prompt_tokens=b.prompt_tokens,
+            new_tokens=b.new_tokens[0],
+            prefill_s=b.prefill_s,
+            total_s=b.total_s,
+        )
+
+    @torch.inference_mode()
+    def generate_batch(
+        self,
+        messages: list[dict[str, str]],
+        n: int,
+        sampling: SamplingSettings | None = None,
+        seed: int | None = None,
+    ) -> BatchGenerationResult:
+        """n sampled replies to the same prompt in one batched call (reply candidates)."""
         from transformers import StoppingCriteriaList
 
         sp = sampling or SamplingSettings()
@@ -177,6 +216,7 @@ class ChatModel:
         start = time.perf_counter()
         out = self.model.generate(
             **inputs,
+            num_return_sequences=n,
             max_new_tokens=sp.max_new_tokens,
             min_new_tokens=sp.min_new_tokens or None,
             do_sample=sp.do_sample,
@@ -189,13 +229,27 @@ class ChatModel:
         torch.cuda.synchronize()
         end = time.perf_counter()
 
-        new_ids = out[0, n_prompt:]
-        text = self.tokenizer.decode(new_ids, skip_special_tokens=True).strip()
+        stop_ids = self._stop_token_ids()
+        texts, lengths = [], []
+        for row in out[:, n_prompt:]:
+            ids = row.tolist()
+            length = next((i + 1 for i, t in enumerate(ids) if t in stop_ids), len(ids))
+            lengths.append(length)
+            texts.append(self.tokenizer.decode(ids[:length], skip_special_tokens=True).strip())
         first = timer.first_token_at or end
-        return GenerationResult(
-            text=text,
+        return BatchGenerationResult(
+            texts=tuple(texts),
             prompt_tokens=n_prompt,
-            new_tokens=int(new_ids.shape[0]),
+            new_tokens=tuple(lengths),
             prefill_s=first - start,
             total_s=end - start,
         )
+
+    def _stop_token_ids(self) -> set[int]:
+        eos = self.model.generation_config.eos_token_id
+        ids = set(eos if isinstance(eos, list) else [eos]) if eos is not None else set()
+        if self.tokenizer.eos_token_id is not None:
+            ids.add(self.tokenizer.eos_token_id)
+        if self.tokenizer.pad_token_id is not None:
+            ids.add(self.tokenizer.pad_token_id)
+        return ids
