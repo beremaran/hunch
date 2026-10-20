@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Secrets (the private signing key must never be committed)
+.env
+secrets/
+*.private.pem
+*_private.key
+
+# Model weights and caches
+models/
+hf_cache/
+*.safetensors
+*.gguf
+
+# Runtime data and logs
+data/
+logs/
+*.db
+*.sqlite
+*.sqlite3
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

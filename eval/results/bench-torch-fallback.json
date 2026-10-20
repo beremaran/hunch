@@ -1,0 +1,61 @@
+{
+  "tag": "torch-fallback",
+  "model_id": "Qwen/Qwen3.5-9B",
+  "quant": "bnb-4bit nf4 double-quant, bf16 compute",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "torch": "2.14.1+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "load_s": 25.2,
+  "weights_allocated_gib": 7.12,
+  "model_footprint_gib": 7.01,
+  "nvidia_smi_used_mib_before": 1146,
+  "nvidia_smi_used_mib_after": 9769,
+  "kernels": {
+    "fla.chunk_gated_delta_rule": "ModuleNotFoundError: No module named 'fla'",
+    "fla.fused_recurrent_gated_delta_rule": "ModuleNotFoundError: No module named 'fla'",
+    "causal_conv1d.causal_conv1d_fn": "ModuleNotFoundError: No module named 'causal_conv1d'",
+    "causal_conv1d.causal_conv1d_update": "ModuleNotFoundError: No module named 'causal_conv1d'"
+  },
+  "fallback_warnings": [
+    "`causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.",
+    "`chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.",
+    "`causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.",
+    "`fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel."
+  ],
+  "fast_path": false,
+  "cases": [
+    {
+      "case": "short_prompt_256_new",
+      "prompt_tokens": 27,
+      "new_tokens": 256,
+      "prefill_s": 0.088,
+      "prefill_tok_per_s": 308.5,
+      "decode_tok_per_s": 16.86,
+      "decode_tok_per_s_all": [
+        16.82,
+        16.86
+      ],
+      "total_s": 15.21,
+      "peak_allocated_gib": 7.2,
+      "peak_reserved_gib": 7.24,
+      "sample_text": "Der Leuchtturm von „Nebelküste\" stand seit über einem Jahrhundert einsam am Rand der Welt, umgeben von wildem, schlagendem Atlantik. Sein weißer Turm war längst von der Zeit gezeichnet; die Farbe war verblasst zu einem warmen Grau, und das Eisen der Wendeltreppe knarrte unter jedem Schritt wie ein a"
+    },
+    {
+      "case": "long_prompt_128_new",
+      "prompt_tokens": 2968,
+      "new_tokens": 128,
+      "prefill_s": 1.021,
+      "prefill_tok_per_s": 2905.8,
+      "decode_tok_per_s": 16.99,
+      "decode_tok_per_s_all": [
+        16.9,
+        16.99
+      ],
+      "total_s": 8.49,
+      "peak_allocated_gib": 7.98,
+      "peak_reserved_gib": 8.19,
+      "sample_text": "Bu metin, aynı cümleyi tekrar tekrar kopyalayıp yapıştığını gösteren bir tekrar hatası içeriyor. Gerçekten ifade etmek istediğiniz tek bir cümle şudur: \"Bu hafta çok yoğundu; Pazartesi işte uzun bir toplantı vardı, salı günü annemi ziyaret ettim, çarşamba spor salonuna gittim ve perşembe arkadaşlarl"
+    }
+  ]
+}

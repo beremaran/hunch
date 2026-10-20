@@ -1,0 +1,22 @@
+{
+  "tag": "phase0-baseline",
+  "model_id": "Qwen/Qwen3.5-9B",
+  "sampling": {
+    "max_new_tokens": 384,
+    "min_new_tokens": 0,
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "do_sample": true,
+    "enable_thinking": false
+  },
+  "base_seed": 1234,
+  "fast_path": false,
+  "kernels": {
+    "fla.chunk_gated_delta_rule": "ok",
+    "fla.fused_recurrent_gated_delta_rule": "ok",
+    "causal_conv1d.causal_conv1d_fn": "ModuleNotFoundError: No module named 'causal_conv1d'",
+    "causal_conv1d.causal_conv1d_update": "ModuleNotFoundError: No module named 'causal_conv1d'"
+  },
+  "peak_allocated_gib": 7.3
+}

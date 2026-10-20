@@ -1,0 +1,59 @@
+{
+  "tag": "fla-triton-windows",
+  "model_id": "Qwen/Qwen3.5-9B",
+  "quant": "bnb-4bit nf4 double-quant, bf16 compute",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "torch": "2.14.1+cu130",
+  "cuda": "13.0",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "load_s": 20.9,
+  "weights_allocated_gib": 7.12,
+  "model_footprint_gib": 7.01,
+  "nvidia_smi_used_mib_before": 1146,
+  "nvidia_smi_used_mib_after": 9305,
+  "kernels": {
+    "fla.chunk_gated_delta_rule": "ok",
+    "fla.fused_recurrent_gated_delta_rule": "ok",
+    "causal_conv1d.causal_conv1d_fn": "ModuleNotFoundError: No module named 'causal_conv1d'",
+    "causal_conv1d.causal_conv1d_update": "ModuleNotFoundError: No module named 'causal_conv1d'"
+  },
+  "fallback_warnings": [
+    "`causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.",
+    "`causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel."
+  ],
+  "fast_path": false,
+  "cases": [
+    {
+      "case": "short_prompt_256_new",
+      "prompt_tokens": 27,
+      "new_tokens": 256,
+      "prefill_s": 0.072,
+      "prefill_tok_per_s": 374.0,
+      "decode_tok_per_s": 19.66,
+      "decode_tok_per_s_all": [
+        19.45,
+        19.66
+      ],
+      "total_s": 13.04,
+      "peak_allocated_gib": 7.2,
+      "peak_reserved_gib": 7.49,
+      "sample_text": "Der Leuchtturm von „Nebelküste\" stand seit hundert Jahren einsam am Rand der Welt, ein weißer Felsbrocken, der sich gegen das graue Meer auflehnte. Sein Name war legendär, doch niemand hatte ihn je betreten, bis der junge Mechaniker Elias ankam.\n\nElias war kein gewöhnlicher Mann; er suchte nicht nac"
+    },
+    {
+      "case": "long_prompt_128_new",
+      "prompt_tokens": 2968,
+      "new_tokens": 128,
+      "prefill_s": 0.79,
+      "prefill_tok_per_s": 3756.0,
+      "decode_tok_per_s": 19.6,
+      "decode_tok_per_s_all": [
+        19.5,
+        19.6
+      ],
+      "total_s": 7.27,
+      "peak_allocated_gib": 7.66,
+      "peak_reserved_gib": 7.74,
+      "sample_text": "Bu metin, aynı cümleyi tekrar tekrar kopyalayıp yapıştığını gösteren bir tekrar hatasıdır; çünkü aslında sadece tek bir cümle içerir. Bu nedenle, bu metni özetlemek için orijinal cümleyi iki kere yazmak en doğrusu olacaktır:\n\nBu hafta çok yoğundu. Pazartesi işte uzun bir toplantı vardı, salı günü an"
+    }
+  ]
+}
