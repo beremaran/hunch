@@ -11,7 +11,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 from hunch.config import DEFAULT_CONFIG, Config, load_config
 from hunch.memory.embeddings import QwenEmbedder
@@ -21,6 +21,17 @@ from hunch.pipeline.turn import TurnPipeline
 from hunch.values.core import DEFAULT_CORE_DIR, require_core_values, values_file
 
 REPO_ROOT = DEFAULT_CONFIG.parents[1]
+
+
+def load_env(path: Path | None = None) -> None:
+    """Read .env into the environment: only keys with a value, never overriding what is set.
+
+    An empty line like `HF_HOME=` must not become an empty variable: Hugging Face then treats the
+    current directory as its cache and downloads the full model again (Phase 3, first CLI run).
+    """
+    for key, value in dotenv_values(path).items():
+        if value and key not in os.environ:
+            os.environ[key] = value
 
 
 def _env_dir(name: str, default: str) -> Path:
@@ -43,7 +54,7 @@ def build_runtime(
     model: object | None = None,
     embedder: QwenEmbedder | None = None,
 ) -> Runtime:
-    load_dotenv(override=False)
+    load_env()
     values = require_core_values(values_file(DEFAULT_CORE_DIR))
     cfg = load_config()
     if model is None:

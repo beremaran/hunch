@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -7,7 +8,7 @@ import pytest
 
 from hunch import cli
 from hunch.observability.turn_log import TURNS_FILE
-from hunch.runtime import build_runtime, fresh_pipeline
+from hunch.runtime import build_runtime, fresh_pipeline, load_env
 from tests.fakes import FakeLLM, HashEmbedder
 
 
@@ -51,3 +52,18 @@ def test_cli_chats_until_quit(
     out = capsys.readouterr().out
     assert out.count("hunch> Hey! How are you?") == 1
     assert "after reply" in out
+
+
+def test_empty_dotenv_entries_do_not_become_empty_variables(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    env_file = tmp_path / "test.env"
+    env_file.write_text("HF_HOME=\nHUNCH_TEST_SET=x\nHUNCH_TEST_KEEP=from_file\n")
+    monkeypatch.delenv("HF_HOME", raising=False)
+    monkeypatch.delenv("HUNCH_TEST_SET", raising=False)
+    monkeypatch.setenv("HUNCH_TEST_KEEP", "from_shell")
+    load_env(env_file)
+    assert "HF_HOME" not in os.environ  # an empty HF_HOME made HF download the model again
+    assert os.environ["HUNCH_TEST_SET"] == "x"
+    assert os.environ["HUNCH_TEST_KEEP"] == "from_shell"
+    monkeypatch.delenv("HUNCH_TEST_SET")
