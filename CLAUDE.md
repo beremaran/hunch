@@ -4,7 +4,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 
 **Source of truth:** `docs/design.md` in this repo (Turkish); there is no external live version. Read it before any design-relevant change. The decisions table in that file lists what Berk (owner/admin) decided and what is only a default proposed by Claude.
 
-**Status:** Phases 0–2 done (Phase 2: memory store, activation engine, cue extraction, involuntary recall, reconsolidation; see `reports/phase2/REPORT.md`). Next: Phase 3 (turn pipeline). Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
+**Status:** Phases 0–3 done (Phase 3: turn pipeline as a local CLI chat: language check, working memory, recall with relevance gate, candidate filter, judge, modulation, value gate, turn log; see `reports/phase3/REPORT.md`). Next: Phase 4 (Hunch and reflection). Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
 
 ## Environment
 
@@ -31,7 +31,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 6. **Cross-user privacy:** a user's `private` memories must never appear in, or be hinted at by, a reply to another user. The disclosure check is rule-based plus a model judge, never the model judge alone.
 7. **Admin sees everything, the AI sees none of its own modulation.** Every internal decision is logged for the admin; logs are never fed back to the AI.
 8. **Multi-user from day one:** every memory carries `owner_user` and `privacy`.
-9. **Memories come only from the pipeline.** The persona prompt never encourages the model to bring up remembered topics on its own and tells it it remembers nothing beyond what the context shows. The invented-memory check stays in `eval/` and in `tests/golden/` as a permanent regression test (0 invented memories allowed; a temporary persona-level allowance of 1 in 10 for "I have no memory"-style replies ends in Phase 3, see design.md).
+9. **Memories come only from the pipeline.** The persona prompt never encourages the model to bring up remembered topics on its own and tells it it remembers nothing beyond what the context shows. The invented-memory check stays in `eval/` and in `tests/golden/` as a permanent regression test (since Phase 3 on the pipeline output: 0 invented memories and 0 "I have no memory"-style replies allowed).
 10. **The privacy module decides when to ask about privacy.** It injects a one-turn instruction; there is never a standing "ask whether this is private" instruction in the persona prompt.
 11. **Do not do everything on your own**, delegate to sub agents when needed. Choose models based on the task complexity.
 
@@ -64,6 +64,8 @@ src/hunch/
   consolidation/  # nightly job
   channels/       # telegram
   observability/  # turn, reflection, revision, disclosure logs; nightly report
+  pipeline/       # turn pipeline: language check, prompt, candidate filter, orchestration
+  runtime.py      # wires real components (paths from .env); cli.py: local chat
 core/             # values.yaml (read-only at runtime)
 tests/  tests/golden/
 scripts/  eval/

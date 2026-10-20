@@ -13,6 +13,16 @@ from typing import Any
 
 import torch
 
+from hunch.llm.types import BatchGenerationResult, GenerationResult, SamplingSettings
+
+__all__ = [
+    "BatchGenerationResult",
+    "ChatModel",
+    "GenerationResult",
+    "LLMSettings",
+    "SamplingSettings",
+]
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,62 +34,6 @@ class LLMSettings:
     double_quant: bool = True
     compute_dtype: torch.dtype = torch.bfloat16
     device: str = "cuda:0"
-
-
-@dataclass(frozen=True)
-class SamplingSettings:
-    """Defaults follow Qwen's recommendation for non-thinking general chat.
-
-    Qwen also recommends presence_penalty=1.5, which transformers' generate() does not offer.
-    """
-
-    max_new_tokens: int = 384
-    min_new_tokens: int = 0
-    temperature: float = 0.7
-    top_p: float = 0.8
-    top_k: int = 20
-    do_sample: bool = True
-    enable_thinking: bool = False
-
-
-@dataclass(frozen=True)
-class GenerationResult:
-    text: str
-    prompt_tokens: int
-    new_tokens: int
-    prefill_s: float  # time to first new token (prefill + one decode step)
-    total_s: float
-
-    @property
-    def decode_tok_per_s(self) -> float:
-        decode_s = self.total_s - self.prefill_s
-        return (self.new_tokens - 1) / decode_s if self.new_tokens > 1 and decode_s > 0 else 0.0
-
-    @property
-    def prefill_tok_per_s(self) -> float:
-        return self.prompt_tokens / self.prefill_s if self.prefill_s > 0 else 0.0
-
-
-@dataclass(frozen=True)
-class BatchGenerationResult:
-    texts: tuple[str, ...]
-    prompt_tokens: int
-    new_tokens: tuple[int, ...]  # per sequence, up to and including the stop token
-    prefill_s: float
-    total_s: float
-
-    @property
-    def decode_steps_per_s(self) -> float:
-        """Tokens per second each sequence gets (the batch advances one step for all)."""
-        decode_s = self.total_s - self.prefill_s
-        steps = max(self.new_tokens) - 1
-        return steps / decode_s if steps > 0 and decode_s > 0 else 0.0
-
-    @property
-    def aggregate_tok_per_s(self) -> float:
-        decode_s = self.total_s - self.prefill_s
-        toks = sum(t - 1 for t in self.new_tokens)
-        return toks / decode_s if toks > 0 and decode_s > 0 else 0.0
 
 
 @dataclass
@@ -230,11 +184,13 @@ class ChatModel:
         end = time.perf_counter()
 
         stop_ids = self._stop_token_ids()
-        texts, lengths = [], []
+        texts, lengths, capped = [], [], []
         for row in out[:, n_prompt:]:
             ids = row.tolist()
-            length = next((i + 1 for i, t in enumerate(ids) if t in stop_ids), len(ids))
+            stop = next((i + 1 for i, t in enumerate(ids) if t in stop_ids), None)
+            length = stop or len(ids)
             lengths.append(length)
+            capped.append(stop is None)
             texts.append(self.tokenizer.decode(ids[:length], skip_special_tokens=True).strip())
         first = timer.first_token_at or end
         return BatchGenerationResult(
@@ -243,7 +199,17 @@ class ChatModel:
             new_tokens=tuple(lengths),
             prefill_s=first - start,
             total_s=end - start,
+            hit_cap=tuple(capped),
         )
+
+    def count_tokens(self, text: str) -> int:
+        return len(self.tokenizer(text, add_special_tokens=False)["input_ids"])
+
+    def reset_peak_memory(self) -> None:
+        torch.cuda.reset_peak_memory_stats(self.settings.device)
+
+    def peak_memory_gib(self) -> float:
+        return torch.cuda.max_memory_allocated(self.settings.device) / 2**30
 
     def _stop_token_ids(self) -> set[int]:
         eos = self.model.generation_config.eos_token_id

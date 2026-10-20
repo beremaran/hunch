@@ -58,6 +58,9 @@ class CoreValues:
         raise KeyError(value_id)
 
 
+DEFAULT_CORE_DIR = Path(__file__).resolve().parents[3] / "core"
+
+
 def values_file(core_dir: Path) -> Path:
     return core_dir / "values.yaml"
 

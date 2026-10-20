@@ -9,7 +9,7 @@ import pytest
 
 from hunch.config import load_config
 from hunch.memory.schema import Episode, Memory
-from hunch.memory.store import MemoryStore, StoreError, select_working_memory
+from hunch.memory.store import MemoryStore, StoreError, group_exchanges, select_working_memory
 
 DIM = 4
 
@@ -222,32 +222,43 @@ def words(text: str) -> int:
     return len(text.split())
 
 
-def test_working_memory_caps_turn_count() -> None:
-    turns = _turns([f"turn {i}" for i in range(14)])
+def test_working_memory_counts_exchanges_as_turns() -> None:
+    turns = _turns([f"message {i}" for i in range(28)])  # 14 exchanges (user + reply)
     window = select_working_memory(turns, max_turns=10, max_tokens=2000, count_tokens=words)
-    assert [t.turn_index for t in window.verbatim] == list(range(4, 14))
-    assert [t.turn_index for t in window.to_summarize] == [0, 1, 2, 3]
+    assert [t.turn_index for t in window.verbatim] == list(range(8, 28))
+    assert [t.turn_index for t in window.to_summarize] == list(range(8))
+
+
+def test_group_exchanges_keeps_a_proactive_opener_apart() -> None:
+    eps = [
+        Episode("e0", "c1", 0, "u", "assistant", "hi, how did the run go?", 0.0),
+        Episode("e1", "c1", 1, "u", "user", "great", 1.0),
+        Episode("e2", "c1", 2, "u", "assistant", "nice", 2.0),
+        Episode("e3", "c1", 3, "u", "user", "and you?", 3.0),
+    ]
+    assert [[e.turn_index for e in x] for x in group_exchanges(eps)] == [[0], [1, 2], [3]]
 
 
 def test_working_memory_caps_tokens_and_folds_oldest() -> None:
-    turns = _turns(["a " * 900, "b " * 900, "c " * 900])  # 900 "tokens" each
+    turns = _turns(["a " * 800, "b " * 800, "c " * 800])  # exchanges [0, 1] and [2]
     window = select_working_memory(turns, max_turns=10, max_tokens=2000, count_tokens=words)
-    assert [t.turn_index for t in window.verbatim] == [1, 2]
-    assert [t.turn_index for t in window.to_summarize] == [0]
+    assert [t.turn_index for t in window.verbatim] == [2]  # exchanges are never split
+    assert [t.turn_index for t in window.to_summarize] == [0, 1]
 
 
 def test_working_memory_always_keeps_the_newest_turn() -> None:
-    turns = _turns(["short", "x " * 5000])
+    turns = _turns(["short", "reply", "x " * 5000])
     window = select_working_memory(turns, max_turns=10, max_tokens=2000, count_tokens=words)
-    assert [t.turn_index for t in window.verbatim] == [1]
+    assert [t.turn_index for t in window.verbatim] == [2]
 
 
 def test_working_memory_limits_come_from_config(store: MemoryStore) -> None:
     cfg = load_config().working_memory
-    for i in range(12):
+    for i in range(24):  # 12 exchanges
         store.append_turn("c1", "u_anna", "user" if i % 2 == 0 else "assistant", f"turn {i}")
     window = select_working_memory(
         store.turns("c1"), cfg.max_turns, cfg.max_tokens, count_tokens=words
     )
-    assert len(window.verbatim) == cfg.max_turns == 10
-    assert len(window.to_summarize) == 2
+    assert cfg.max_turns == 10
+    assert len(window.verbatim) == 2 * cfg.max_turns
+    assert len(window.to_summarize) == 4

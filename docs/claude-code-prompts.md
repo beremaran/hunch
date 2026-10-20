@@ -38,7 +38,9 @@ Implement the memory store and the activation engine from design.md ("Hafıza ka
 Where design.md gives no default for a parameter, propose values and ask me before fixing them. End the phase with the eval rerun and the diff against phase1c.
 ```
 
-## Phase 3 — Turn pipeline (local CLI)
+## Phase 3 — Turn pipeline (local CLI) (done)
+
+Done; see `reports/phase3/REPORT.md`. Berk's decisions from this phase are in the design.md decisions table (one judge call for quality and values, cheap memory encoding after the reply, a working-memory turn is one exchange, Phase 3 defaults).
 
 ```
 Build the full turn pipeline as a local CLI chat, no Telegram yet (design.md: "Mimari genel bakış", "Dürtü vektörü ve modülasyon").

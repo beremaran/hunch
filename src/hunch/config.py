@@ -6,12 +6,14 @@ Secrets and machine-specific paths live in .env instead. Nothing here writes fil
 from __future__ import annotations
 
 import tomllib
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
 
 from hunch.memory.schema import CUE_TYPES
 from hunch.recall.activation import ActivationParams
+from hunch.recall.cues import EMOTIONS
 
 DEFAULT_CONFIG = Path(__file__).resolve().parents[2] / "config" / "hunch.toml"
 
@@ -23,6 +25,24 @@ class ConfigError(ValueError):
 def _positive_int(section: str, name: str, value: object) -> None:
     if not isinstance(value, int) or isinstance(value, bool) or value < 1:
         raise ConfigError(f"{section}.{name} must be a positive integer, got {value!r}")
+
+
+def _number(section: str, name: str, value: object, lo: float, hi: float) -> None:
+    if not isinstance(value, int | float) or isinstance(value, bool) or not lo <= value <= hi:
+        raise ConfigError(f"{section}.{name} must be a number in [{lo}, {hi}], got {value!r}")
+
+
+def _text(section: str, name: str, value: object) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ConfigError(f"{section}.{name} must be a non-empty string, got {value!r}")
+
+
+def _affect(section: str, name: str, value: object) -> tuple[float, float]:
+    if not (isinstance(value, list | tuple) and len(value) == 2):
+        raise ConfigError(f"{section}.{name} must be [valence, arousal], got {value!r}")
+    _number(section, f"{name} valence", value[0], -1.0, 1.0)
+    _number(section, f"{name} arousal", value[1], 0.0, 1.0)
+    return (float(value[0]), float(value[1]))
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,9 +76,13 @@ class RecallConfig:
     max_upper_per_turn: int
     involuntary_per_session: int
     reconsolidation_rate: float
+    similar_k: int
+    min_similarity: float
 
     def __post_init__(self) -> None:
         _positive_int("recall", "max_upper_per_turn", self.max_upper_per_turn)
+        _positive_int("recall", "similar_k", self.similar_k)
+        _number("recall", "min_similarity", self.min_similarity, -1.0, 1.0)
         n = self.involuntary_per_session
         if not isinstance(n, int) or isinstance(n, bool) or n < 0:
             raise ConfigError(f"recall.involuntary_per_session must be an integer >= 0, got {n!r}")
@@ -68,12 +92,106 @@ class RecallConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class GenerationConfig:
+    candidates: int
+    temperature: float
+    top_p: float
+    top_k: int
+    max_new_tokens: int
+
+    def __post_init__(self) -> None:
+        for name in ("candidates", "top_k", "max_new_tokens"):
+            _positive_int("generation", name, getattr(self, name))
+        _number("generation", "temperature", self.temperature, 0.01, 2.0)
+        _number("generation", "top_p", self.top_p, 0.01, 1.0)
+
+
+@dataclass(frozen=True, slots=True)
+class SessionConfig:
+    summary_max_words: int
+
+    def __post_init__(self) -> None:
+        _positive_int("session", "summary_max_words", self.summary_max_words)
+
+
+@dataclass(frozen=True, slots=True)
+class MoodConfig:
+    neutral_valence: float
+    neutral_arousal: float
+    neutral_label: str
+
+    def __post_init__(self) -> None:
+        _number("mood", "neutral_valence", self.neutral_valence, -1.0, 1.0)
+        _number("mood", "neutral_arousal", self.neutral_arousal, 0.0, 1.0)
+        _text("mood", "neutral_label", self.neutral_label)
+
+    @property
+    def neutral(self) -> tuple[float, float]:
+        return (float(self.neutral_valence), float(self.neutral_arousal))
+
+
+@dataclass(frozen=True, slots=True)
+class DriveConfig:
+    hunch_min_intensity: float
+    hunch_clear_intensity: float
+    hunch_neutral_valence: float
+    hunch_strong_valence: float
+
+    def __post_init__(self) -> None:
+        for name in ("hunch_min_intensity", "hunch_clear_intensity", "hunch_neutral_valence",
+                     "hunch_strong_valence"):  # fmt: skip
+            _number("drive", name, getattr(self, name), 0.0, 1.0)
+        if not self.hunch_min_intensity <= self.hunch_clear_intensity:
+            raise ConfigError("drive.hunch_clear_intensity must be >= hunch_min_intensity")
+        if not self.hunch_neutral_valence <= self.hunch_strong_valence:
+            raise ConfigError("drive.hunch_strong_valence must be >= hunch_neutral_valence")
+
+
+@dataclass(frozen=True, slots=True)
+class SelectionConfig:
+    quality_floor: float
+    drive_weight: float
+    exploration: float
+
+    def __post_init__(self) -> None:
+        _number("selection", "quality_floor", self.quality_floor, 1.0, 10.0)
+        _number("selection", "drive_weight", self.drive_weight, 0.0, 10.0)
+        _number("selection", "exploration", self.exploration, 0.0, 1.0)
+
+
+@dataclass(frozen=True, slots=True)
+class RepliesConfig:
+    filter_fallback: str
+    gate_fallback: str
+
+    def __post_init__(self) -> None:
+        _text("replies", "filter_fallback", self.filter_fallback)
+        _text("replies", "gate_fallback", self.gate_fallback)
+
+
+@dataclass(frozen=True, slots=True)
+class EncodingConfig:
+    default_affect: tuple[float, float]
+    salience_base: float
+    salience_per_cue: float
+    salience_arousal: float
+    emotion_affect: Mapping[str, tuple[float, float]]
+
+
+@dataclass(frozen=True, slots=True)
 class Config:
     working_memory: WorkingMemoryConfig
     memory: MemoryConfig
     embedding: EmbeddingConfig
     recall: RecallConfig
     activation: ActivationParams
+    generation: GenerationConfig
+    session: SessionConfig
+    mood: MoodConfig
+    drive: DriveConfig
+    selection: SelectionConfig
+    replies: RepliesConfig
+    encoding: EncodingConfig
 
 
 def _section(data: dict, name: str, cls: type, nested: tuple[str, ...] = ()) -> dict:
@@ -110,6 +228,24 @@ def _activation(data: dict) -> ActivationParams:
         raise ConfigError(f"[activation]: {exc}") from exc
 
 
+def _encoding(data: dict) -> EncodingConfig:
+    raw = dict(_section(data, "encoding", EncodingConfig, nested=("emotion_affect",)))
+    table = raw.pop("emotion_affect")
+    if set(table) != set(EMOTIONS):
+        raise ConfigError(f"[encoding.emotion_affect] must cover exactly {list(EMOTIONS)}")
+    for name in ("salience_base", "salience_per_cue", "salience_arousal"):
+        _number("encoding", name, raw[name], 0.0, 1.0)
+    return EncodingConfig(
+        default_affect=_affect("encoding", "default_affect", raw["default_affect"]),
+        salience_base=float(raw["salience_base"]),
+        salience_per_cue=float(raw["salience_per_cue"]),
+        salience_arousal=float(raw["salience_arousal"]),
+        emotion_affect=MappingProxyType(
+            {k: _affect("encoding.emotion_affect", k, v) for k, v in table.items()}
+        ),
+    )
+
+
 def load_config(path: Path = DEFAULT_CONFIG) -> Config:
     with path.open("rb") as f:
         data = tomllib.load(f)
@@ -119,4 +255,11 @@ def load_config(path: Path = DEFAULT_CONFIG) -> Config:
         embedding=EmbeddingConfig(**_section(data, "embedding", EmbeddingConfig)),
         recall=RecallConfig(**_section(data, "recall", RecallConfig)),
         activation=_activation(data),
+        generation=GenerationConfig(**_section(data, "generation", GenerationConfig)),
+        session=SessionConfig(**_section(data, "session", SessionConfig)),
+        mood=MoodConfig(**_section(data, "mood", MoodConfig)),
+        drive=DriveConfig(**_section(data, "drive", DriveConfig)),
+        selection=SelectionConfig(**_section(data, "selection", SelectionConfig)),
+        replies=RepliesConfig(**_section(data, "replies", RepliesConfig)),
+        encoding=_encoding(data),
     )

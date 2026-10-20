@@ -4,12 +4,16 @@ The labels were written blind, without seeing the extraction prompt. Matching is
 normalised "type:value" key; a second, lenient score also counts a cue as found when the type
 matches and one value contains the other (e.g. "lake_como" vs "como").
 
-Two sets, both labelled blind by a separate agent: "labelled" is the tuning set the prompt was
-improved on; "heldout" is measured once, at the end, and is the number to report.
+Sets, all labelled blind by a separate agent: "labelled" is the tuning set the prompt was
+improved on; "heldout" was measured once at the end of Phase 2; "heldout2" is measured once after
+the rule-based date finder was frozen (Phase 3). By default date cues come from the LLM plus the
+rule-based finder; --no-rule-dates measures the LLM alone.
 
 Usage:
     python scripts/eval_cues.py --set labelled   # reports/phase2/cue_extraction-labelled.*
     python scripts/eval_cues.py --set heldout    # reports/phase2/cue_extraction-heldout.*
+    python scripts/eval_cues.py --set heldout2   # reports/phase3/cue_extraction-heldout2.*
+    python scripts/eval_cues.py --set heldout2 --no-rule-dates  # ...-heldout2-llm-only.*
 """
 
 from __future__ import annotations
@@ -26,7 +30,8 @@ from hunch.recall.cues import extract_cues, llm_generate, normalize_value
 
 ROOT = Path(__file__).resolve().parents[1]
 CUE_SETS = ROOT / "eval" / "cues"
-OUT = ROOT / "reports" / "phase2"
+REPORTS = ROOT / "reports"
+OUT_DIRS = {"labelled": "phase2", "heldout": "phase2", "heldout2": "phase3"}
 
 
 def _norm_key(key: str) -> str:
@@ -75,8 +80,13 @@ def main() -> None:
     from hunch.llm.model import ChatModel
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--set", choices=("labelled", "heldout"), required=True)
+    ap.add_argument("--set", choices=tuple(OUT_DIRS), required=True)
+    ap.add_argument(
+        "--no-rule-dates", action="store_true", help="date cues from the LLM alone, no rules"
+    )
     args = ap.parse_args()
+    out_dir = REPORTS / OUT_DIRS[args.set]
+    name = f"cue_extraction-{args.set}{'-llm-only' if args.no_rule_dates else ''}"
     data = json.loads((CUE_SETS / f"{args.set}.json").read_text(encoding="utf-8"))
     today = date.fromisoformat(data["today"])
     model = ChatModel()
@@ -84,7 +94,7 @@ def main() -> None:
     rows = []
     for it in data["items"]:
         t0 = time.perf_counter()
-        out = extract_cues(it["text"], today, generate)
+        out = extract_cues(it["text"], today, generate, rule_dates=not args.no_rule_dates)
         rows.append(
             {
                 "id": it["id"],
@@ -92,6 +102,7 @@ def main() -> None:
                 "gold": sorted(_norm_key(c) for c in it["cues"]),
                 "pred": sorted(out.cues),
                 "strengths": out.cues,
+                "rule_dates": list(out.rule_dates),
                 "dropped": list(out.dropped),
                 "attempts": out.attempts,
                 "errors": list(out.errors),
@@ -106,6 +117,7 @@ def main() -> None:
     lat = sorted(r["latency_s"] for r in rows)
     report = {
         "n_messages": len(rows),
+        "rule_dates": not args.no_rule_dates,
         "strict": strict,
         "lenient": lenient,
         "latency_s": {"median": lat[len(lat) // 2], "max": lat[-1]},
@@ -113,10 +125,8 @@ def main() -> None:
         "failed": sum(not r["pred"] and r["errors"] != [] for r in rows),
         "rows": rows,
     }
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / f"cue_extraction-{args.set}.json").write_text(
-        json.dumps(report, indent=2), encoding="utf-8"
-    )
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / f"{name}.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     lines = [
         "| type | gold | strict P | strict R | lenient P | lenient R |",
@@ -142,7 +152,7 @@ def main() -> None:
         fn = sorted(set(r["gold"]) - set(r["pred"]))
         if fp or fn:
             lines.append(f"- {r['id']} {r['text'][:70]!r}: extra {fp}, missed {fn}")
-    (OUT / f"cue_extraction-{args.set}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (out_dir / f"{name}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
 

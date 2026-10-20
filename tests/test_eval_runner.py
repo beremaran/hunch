@@ -59,3 +59,14 @@ def test_summary_counts_samples_and_latency_budget() -> None:
     assert "| en | 2 | 3 | 1 |" in text
     assert "1/2 over the 10 s budget" in text
     assert "### en-a (1/2 clean, 4.0 s)" in text
+
+
+def test_pipeline_mode_hands_item_memories_over_as_recalled_lines() -> None:
+    from eval.run_eval import provided_memories
+    from hunch.pipeline.prompt import RecalledLine
+
+    item = {"memory": ["(3 days ago) Said they would call the landlord.", "no age here"]}
+    assert provided_memories(item) == [
+        RecalledLine("3 days ago", "Said they would call the landlord."),
+        RecalledLine("earlier", "no age here"),
+    ]

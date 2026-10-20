@@ -61,7 +61,7 @@ def test_valid_reply_becomes_store_cues() -> None:
             {"type": "emotion", "value": "nostalgia", "strength": 0.6},
         )
     )
-    out = extract_cues("Anna sang Hallelujah, see you Friday", TODAY, gen)
+    out = extract_cues("Anna sang Hallelujah, see you Friday", TODAY, gen, rule_dates=False)
     assert out.cues == {
         "person:anna": 1.0,
         "song:hallelujah": 0.8,
@@ -163,3 +163,45 @@ def test_a_name_next_to_a_role_word_is_kept() -> None:
 def test_prompt_asks_for_date_expressions_not_arithmetic() -> None:
     system = build_messages("hi", TODAY)[0]["content"]
     assert "do not calculate" in system
+
+
+# --- rule-based dates merged into the LLM cues ---------------------------------------------------
+
+
+def test_rule_dates_add_what_the_llm_missed() -> None:
+    gen = scripted(reply({"type": "person", "value": "Anna", "strength": 1.0}))
+    out = extract_cues("Anna arrives the day after tomorrow", TODAY, gen)
+    assert out.cues == {"person:anna": 1.0, "date:2026-10-22": 0.5}
+    assert out.rule_dates == ("date:2026-10-22",)
+
+
+@pytest.mark.parametrize(("llm_strength", "merged"), [(0.9, 0.9), (0.2, 0.5)])
+def test_a_date_both_found_keeps_the_higher_strength(llm_strength: float, merged: float) -> None:
+    gen = scripted(reply({"type": "date", "value": "Friday", "strength": llm_strength}))
+    out = extract_cues("see you Friday", TODAY, gen)
+    assert out.cues == {"date:2026-10-23": merged}
+    assert out.rule_dates == ("date:2026-10-23",)
+
+
+def test_two_rule_dates_and_one_key_per_resolved_day() -> None:
+    gen = scripted(reply())
+    out = extract_cues("Friday, Oct 23, then last Sunday's photos", TODAY, gen)
+    assert out.cues == {"date:2026-10-23": 0.5, "date:2026-10-18": 0.5}
+    assert out.rule_dates == ("date:2026-10-23", "date:2026-10-18")
+
+
+def test_vague_times_add_no_rule_dates() -> None:
+    out = extract_cues("see you soon, maybe next week", TODAY, scripted(reply()))
+    assert out.cues == {} and out.rule_dates == ()
+
+
+def test_rule_dates_off_measures_the_llm_alone() -> None:
+    gen = scripted(reply({"type": "person", "value": "Anna"}))
+    out = extract_cues("Anna arrives tomorrow", TODAY, gen, rule_dates=False)
+    assert out.cues == {"person:anna": 0.5} and out.rule_dates == ()
+
+
+def test_rule_dates_survive_an_unparseable_llm_reply() -> None:
+    out = extract_cues("dentist on Christmas Eve", TODAY, scripted("no json", "still none"))
+    assert out.cues == {"date:christmas_eve": 0.5}
+    assert out.attempts == 2 and len(out.errors) == 2

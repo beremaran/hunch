@@ -59,7 +59,9 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 known-first-party = ["hunch", "eval", "scripts"]
 
 [tool.ruff.lint.per-file-ignores]
-"eval/scoring.py" = ["SIM905"]  # whitespace-split word lists read better than list literals
+"src/hunch/pipeline/checks.py" = ["SIM905"]  # whitespace-split word lists read better than list literals
+"src/hunch/pipeline/filter.py" = ["SIM905"]
+"src/hunch/values/gate.py" = ["E501"]  # the judge prompt is model text, one rule per line
 "scripts/simulate_recall.py" = ["E501"]  # hand-written memory table: one memory per line
 "src/hunch/recall/cues.py" = ["E501"]  # the extraction prompt is model text, one rule per line
 

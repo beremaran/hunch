@@ -3,8 +3,15 @@
 Each prompt gets `samples_per_prompt` sampled replies from one batched call (the way reply
 candidates are generated), so latency is measured per batched call against the 10 s budget.
 
+With --pipeline (Phase 3 on), each sample is instead the reply of the full turn pipeline
+(candidate filter, judge, selection, value gate) in a fresh conversation over an empty memory
+store: earlier messages of the item become the conversation's turns, its memories and one-turn
+instructions are handed to the pipeline as module-provided context, and latency is the whole
+reply path.
+
 Usage:
     python -m eval.run_eval --tag phase1
+    python -m eval.run_eval --tag phase3 --pipeline
     python -m eval.run_eval --tag phase1 --rescore   # re-run checks on saved outputs only
 Writes eval/results/<tag>/outputs.jsonl, meta.json and summary.md.
 """
@@ -77,15 +84,27 @@ def summarize(rows: list[dict]) -> str:
         counts = [str(sum(has_flag(r, f) for r in rs)) for f in SUMMARY_FLAGS]
         lines.append(f"| {lang} | {n_prompts} | {len(rs)} | {clean} | " + " | ".join(counts) + " |")
 
-    latencies = [rs[0]["batch_latency_s"] for rs in by_item.values()]
+    pipeline = any("chosen_by" in r for r in rows)
+    latencies = [max(r["batch_latency_s"] for r in rs) for rs in by_item.values()]
     over = sum(t > LATENCY_BUDGET_S for t in latencies)
+    what = "Full reply latency (pipeline), worst run" if pipeline else "Batched call latency"
     lines += [
         "",
-        f"Batched call latency per prompt: median {statistics.median(latencies):.1f} s, "
+        f"{what} per prompt: median {statistics.median(latencies):.1f} s, "
         f"max {max(latencies):.1f} s; {over}/{len(latencies)} over the "
         f"{LATENCY_BUDGET_S:.0f} s budget.",
         "",
     ]
+    if pipeline:
+        fallback = sum(r["chosen_by"] == "filter_fallback" for r in rows)
+        gate = sum(r["chosen_by"] == "gate_fallback" for r in rows)
+        rejected = sum(len(r["rejected"]) for r in rows)
+        lines += [
+            f"Pipeline: {fallback}/{len(rows)} replies were the filter fallback (all candidates "
+            f"rejected), {gate} the value-gate fallback; {rejected} of {3 * len(rows)} "
+            "candidates rejected by the filter.",
+            "",
+        ]
     expected = {i: rs for i, rs in by_item.items() if rs[0].get("expected_fail")}
     if expected:
         lines.append("Expected-fail prompts (known issues, not counted above):")
@@ -95,9 +114,14 @@ def summarize(rows: list[dict]) -> str:
         lines.append("")
     for item_id, rs in by_item.items():
         clean = sum(not r["checks"]["flags"] for r in rs)
-        lines.append(f"### {item_id} ({clean}/{len(rs)} clean, {rs[0]['batch_latency_s']} s)")
+        worst = max(r["batch_latency_s"] for r in rs)
+        lines.append(f"### {item_id} ({clean}/{len(rs)} clean, {worst} s)")
         for r in rs:
             flags = ", ".join(r["checks"]["flags"]) or "clean"
+            if "chosen_by" in r:
+                flags += f"; {r['chosen_by']}"
+                if r["rejected"]:
+                    flags += f", rejected {r['rejected']}"
             reply = r["reply"].replace("\n", " ")
             lines.append(f"- [{r['sample']}] ({flags}) {reply}")
         lines.append("")
@@ -124,6 +148,7 @@ def main() -> None:
     ap.add_argument("--only", default=None, help="comma-separated item ids")
     ap.add_argument("--samples", type=int, default=None, help="override samples_per_prompt")
     ap.add_argument("--rescore", action="store_true", help="re-check saved outputs, no generation")
+    ap.add_argument("--pipeline", action="store_true", help="samples = full turn pipeline replies")
     args = ap.parse_args()
 
     data = json.loads((EVAL_DIR / "prompts.json").read_text(encoding="utf-8"))
@@ -146,6 +171,9 @@ def main() -> None:
     model = ChatModel()
     sampling = SamplingSettings()
     torch.cuda.reset_peak_memory_stats()
+    if args.pipeline:
+        run_pipeline(data, items, n, args.seed, model, out_dir)
+        return
 
     rows = []
     with (out_dir / "outputs.jsonl").open("w", encoding="utf-8") as f:
@@ -183,6 +211,83 @@ def main() -> None:
         "sampling": dict(vars(sampling)),
         "base_seed": args.seed,
         "kernels": status.packages,
+        "peak_allocated_gib": round(torch.cuda.max_memory_allocated() / 2**30, 2),
+    }
+    (out_dir / "meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    (out_dir / "summary.md").write_text(summarize(rows), encoding="utf-8")
+    print(f"wrote {out_dir}")
+
+
+def provided_memories(item: dict) -> list:
+    """The item's memories ("(3 days ago) Said ...") as module-provided recalled lines."""
+    from hunch.pipeline.prompt import RecalledLine
+
+    out = []
+    for m in item.get("memory", ()):
+        age, sep, rest = m.partition(") ")
+        out.append(RecalledLine(age.lstrip("("), rest) if sep else RecalledLine("earlier", m))
+    return out
+
+
+def run_pipeline(
+    data: dict, items: list[dict], n: int, base_seed: int, model, out_dir: Path
+) -> None:
+    import torch
+
+    from hunch.config import load_config
+    from hunch.memory.embeddings import QwenEmbedder
+    from hunch.runtime import fresh_pipeline
+
+    e = load_config().embedding
+    embedder = QwenEmbedder(e.model_id, e.device, e.query_instruction)
+    rows = []
+    with (out_dir / "outputs.jsonl").open("w", encoding="utf-8") as f:
+        for it in items:
+            seed = item_seed(base_seed, it["id"])
+            for k in range(n):
+                pipe = fresh_pipeline(model, embedder, seed=seed + k)
+                session = pipe.new_session("u_eval")
+                for m in it["messages"][:-1]:
+                    pipe.store.append_turn(
+                        session.conversation_id, "u_eval", m["role"], m["content"]
+                    )
+                r = pipe.turn(
+                    session,
+                    it["messages"][-1]["content"],
+                    instructions=it.get("turn_instructions", ()),
+                    provided_memories=provided_memories(it),
+                )
+                pipe.store.close()
+                row = {
+                    "id": it["id"],
+                    "lang": it["lang"],
+                    "category": it["category"],
+                    "expected_fail": bool(it.get("expected_fail")),
+                    "sample": k,
+                    "seed": seed + k,
+                    "user": it["messages"][-1]["content"],
+                    "reply": r.reply,
+                    "chosen_by": r.log["chosen_by"],
+                    "rejected": [c["rejected"] for c in r.details["candidates"] if c["rejected"]],
+                    "candidates": r.details["candidates"],
+                    "quality": [c["quality"] for c in r.log["candidates"]],
+                    "latency_s": r.details["latency_s"],
+                    "batch_latency_s": r.details["latency_s"]["total"],
+                    "checks": check_reply(it, r.reply).to_dict(),
+                }
+                rows.append(row)
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+                f.flush()
+            flagged = sum(bool(r["checks"]["flags"]) for r in rows[-n:])
+            print(f"{it['id']}: {flagged}/{n} flagged", flush=True)
+    meta = {
+        "tag": out_dir.name,
+        "mode": "pipeline",
+        "model_id": model.settings.model_id,
+        "prompts_version": data["version"],
+        "samples_per_prompt": n,
+        "base_seed": base_seed,
+        "kernels": model.kernel_status().packages,
         "peak_allocated_gib": round(torch.cuda.max_memory_allocated() / 2**30, 2),
     }
     (out_dir / "meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")

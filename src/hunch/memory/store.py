@@ -16,7 +16,7 @@ import os
 import sqlite3
 import time
 import uuid
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -100,27 +100,39 @@ class WorkingMemoryWindow:
     to_summarize: tuple[Episode, ...]  # older turns, to be folded into the session summary
 
 
+def group_exchanges(turns: Sequence[Episode]) -> list[list[Episode]]:
+    """One exchange (= one working-memory turn, Berk) is a user message plus Hunch's replies to
+    it. Assistant messages before the first user message (a proactive opener) form their own."""
+    exchanges: list[list[Episode]] = []
+    for turn in turns:
+        if turn.role == "user" or not exchanges:
+            exchanges.append([turn])
+        else:
+            exchanges[-1].append(turn)
+    return exchanges
+
+
 def select_working_memory(
     turns: Sequence[Episode],
     max_turns: int,
     max_tokens: int,
     count_tokens: Callable[[str], int],
 ) -> WorkingMemoryWindow:
-    """Keep the newest turns verbatim within max_turns and max_tokens; the rest get summarized.
-
-    The newest turn is always kept, even if it alone exceeds max_tokens.
+    """Keep the newest exchanges verbatim within max_turns exchanges and max_tokens; the rest get
+    summarized. Exchanges are never split. The newest exchange is always kept, even if it alone
+    exceeds max_tokens.
     """
-    kept: list[Episode] = []
+    kept: list[list[Episode]] = []
     used = 0
-    for turn in reversed(turns):
-        cost = count_tokens(turn.text)
+    for exchange in reversed(group_exchanges(turns)):
+        cost = sum(count_tokens(t.text) for t in exchange)
         if kept and (len(kept) >= max_turns or used + cost > max_tokens):
             break
-        kept.append(turn)
+        kept.append(exchange)
         used += cost
-    kept.reverse()
-    older = turns[: len(turns) - len(kept)]
-    return WorkingMemoryWindow(verbatim=tuple(kept), to_summarize=tuple(older))
+    verbatim = [t for exchange in reversed(kept) for t in exchange]
+    older = turns[: len(turns) - len(verbatim)]
+    return WorkingMemoryWindow(verbatim=tuple(verbatim), to_summarize=tuple(older))
 
 
 class MemoryStore:
@@ -332,12 +344,22 @@ class MemoryStore:
         return int(n)
 
     def similar(
-        self, query: np.ndarray, k: int, owner_user: str | None = None
+        self,
+        query: np.ndarray,
+        k: int,
+        owner_user: str | None = None,
+        visible_to: str | None = None,
     ) -> list[tuple[Memory, float]]:
-        """Nearest memories by cosine distance (candidate generation, not activation)."""
+        """Nearest memories by cosine distance (candidate generation, not activation).
+
+        owner_user: only that user's memories. visible_to: that user's memories plus other
+        users' general ones (never another user's private memory, invariant 6).
+        """
+        if owner_user is not None and visible_to is not None:
+            raise ValueError("pass owner_user or visible_to, not both")
         vec = sqlite_vec.serialize_float32(np.asarray(query, dtype=np.float32).tolist())
-        # Over-fetch when filtering by owner, since vec0 applies k before the join.
-        fetch = k if owner_user is None else k * 4
+        # Over-fetch when filtering, since vec0 applies k before the join.
+        fetch = k if owner_user is None and visible_to is None else k * 4
         rows = self.db.execute(
             "SELECT m.id, v.distance FROM memory_vec v JOIN memories m ON m.rowid = v.rowid"
             " WHERE v.embedding MATCH ? AND k = ? ORDER BY v.distance",
@@ -346,4 +368,46 @@ class MemoryStore:
         out = [(self.memory(mid), float(dist)) for mid, dist in rows]
         if owner_user is not None:
             out = [(m, d) for m, d in out if m.owner_user == owner_user]
+        if visible_to is not None:
+            out = [(m, d) for m, d in out if _visible(m, visible_to)]
         return out[:k]
+
+    def with_cues(self, cues: Iterable[str], visible_to: str) -> list[Memory]:
+        """Memories visible to the user that share at least one of the cues."""
+        cues = sorted(set(cues))
+        if not cues:
+            return []
+        marks = ",".join("?" * len(cues))
+        ids = [
+            mid
+            for (mid,) in self.db.execute(
+                "SELECT DISTINCT c.memory_id FROM memory_cues c JOIN memories m"
+                f" ON m.id = c.memory_id WHERE c.cue IN ({marks})"
+                " AND (m.owner_user = ? OR m.privacy = 'general') ORDER BY m.rowid",
+                (*cues, visible_to),
+            )
+        ]
+        return [self.memory(mid) for mid in ids]
+
+    def memory_ids_from_conversation(self, conversation_id: str) -> set[str]:
+        """Memories encoded from this conversation's own turns."""
+        return {
+            mid
+            for (mid,) in self.db.execute(
+                "SELECT m.id FROM memories m JOIN episodes e ON e.id = m.episode_ref"
+                " WHERE e.conversation_id = ?",
+                (conversation_id,),
+            )
+        }
+
+    def private_memories_of_others(self, user: str) -> list[Memory]:
+        """Other users' private memories (for the disclosure check, never for a prompt)."""
+        rows = self.db.execute(
+            "SELECT id FROM memories WHERE owner_user != ? AND privacy = 'private' ORDER BY rowid",
+            (user,),
+        ).fetchall()
+        return [self.memory(mid) for (mid,) in rows]
+
+
+def _visible(memory: Memory, user: str) -> bool:
+    return memory.owner_user == user or memory.privacy == "general"

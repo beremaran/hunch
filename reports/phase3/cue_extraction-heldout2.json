@@ -1,0 +1,1025 @@
+{
+  "n_messages": 40,
+  "rule_dates": true,
+  "strict": {
+    "overall": {
+      "tp": 70,
+      "fp": 5,
+      "fn": 9,
+      "precision": 0.9333333333333333,
+      "recall": 0.8860759493670886
+    },
+    "per_type": {
+      "person": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.9,
+        "recall": 1.0
+      },
+      "place": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "song": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "film": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "date": {
+        "tp": 30,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "emotion": {
+        "tp": 14,
+        "fp": 4,
+        "fn": 9,
+        "precision": 0.7777777777777778,
+        "recall": 0.6086956521739131
+      },
+      "phrase": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": null,
+        "recall": null
+      }
+    }
+  },
+  "lenient": {
+    "overall": {
+      "tp": 70,
+      "fp": 5,
+      "fn": 9,
+      "precision": 0.9333333333333333,
+      "recall": 0.8860759493670886
+    },
+    "per_type": {
+      "person": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.9,
+        "recall": 1.0
+      },
+      "place": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "song": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "film": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "date": {
+        "tp": 30,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "emotion": {
+        "tp": 14,
+        "fp": 4,
+        "fn": 9,
+        "precision": 0.7777777777777778,
+        "recall": 0.6086956521739131
+      },
+      "phrase": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": null,
+        "recall": null
+      }
+    }
+  },
+  "latency_s": {
+    "median": 2.98,
+    "max": 6.12
+  },
+  "retries": 0,
+  "failed": 0,
+  "rows": [
+    {
+      "id": "h2-01",
+      "text": "meeting dana for coffee this coming saturday, kinda excited",
+      "gold": [
+        "date:2026-11-14",
+        "emotion:excitement",
+        "person:dana"
+      ],
+      "pred": [
+        "date:2026-11-14",
+        "emotion:excitement",
+        "person:dana"
+      ],
+      "strengths": {
+        "person:dana": 0.8,
+        "date:2026-11-14": 0.5,
+        "emotion:excitement": 0.9
+      },
+      "rule_dates": [
+        "date:2026-11-14"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 5.45
+    },
+    {
+      "id": "h2-02",
+      "text": "my flight to lisbon leaves tomorrow morning and i haven't packed at all",
+      "gold": [
+        "date:2026-11-13",
+        "place:lisbon"
+      ],
+      "pred": [
+        "date:2026-11-13",
+        "place:lisbon"
+      ],
+      "strengths": {
+        "place:lisbon": 0.8,
+        "date:2026-11-13": 0.8
+      },
+      "rule_dates": [
+        "date:2026-11-13"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.33
+    },
+    {
+      "id": "h2-03",
+      "text": "what are you up to tonight? i'm free again next thursday",
+      "gold": [
+        "date:2026-11-12",
+        "date:2026-11-19"
+      ],
+      "pred": [
+        "date:2026-11-12",
+        "date:2026-11-19"
+      ],
+      "strengths": {
+        "date:2026-11-19": 0.5,
+        "date:2026-11-12": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-12",
+        "date:2026-11-19"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.05
+    },
+    {
+      "id": "h2-04",
+      "text": "last thursday was the worst day at work, i'm still annoyed about it",
+      "gold": [
+        "date:2026-11-05",
+        "emotion:annoyed"
+      ],
+      "pred": [
+        "date:2026-11-05",
+        "emotion:annoyed"
+      ],
+      "strengths": {
+        "date:2026-11-05": 0.5,
+        "emotion:annoyed": 1.0
+      },
+      "rule_dates": [
+        "date:2026-11-05"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.56
+    },
+    {
+      "id": "h2-05",
+      "text": "we're driving to lake como next friday with tom and priya",
+      "gold": [
+        "date:2026-11-13",
+        "person:priya",
+        "person:tom",
+        "place:lake_como"
+      ],
+      "pred": [
+        "date:2026-11-13",
+        "person:priya",
+        "person:tom",
+        "place:lake_como"
+      ],
+      "strengths": {
+        "place:lake_como": 0.9,
+        "person:tom": 0.5,
+        "person:priya": 0.5,
+        "date:2026-11-13": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-13"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 6.12
+    },
+    {
+      "id": "h2-06",
+      "text": "just finished watching succession and wow, i'm still processing",
+      "gold": [
+        "emotion:surprise",
+        "film:succession"
+      ],
+      "pred": [
+        "emotion:anxious",
+        "film:succession"
+      ],
+      "strengths": {
+        "film:succession": 1.0,
+        "emotion:anxious": 0.3
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.4
+    },
+    {
+      "id": "h2-07",
+      "text": "dad's birthday is on december 3rd, i'm so stressed about finding a gift",
+      "gold": [
+        "date:2026-12-03",
+        "emotion:stress"
+      ],
+      "pred": [
+        "date:2026-12-03",
+        "emotion:stress"
+      ],
+      "strengths": {
+        "date:2026-12-03": 0.8,
+        "emotion:stress": 0.9
+      },
+      "rule_dates": [
+        "date:2026-12-03"
+      ],
+      "dropped": [
+        "role, not a name: 'dad'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.79
+    },
+    {
+      "id": "h2-08",
+      "text": "in two days i start my new job and i'm so nervous",
+      "gold": [
+        "date:2026-11-14",
+        "emotion:anxious"
+      ],
+      "pred": [
+        "date:2026-11-14"
+      ],
+      "strengths": {
+        "date:2026-11-14": 0.8
+      },
+      "rule_dates": [
+        "date:2026-11-14"
+      ],
+      "dropped": [
+        "emotion not in vocabulary: 'nervous'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.15
+    },
+    {
+      "id": "h2-09",
+      "text": "on christmas eve we always go to my grandma's in vienna",
+      "gold": [
+        "date:christmas_eve",
+        "place:vienna"
+      ],
+      "pred": [
+        "date:christmas_eve",
+        "place:vienna"
+      ],
+      "strengths": {
+        "date:christmas_eve": 0.8,
+        "place:vienna": 0.8
+      },
+      "rule_dates": [
+        "date:christmas_eve"
+      ],
+      "dropped": [
+        "role, not a name: 'grandma'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.98
+    },
+    {
+      "id": "h2-10",
+      "text": "been listening to bohemian rhapsody on repeat all week",
+      "gold": [
+        "song:bohemian_rhapsody"
+      ],
+      "pred": [
+        "song:bohemian_rhapsody"
+      ],
+      "strengths": {
+        "song:bohemian_rhapsody": 1.0
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.82
+    },
+    {
+      "id": "h2-11",
+      "text": "i've been so tired lately, barely sleeping",
+      "gold": [
+        "emotion:tired"
+      ],
+      "pred": [
+        "emotion:anxious",
+        "emotion:tired"
+      ],
+      "strengths": {
+        "emotion:tired": 1.0,
+        "emotion:anxious": 0.3
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.72
+    },
+    {
+      "id": "h2-12",
+      "text": "do you know a good recipe for lentil soup?",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.61
+    },
+    {
+      "id": "h2-13",
+      "text": "the other day i ran into will at the supermarket, we talked for ages",
+      "gold": [
+        "person:will"
+      ],
+      "pred": [
+        "person:will"
+      ],
+      "strengths": {
+        "person:will": 0.8
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.57
+    },
+    {
+      "id": "h2-14",
+      "text": "going to see the cure in berlin on nov 20",
+      "gold": [
+        "date:2026-11-20",
+        "place:berlin"
+      ],
+      "pred": [
+        "date:2026-11-20",
+        "person:the_cure",
+        "place:berlin"
+      ],
+      "strengths": {
+        "person:the_cure": 0.8,
+        "place:berlin": 0.8,
+        "date:2026-11-20": 0.8
+      },
+      "rule_dates": [
+        "date:2026-11-20"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.88
+    },
+    {
+      "id": "h2-15",
+      "text": "rose called me last night, she's moving to canada next spring",
+      "gold": [
+        "person:rose",
+        "place:canada"
+      ],
+      "pred": [
+        "person:rose",
+        "place:canada"
+      ],
+      "strengths": {
+        "person:rose": 0.8,
+        "place:canada": 0.8
+      },
+      "rule_dates": [],
+      "dropped": [
+        "vague or unresolvable date: 'next_spring'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.79
+    },
+    {
+      "id": "h2-16",
+      "text": "my mum's coming to visit this weekend and i'm really looking forward to it",
+      "gold": [
+        "emotion:excitement"
+      ],
+      "pred": [
+        "emotion:excitement"
+      ],
+      "strengths": {
+        "emotion:excitement": 0.9
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.63
+    },
+    {
+      "id": "h2-17",
+      "text": "yesterday i finally watched the martian again, still love it",
+      "gold": [
+        "date:2026-11-11",
+        "emotion:love",
+        "film:the_martian"
+      ],
+      "pred": [
+        "date:2026-11-11",
+        "emotion:love",
+        "film:the_martian"
+      ],
+      "strengths": {
+        "film:the_martian": 0.8,
+        "emotion:love": 0.8,
+        "date:2026-11-11": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-11"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.83
+    },
+    {
+      "id": "h2-18",
+      "text": "hey, how's it going?",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.61
+    },
+    {
+      "id": "h2-19",
+      "text": "my doctor said i should rest for a few days, bit worried honestly",
+      "gold": [
+        "emotion:worry"
+      ],
+      "pred": [],
+      "strengths": {},
+      "rule_dates": [],
+      "dropped": [
+        "emotion not in vocabulary: 'worried'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.63
+    },
+    {
+      "id": "h2-20",
+      "text": "dentist appointment on the 5th of january and i'm dreading it",
+      "gold": [
+        "date:2027-01-05",
+        "emotion:anxious"
+      ],
+      "pred": [
+        "date:2027-01-05",
+        "emotion:anxious"
+      ],
+      "strengths": {
+        "date:2027-01-05": 0.8,
+        "emotion:anxious": 0.9
+      },
+      "rule_dates": [
+        "date:2027-01-05"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.04
+    },
+    {
+      "id": "h2-21",
+      "text": "this sunday we're hiking in the black forest with jonas",
+      "gold": [
+        "date:2026-11-15",
+        "person:jonas",
+        "place:black_forest"
+      ],
+      "pred": [
+        "date:2026-11-15",
+        "person:jonas",
+        "place:black_forest"
+      ],
+      "strengths": {
+        "person:jonas": 0.8,
+        "place:black_forest": 0.8,
+        "date:2026-11-15": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-15"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.97
+    },
+    {
+      "id": "h2-22",
+      "text": "the day after tomorrow is our anniversary, i love her so much",
+      "gold": [
+        "date:2026-11-14",
+        "emotion:love"
+      ],
+      "pred": [
+        "date:2026-11-14",
+        "emotion:love"
+      ],
+      "strengths": {
+        "date:2026-11-14": 0.8,
+        "emotion:love": 1.0
+      },
+      "rule_dates": [
+        "date:2026-11-14"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.98
+    },
+    {
+      "id": "h2-23",
+      "text": "i got the promotion!! so proud right now",
+      "gold": [
+        "emotion:joy",
+        "emotion:pride"
+      ],
+      "pred": [
+        "emotion:pride"
+      ],
+      "strengths": {
+        "emotion:pride": 1.0
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.68
+    },
+    {
+      "id": "h2-24",
+      "text": "hotel california came on today and it reminds me of my dad's road trips",
+      "gold": [
+        "date:2026-11-12",
+        "emotion:nostalgia",
+        "song:hotel_california"
+      ],
+      "pred": [
+        "date:2026-11-12",
+        "song:hotel_california"
+      ],
+      "strengths": {
+        "song:hotel_california": 0.8,
+        "date:2026-11-12": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-12"
+      ],
+      "dropped": [
+        "role, not a name: 'dad'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.8
+    },
+    {
+      "id": "h2-25",
+      "text": "honestly i miss the old days at uni, feeling kind of nostalgic",
+      "gold": [
+        "emotion:nostalgia"
+      ],
+      "pred": [
+        "emotion:nostalgia"
+      ],
+      "strengths": {
+        "emotion:nostalgia": 0.9
+      },
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.77
+    },
+    {
+      "id": "h2-26",
+      "text": "is the party friday night or saturday night?",
+      "gold": [
+        "date:2026-11-13",
+        "date:2026-11-14"
+      ],
+      "pred": [
+        "date:2026-11-13",
+        "date:2026-11-14"
+      ],
+      "strengths": {
+        "date:2026-11-13": 0.5,
+        "date:2026-11-14": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-13",
+        "date:2026-11-14"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.87
+    },
+    {
+      "id": "h2-27",
+      "text": "i'll be in madrid from next monday until the 22nd of november",
+      "gold": [
+        "date:2026-11-16",
+        "date:2026-11-22",
+        "place:madrid"
+      ],
+      "pred": [
+        "date:2026-11-16",
+        "date:2026-11-22",
+        "place:madrid"
+      ],
+      "strengths": {
+        "place:madrid": 1.0,
+        "date:2026-11-16": 0.5,
+        "date:2026-11-22": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-16",
+        "date:2026-11-22"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 4.1
+    },
+    {
+      "id": "h2-28",
+      "text": "we're getting a puppy in 10 days!",
+      "gold": [
+        "date:2026-11-22",
+        "emotion:excitement"
+      ],
+      "pred": [
+        "date:2026-11-22"
+      ],
+      "strengths": {
+        "date:2026-11-22": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-22"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.62
+    },
+    {
+      "id": "h2-29",
+      "text": "last saturday anna and i went to hyde park for a long walk",
+      "gold": [
+        "date:2026-11-07",
+        "person:anna",
+        "place:hyde_park"
+      ],
+      "pred": [
+        "date:2026-11-07",
+        "person:anna",
+        "place:hyde_park"
+      ],
+      "strengths": {
+        "person:anna": 0.8,
+        "place:hyde_park": 0.8,
+        "date:2026-11-07": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-07"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.91
+    },
+    {
+      "id": "h2-30",
+      "text": "new year's eve plans? i was thinking of staying in with netflix",
+      "gold": [
+        "date:new_years_eve"
+      ],
+      "pred": [
+        "date:new_years_eve"
+      ],
+      "strengths": {
+        "date:new_years_eve": 0.5
+      },
+      "rule_dates": [
+        "date:new_years_eve"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.62
+    },
+    {
+      "id": "h2-31",
+      "text": "this morning my boss yelled at me in front of everyone and i felt so ashamed",
+      "gold": [
+        "date:2026-11-12",
+        "emotion:shame"
+      ],
+      "pred": [
+        "date:2026-11-12",
+        "emotion:shame"
+      ],
+      "strengths": {
+        "emotion:shame": 1.0,
+        "date:2026-11-12": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-12"
+      ],
+      "dropped": [
+        "role, not a name: 'boss'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.73
+    },
+    {
+      "id": "h2-32",
+      "text": "thanks so much for listening yesterday, it really helped",
+      "gold": [
+        "date:2026-11-11",
+        "emotion:gratitude"
+      ],
+      "pred": [
+        "date:2026-11-11",
+        "emotion:gratitude"
+      ],
+      "strengths": {
+        "emotion:gratitude": 1.0,
+        "date:2026-11-11": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-11"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.75
+    },
+    {
+      "id": "h2-33",
+      "text": "i'm off all day this thursday, should i watch dark or stranger things?",
+      "gold": [
+        "date:2026-11-12",
+        "film:dark",
+        "film:stranger_things"
+      ],
+      "pred": [
+        "date:2026-11-12",
+        "film:dark",
+        "film:stranger_things"
+      ],
+      "strengths": {
+        "film:dark": 0.5,
+        "film:stranger_things": 0.5,
+        "date:2026-11-12": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-12"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.79
+    },
+    {
+      "id": "h2-34",
+      "text": "mia's wedding is in april, can't wait to see everyone",
+      "gold": [
+        "emotion:excitement",
+        "person:mia"
+      ],
+      "pred": [
+        "emotion:excitement",
+        "person:mia"
+      ],
+      "strengths": {
+        "person:mia": 0.8,
+        "emotion:excitement": 0.9
+      },
+      "rule_dates": [],
+      "dropped": [
+        "vague or unresolvable date: 'april'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.71
+    },
+    {
+      "id": "h2-35",
+      "text": "my grandfather passed away last tuesday and the funeral is on friday",
+      "gold": [
+        "date:2026-11-10",
+        "date:2026-11-13",
+        "emotion:grief"
+      ],
+      "pred": [
+        "date:2026-11-10",
+        "date:2026-11-13",
+        "emotion:grief"
+      ],
+      "strengths": {
+        "emotion:grief": 1.0,
+        "date:2026-11-10": 0.5,
+        "date:2026-11-13": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-10",
+        "date:2026-11-13"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.83
+    },
+    {
+      "id": "h2-36",
+      "text": "thinking about moving to amsterdam next year, scared but excited",
+      "gold": [
+        "emotion:excitement",
+        "emotion:fear",
+        "place:amsterdam"
+      ],
+      "pred": [
+        "place:amsterdam"
+      ],
+      "strengths": {
+        "place:amsterdam": 0.9
+      },
+      "rule_dates": [],
+      "dropped": [
+        "emotion not in vocabulary: 'excited'",
+        "emotion not in vocabulary: 'scared'"
+      ],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.88
+    },
+    {
+      "id": "h2-37",
+      "text": "the pumpkin soup on halloween was so good, ben outdid himself",
+      "gold": [
+        "date:halloween",
+        "person:ben"
+      ],
+      "pred": [
+        "date:halloween",
+        "emotion:joy",
+        "person:ben"
+      ],
+      "strengths": {
+        "person:ben": 0.8,
+        "date:halloween": 0.7,
+        "emotion:joy": 0.9
+      },
+      "rule_dates": [
+        "date:halloween"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 3.69
+    },
+    {
+      "id": "h2-38",
+      "text": "my brother and sister are coming for easter, i'll cook everything",
+      "gold": [
+        "date:easter"
+      ],
+      "pred": [
+        "date:easter",
+        "emotion:excitement"
+      ],
+      "strengths": {
+        "emotion:excitement": 0.8,
+        "date:easter": 0.5
+      },
+      "rule_dates": [
+        "date:easter"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 1.66
+    },
+    {
+      "id": "h2-39",
+      "text": "what's the difference between a crocodile and an alligator?",
+      "gold": [],
+      "pred": [],
+      "strengths": {},
+      "rule_dates": [],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 0.62
+    },
+    {
+      "id": "h2-40",
+      "text": "put on purple rain tonight, love both the song and the film",
+      "gold": [
+        "date:2026-11-12",
+        "emotion:love",
+        "film:purple_rain",
+        "song:purple_rain"
+      ],
+      "pred": [
+        "date:2026-11-12",
+        "film:purple_rain",
+        "song:purple_rain"
+      ],
+      "strengths": {
+        "song:purple_rain": 0.8,
+        "film:purple_rain": 0.8,
+        "date:2026-11-12": 0.5
+      },
+      "rule_dates": [
+        "date:2026-11-12"
+      ],
+      "dropped": [],
+      "attempts": 1,
+      "errors": [],
+      "latency_s": 2.8
+    }
+  ]
+}

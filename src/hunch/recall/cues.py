@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from datetime import date
 
 from hunch.memory.schema import CUE_TYPES
-from hunch.recall.dates import resolve_date
+from hunch.recall.dates import find_date_expressions, resolve_date
 
 # Fixed vocabulary so the same feeling always becomes the same cue (and fan counts work).
 EMOTIONS: tuple[str, ...] = (
@@ -122,6 +122,8 @@ class CueExtraction:
     raw: str = ""
     attempts: int = 1
     errors: tuple[str, ...] = field(default_factory=tuple)
+    # "date:<resolved>" cues the rule-based finder produced (whether or not the LLM had them too)
+    rule_dates: tuple[str, ...] = ()
 
 
 def normalize_value(value: str) -> str:
@@ -195,10 +197,34 @@ def build_messages(text: str, today: date) -> list[dict[str, str]]:
     return [{"role": "system", "content": system}, {"role": "user", "content": text}]
 
 
-def extract_cues(text: str, today: date, generate: Generate, retries: int = 1) -> CueExtraction:
+def merge_rule_dates(text: str, today: date, cues: dict[str, float]) -> tuple[str, ...]:
+    """Add the date cues the rule-based finder sees in `text` to `cues` (in place).
+
+    The LLM misses many dates; a found date it also has keeps the higher strength, a new one gets
+    the same default strength as a cue without one.
+    """
+    keys: list[str] = []
+    for expr in find_date_expressions(text):
+        resolved = resolve_date(expr, today)
+        if resolved is None:
+            continue
+        key = f"date:{resolved}"
+        cues[key] = max(cues.get(key, 0.0), 0.5)
+        if key not in keys:
+            keys.append(key)
+    return tuple(keys)
+
+
+def extract_cues(
+    text: str, today: date, generate: Generate, retries: int = 1, *, rule_dates: bool = True
+) -> CueExtraction:
+    """LLM cues plus, unless `rule_dates` is False, the dates the rule-based finder sees."""
     messages = build_messages(text, today)
     errors: list[str] = []
     raw = ""
+    cues: dict[str, float] = {}
+    dropped: list[str] = []
+    attempts = retries + 1
     for attempt in range(1, retries + 2):
         raw = generate(messages)
         try:
@@ -207,8 +233,10 @@ def extract_cues(text: str, today: date, generate: Generate, retries: int = 1) -
             errors.append(f"attempt {attempt}: {exc}")
             continue
         cues, dropped = validate_cues(data["cues"], today)
-        return CueExtraction(cues, tuple(dropped), raw, attempt, tuple(errors))
-    return CueExtraction({}, (), raw, retries + 1, tuple(errors))
+        attempts = attempt
+        break
+    found = merge_rule_dates(text, today, cues) if rule_dates else ()
+    return CueExtraction(cues, tuple(dropped), raw, attempts, tuple(errors), found)
 
 
 def llm_generate(model: object, max_new_tokens: int = 256) -> Generate:

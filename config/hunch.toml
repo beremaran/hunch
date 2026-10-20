@@ -28,6 +28,13 @@ max_upper_per_turn = 3
 involuntary_per_session = 1
 # On every recall the memory's affect drifts this far toward the current mood.
 reconsolidation_rate = 0.1
+# Memories scored per turn (Phase 3): this many nearest by embedding (own memories + other users'
+# general ones) plus every visible memory that shares a cue with the message.
+similar_k = 20
+# Berk (Phase 3 bench): a memory enters reasoning only if it shares a cue with the message or its
+# embedding similarity to the message is at least this (cosine). Strong memories otherwise sat
+# above tau_upper in every turn, related or not. Gated memories still act as lower traces.
+min_similarity = 0.45
 
 [activation]
 decay_d = 0.5          # design.md: d ~ 0.5
@@ -53,3 +60,79 @@ place = 0.7
 phrase = 0.6
 date = 0.6
 emotion = 0.4
+
+# --- Phase 3: turn pipeline ---------------------------------------------------------------------
+# Values approved by Berk (Phase 3 defaults); "PROPOSED" marks anything still waiting for approval.
+
+[generation]
+# Reply candidates, generated in one batched call (num_return_sequences), never one by one.
+candidates = 3
+temperature = 0.7
+top_p = 0.8
+top_k = 20
+# Cap per candidate; a reply that hits it is cut back to its last full sentence.
+max_new_tokens = 150
+
+[session]
+# Rolling session summary, folded after the reply is sent (off the latency path).
+summary_max_words = 120
+
+[mood]
+# Global mood and relationship state come with Phase 5; until then the mood is fixed and neutral.
+neutral_valence = 0.0
+neutral_arousal = 0.5
+neutral_label = "calm"
+
+[drive]
+# Hunch flag reaches reasoning only from this intensity on, in words, never numbers or source.
+hunch_min_intensity = 0.3
+# PROPOSED: wording buckets for the hunch flag. Intensity >= this is "a clear hunch", below it
+# "a faint hunch"; |valence| below hunch_neutral_valence is "neither good nor bad", up to
+# hunch_strong_valence "slightly positive/negative", above it "positive/negative".
+hunch_clear_intensity = 0.6
+hunch_neutral_valence = 0.2
+hunch_strong_valence = 0.5
+
+[selection]
+quality_floor = 6      # judge score 1-10; modulation never picks a candidate below it
+drive_weight = 0.5     # score = quality / 10 + drive_weight * drive_score
+exploration = 0.1      # chance to pick the least drive-fitting candidate above the floor
+
+[replies]
+# Candidate filter: all candidates rejected (CJK, not English, invented memory, memory denial).
+filter_fallback = "I don't have that in mind right now. Could you tell me again?"
+# Value gate: no candidate above the quality floor passes.
+gate_fallback = "I'd rather not go there. Can we talk about it another way?"
+
+[encoding]
+# PROPOSED: a user message becomes a memory after the reply is sent. Its affect is the mean of
+# its emotion cues' table entries (valence in [-1, 1], arousal in [0, 1]); without emotion cues
+# it gets default_affect. Salience = min(1, salience_base + salience_per_cue * named cues
+# (person, place, song, film, date, phrase) + salience_arousal * arousal).
+default_affect = [0.0, 0.3]
+salience_base = 0.1
+salience_per_cue = 0.1
+salience_arousal = 0.5
+
+[encoding.emotion_affect]
+joy = [0.8, 0.6]
+love = [0.8, 0.5]
+gratitude = [0.7, 0.4]
+pride = [0.7, 0.6]
+excitement = [0.7, 0.8]
+calm = [0.4, 0.1]
+sad = [-0.6, 0.3]
+lonely = [-0.6, 0.3]
+grief = [-0.9, 0.6]
+anger = [-0.7, 0.9]
+annoyed = [-0.4, 0.6]
+fear = [-0.7, 0.9]
+anxious = [-0.5, 0.8]
+worry = [-0.4, 0.6]
+stress = [-0.5, 0.8]
+tired = [-0.3, 0.1]
+shame = [-0.6, 0.5]
+guilt = [-0.5, 0.5]
+disappointment = [-0.5, 0.4]
+surprise = [0.1, 0.8]
+nostalgia = [0.2, 0.4]

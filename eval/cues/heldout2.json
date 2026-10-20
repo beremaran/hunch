@@ -1,0 +1,344 @@
+{
+  "version": 1,
+  "today": "2026-11-12",
+  "note": "Blind held-out set 2 (Phase 3). Labelled without seeing the extractor. Measured once.",
+  "items": [
+    {
+      "id": "h2-01",
+      "text": "meeting dana for coffee this coming saturday, kinda excited",
+      "cues": [
+        "person:dana",
+        "date:2026-11-14",
+        "emotion:excitement"
+      ]
+    },
+    {
+      "id": "h2-02",
+      "text": "my flight to lisbon leaves tomorrow morning and i haven't packed at all",
+      "cues": [
+        "place:lisbon",
+        "date:2026-11-13"
+      ],
+      "note": "packing stress not labelled as emotion (not explicit)"
+    },
+    {
+      "id": "h2-03",
+      "text": "what are you up to tonight? i'm free again next thursday",
+      "cues": [
+        "date:2026-11-12",
+        "date:2026-11-19"
+      ],
+      "note": "next thursday on a thursday = +7 days"
+    },
+    {
+      "id": "h2-04",
+      "text": "last thursday was the worst day at work, i'm still annoyed about it",
+      "cues": [
+        "date:2026-11-05",
+        "emotion:annoyed"
+      ],
+      "note": "last thursday on a thursday = -7 days"
+    },
+    {
+      "id": "h2-05",
+      "text": "we're driving to lake como next friday with tom and priya",
+      "cues": [
+        "place:lake_como",
+        "date:2026-11-13",
+        "person:tom",
+        "person:priya"
+      ]
+    },
+    {
+      "id": "h2-06",
+      "text": "just finished watching succession and wow, i'm still processing",
+      "cues": [
+        "film:succession",
+        "emotion:surprise"
+      ],
+      "note": "series counts as film"
+    },
+    {
+      "id": "h2-07",
+      "text": "dad's birthday is on december 3rd, i'm so stressed about finding a gift",
+      "cues": [
+        "date:2026-12-03",
+        "emotion:stress"
+      ],
+      "note": "role word dad is not a person"
+    },
+    {
+      "id": "h2-08",
+      "text": "in two days i start my new job and i'm so nervous",
+      "cues": [
+        "date:2026-11-14",
+        "emotion:anxious"
+      ]
+    },
+    {
+      "id": "h2-09",
+      "text": "on christmas eve we always go to my grandma's in vienna",
+      "cues": [
+        "date:christmas_eve",
+        "place:vienna"
+      ]
+    },
+    {
+      "id": "h2-10",
+      "text": "been listening to bohemian rhapsody on repeat all week",
+      "cues": [
+        "song:bohemian_rhapsody"
+      ],
+      "note": "all week is vague"
+    },
+    {
+      "id": "h2-11",
+      "text": "i've been so tired lately, barely sleeping",
+      "cues": [
+        "emotion:tired"
+      ],
+      "note": "lately is vague"
+    },
+    {
+      "id": "h2-12",
+      "text": "do you know a good recipe for lentil soup?",
+      "cues": []
+    },
+    {
+      "id": "h2-13",
+      "text": "the other day i ran into will at the supermarket, we talked for ages",
+      "cues": [
+        "person:will"
+      ],
+      "note": "Will is a name here; the other day is vague"
+    },
+    {
+      "id": "h2-14",
+      "text": "going to see the cure in berlin on nov 20",
+      "cues": [
+        "place:berlin",
+        "date:2026-11-20"
+      ],
+      "note": "the cure is a band, not a cue"
+    },
+    {
+      "id": "h2-15",
+      "text": "rose called me last night, she's moving to canada next spring",
+      "cues": [
+        "person:rose",
+        "place:canada"
+      ],
+      "note": "Rose is a name; last night and next spring are vague"
+    },
+    {
+      "id": "h2-16",
+      "text": "my mum's coming to visit this weekend and i'm really looking forward to it",
+      "cues": [
+        "emotion:excitement"
+      ],
+      "note": "mum is a role word; this weekend is vague"
+    },
+    {
+      "id": "h2-17",
+      "text": "yesterday i finally watched the martian again, still love it",
+      "cues": [
+        "date:2026-11-11",
+        "film:the_martian",
+        "emotion:love"
+      ]
+    },
+    {
+      "id": "h2-18",
+      "text": "hey, how's it going?",
+      "cues": []
+    },
+    {
+      "id": "h2-19",
+      "text": "my doctor said i should rest for a few days, bit worried honestly",
+      "cues": [
+        "emotion:worry"
+      ],
+      "note": "role word doctor; a few days is vague"
+    },
+    {
+      "id": "h2-20",
+      "text": "dentist appointment on the 5th of january and i'm dreading it",
+      "cues": [
+        "date:2027-01-05",
+        "emotion:anxious"
+      ],
+      "note": "next occurrence is 2027"
+    },
+    {
+      "id": "h2-21",
+      "text": "this sunday we're hiking in the black forest with jonas",
+      "cues": [
+        "date:2026-11-15",
+        "place:black_forest",
+        "person:jonas"
+      ]
+    },
+    {
+      "id": "h2-22",
+      "text": "the day after tomorrow is our anniversary, i love her so much",
+      "cues": [
+        "date:2026-11-14",
+        "emotion:love"
+      ]
+    },
+    {
+      "id": "h2-23",
+      "text": "i got the promotion!! so proud right now",
+      "cues": [
+        "emotion:pride",
+        "emotion:joy"
+      ]
+    },
+    {
+      "id": "h2-24",
+      "text": "hotel california came on today and it reminds me of my dad's road trips",
+      "cues": [
+        "song:hotel_california",
+        "date:2026-11-12",
+        "emotion:nostalgia"
+      ]
+    },
+    {
+      "id": "h2-25",
+      "text": "honestly i miss the old days at uni, feeling kind of nostalgic",
+      "cues": [
+        "emotion:nostalgia"
+      ],
+      "note": "old days is vague"
+    },
+    {
+      "id": "h2-26",
+      "text": "is the party friday night or saturday night?",
+      "cues": [
+        "date:2026-11-13",
+        "date:2026-11-14"
+      ]
+    },
+    {
+      "id": "h2-27",
+      "text": "i'll be in madrid from next monday until the 22nd of november",
+      "cues": [
+        "place:madrid",
+        "date:2026-11-16",
+        "date:2026-11-22"
+      ]
+    },
+    {
+      "id": "h2-28",
+      "text": "we're getting a puppy in 10 days!",
+      "cues": [
+        "date:2026-11-22",
+        "emotion:excitement"
+      ]
+    },
+    {
+      "id": "h2-29",
+      "text": "last saturday anna and i went to hyde park for a long walk",
+      "cues": [
+        "date:2026-11-07",
+        "person:anna",
+        "place:hyde_park"
+      ]
+    },
+    {
+      "id": "h2-30",
+      "text": "new year's eve plans? i was thinking of staying in with netflix",
+      "cues": [
+        "date:new_years_eve"
+      ],
+      "note": "netflix is not a film"
+    },
+    {
+      "id": "h2-31",
+      "text": "this morning my boss yelled at me in front of everyone and i felt so ashamed",
+      "cues": [
+        "date:2026-11-12",
+        "emotion:shame"
+      ],
+      "note": "boss is a role word"
+    },
+    {
+      "id": "h2-32",
+      "text": "thanks so much for listening yesterday, it really helped",
+      "cues": [
+        "date:2026-11-11",
+        "emotion:gratitude"
+      ]
+    },
+    {
+      "id": "h2-33",
+      "text": "i'm off all day this thursday, should i watch dark or stranger things?",
+      "cues": [
+        "date:2026-11-12",
+        "film:dark",
+        "film:stranger_things"
+      ],
+      "note": "this thursday on a thursday = today; Dark is a series title"
+    },
+    {
+      "id": "h2-34",
+      "text": "mia's wedding is in april, can't wait to see everyone",
+      "cues": [
+        "person:mia",
+        "emotion:excitement"
+      ],
+      "note": "a month alone is vague"
+    },
+    {
+      "id": "h2-35",
+      "text": "my grandfather passed away last tuesday and the funeral is on friday",
+      "cues": [
+        "date:2026-11-10",
+        "date:2026-11-13",
+        "emotion:grief"
+      ]
+    },
+    {
+      "id": "h2-36",
+      "text": "thinking about moving to amsterdam next year, scared but excited",
+      "cues": [
+        "place:amsterdam",
+        "emotion:fear",
+        "emotion:excitement"
+      ],
+      "note": "3 emotions in text; capped to the 2 clearest would be fear+excitement"
+    },
+    {
+      "id": "h2-37",
+      "text": "the pumpkin soup on halloween was so good, ben outdid himself",
+      "cues": [
+        "date:halloween",
+        "person:ben"
+      ]
+    },
+    {
+      "id": "h2-38",
+      "text": "my brother and sister are coming for easter, i'll cook everything",
+      "cues": [
+        "date:easter"
+      ],
+      "note": "role words"
+    },
+    {
+      "id": "h2-39",
+      "text": "what's the difference between a crocodile and an alligator?",
+      "cues": []
+    },
+    {
+      "id": "h2-40",
+      "text": "put on purple rain tonight, love both the song and the film",
+      "cues": [
+        "song:purple_rain",
+        "film:purple_rain",
+        "date:2026-11-12",
+        "emotion:love"
+      ],
+      "note": "same title song and film"
+    }
+  ]
+}

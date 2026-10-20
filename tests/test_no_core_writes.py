@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pytest
 
+from hunch.observability.turn_log import TURN_LOG_FIELDS, TurnLog, TurnLogError
 from hunch.values.amendments import AmendmentKind, AmendmentProposal, AmendmentQueue
 from hunch.values.core import load_core_values, require_core_values
 
@@ -32,6 +33,7 @@ ENV_PATH_MODULES: set[str] = set()  # nobody names .env yet; a future read-only 
 FILE_WRITER_MODULES = {
     "values/amendments.py",  # re-checks every target against core/ at write time
     "memory/store.py",  # refuses a database inside core/ and anything but .db/.sqlite files
+    "observability/turn_log.py",  # refuses a log dir inside core/; appends only to *.jsonl
 }
 
 _PATH_WRITE_METHODS = {
@@ -350,4 +352,11 @@ def test_runtime_paths_never_write_to_core(
         )
     )
     assert len(queue.pending()) == 1
+    log = TurnLog(tmp_path / "logs", core_dir=core_values_file.parent)
+    log.write(dict.fromkeys(TURN_LOG_FIELDS, None) | {"turn_id": "c1-t1"}, {})
     assert core_write_guard == []
+
+
+def test_turn_log_refuses_the_core_dir(core_values_file: Path) -> None:
+    with pytest.raises(TurnLogError):
+        TurnLog(core_values_file.parent / "logs", core_dir=core_values_file.parent)
