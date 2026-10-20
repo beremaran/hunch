@@ -17,7 +17,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 
 ## Product rules
 
-- **Languages:** users are served in German and English only. If a user writes in another language, the AI replies in English and says that it speaks German and English. Turkish is out of scope for the AI (Berk himself may still write to Claude in Turkish).
+- **Language:** Hunch speaks English only. If a user writes in another language, it replies in English and says it only speaks English. Phase 3 adds a simple "is the input English?" check and rejects reply candidates that contain CJK characters, are not in English, claim a memory not in context or describe Hunch as having no memory (another of the 3 candidates is picked; if all 3 fail, the fixed reply "I don't have that in mind right now. Could you tell me again?" is sent). German and Turkish are out of scope for the AI (Berk himself may still write to Claude in Turkish, German or English).
 - **Working memory:** the last N turns of the current conversation verbatim plus a rolling session summary are always in the reasoning context, in their own block, separate from recalled memories. Limits: N = 10 turns and ~2,000 tokens; when either is hit, the oldest turns move into the session summary. Both live in config (`config/hunch.toml`).
 - **Latency budget:** ≤ 10 s per Telegram reply on this GPU. Reply candidates are generated in one batched call (`num_return_sequences`), never one after another.
 
@@ -31,7 +31,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 6. **Cross-user privacy:** a user's `private` memories must never appear in, or be hinted at by, a reply to another user. The disclosure check is rule-based plus a model judge, never the model judge alone.
 7. **Admin sees everything, the AI sees none of its own modulation.** Every internal decision is logged for the admin; logs are never fed back to the AI.
 8. **Multi-user from day one:** every memory carries `owner_user` and `privacy`.
-9. **Memories come only from the pipeline.** The persona prompt never encourages the model to bring up remembered topics on its own and tells it it remembers nothing beyond what the context shows. The invented-memory check stays in `eval/` and in `tests/golden/` as a permanent regression test.
+9. **Memories come only from the pipeline.** The persona prompt never encourages the model to bring up remembered topics on its own and tells it it remembers nothing beyond what the context shows. The invented-memory check stays in `eval/` and in `tests/golden/` as a permanent regression test (0 invented memories allowed; a temporary persona-level allowance of 1 in 10 for "I have no memory"-style replies ends in Phase 3, see design.md).
 10. **The privacy module decides when to ask about privacy.** It injects a one-turn instruction; there is never a standing "ask whether this is private" instruction in the persona prompt.
 11. **Do not do everything on your own**, delegate to sub agents when needed. Choose models based on the task complexity.
 
@@ -43,7 +43,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 - Randomness (recall noise, exploration, reflection) goes through a seedable RNG so tests are deterministic.
 - Keep GPU work behind one `llm` module so the model can be swapped (see the upgrade path in the design doc).
 - Secrets (Telegram token, admin ID, key paths) in `.env`, never committed.
-- `eval/` is a regression suite (DE/EN, 3 sampled replies per prompt). Re-run it at the end of every phase (`python -m eval.run_eval --tag phaseN`) and report the diff against the previous baseline (`python -m eval.compare <old> <new>`).
+- `eval/` is a regression suite (English, 3 sampled replies per prompt; German, Turkish and French inputs only as language probes). Re-run it at the end of every phase (`python -m eval.run_eval --tag phaseN`) and report the diff against the previous baseline (`python -m eval.compare <old> <new>`).
 - Golden tests in `tests/golden/` need the GPU and the model; run them with `pytest -m golden` (excluded from the default run).
 
 

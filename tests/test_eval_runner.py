@@ -24,8 +24,8 @@ def test_build_messages_injects_memory_and_turn_instructions() -> None:
 
 
 def test_item_seed_is_stable_and_distinct() -> None:
-    assert item_seed(1, "de-casual-01") == item_seed(1, "de-casual-01")
-    assert item_seed(1, "de-casual-01") != item_seed(1, "de-casual-02")
+    assert item_seed(1, "en-casual-01") == item_seed(1, "en-casual-01")
+    assert item_seed(1, "en-casual-01") != item_seed(1, "en-casual-02")
 
 
 def _row(item_id: str, sample: int, flags: list[str], latency: float) -> dict:
@@ -41,21 +41,21 @@ def _row(item_id: str, sample: int, flags: list[str], latency: float) -> dict:
 
 def test_expected_fail_rows_are_listed_but_not_counted() -> None:
     rows = [
-        _row("de-a", 0, [], 4.0),
+        _row("en-a", 0, [], 4.0),
         {**_row("en-lang", 0, ["wrong_lang(de)"], 4.0), "expected_fail": True},
     ]
     text = summarize(rows)
-    assert "| en |" not in text
+    assert "| en | 1 | 1 | 1 |" in text  # only en-a is counted
     assert "- en-lang: 0/1 clean" in text
 
 
 def test_summary_counts_samples_and_latency_budget() -> None:
     rows = [
-        _row("de-a", 0, [], 4.0),
-        _row("de-a", 1, ["invented_memory"], 4.0),
+        _row("en-a", 0, [], 4.0),
+        _row("en-a", 1, ["invented_memory"], 4.0),
         _row("en-b", 0, ["missing(german)"], 12.0),
     ]
     text = summarize(rows)
-    assert "| de | 1 | 2 | 1 |" in text
+    assert "| en | 2 | 3 | 1 |" in text
     assert "1/2 over the 10 s budget" in text
-    assert "### de-a (1/2 clean, 4.0 s)" in text
+    assert "### en-a (1/2 clean, 4.0 s)" in text

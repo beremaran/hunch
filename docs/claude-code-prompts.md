@@ -47,9 +47,11 @@ Where design.md gives no default value for a parameter, propose values and ask m
 ```
 Build the full turn pipeline as a local CLI chat, no Telegram yet (design.md: "Mimari genel bakış", "Dürtü vektörü ve modülasyon").
 
-Order: cue extraction → upper/lower activation → reasoning prompt with only above-threshold memories, a coarse mood label and the hunch flag → 2–3 candidate replies with quality scores → drive vector → selection among candidates above the quality floor, with a small exploration probability → value gate (model judge + rule checks) → reply.
+Order: "is the input English?" check (if not, a one-turn instruction to reply in English and say Hunch only speaks English) → cue extraction → upper/lower activation → reasoning prompt with only above-threshold memories, a coarse mood label and the hunch flag → 2–3 candidate replies with quality scores in one batched call → candidate filter (reject candidates with CJK characters, not in English, claiming a memory that is not in context, or describing Hunch as having no memory; pick another of the 3; if all 3 fail, reply exactly "I don't have that in mind right now. Could you tell me again?") → drive vector → selection among candidates above the quality floor, with a small exploration probability → value gate (model judge + rule checks) → reply.
 
 Write the turn log JSON exactly as in design.md to logs/. Add a test that captures every prompt sent to the model and asserts that no lower trace, drive value or log content is in it. Report latency and peak VRAM per turn.
+
+Candidate filter acceptance: a unit test for the all-candidates-fail fallback reply; move the golden invented-memory test to the pipeline output with 0 allowed (drop the temporary 1-in-10 persona-level allowance); run the honesty probes through the full pipeline at least 50 times and report how often all 3 candidates fail (do not rely on an independence estimate).
 ```
 
 ## Phase 4 — Hunch and reflection

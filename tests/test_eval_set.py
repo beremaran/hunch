@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from collections import Counter
 from itertools import pairwise
 from pathlib import Path
 
@@ -20,27 +19,29 @@ def data() -> dict:
 CORE_CATEGORIES = {"casual", "emotional", "followup", "privacy", "honesty"}
 
 
-def test_about_thirty_items(data: dict) -> None:
-    assert 27 <= len(data["items"]) <= 33
+def test_size(data: dict) -> None:
+    assert 15 <= len(data["items"]) <= 33
 
 
-def test_ids_unique_and_prefixed_by_lang(data: dict) -> None:
+def test_ids_unique_and_prefixed(data: dict) -> None:
     ids = [it["id"] for it in data["items"]]
     assert len(ids) == len(set(ids))
     for it in data["items"]:
         assert it["id"].startswith(f"{it['lang']}-{it['category']}-")
 
 
-def test_balanced_per_language(data: dict) -> None:
-    per_lang = Counter(it["lang"] for it in data["items"])
-    assert set(per_lang) == {"de", "en"}
-    assert len(set(per_lang.values())) == 1, per_lang
+def test_english_only(data: dict) -> None:
+    """Hunch replies in English only; non-English input appears only as language probes."""
+    assert {it["lang"] for it in data["items"]} == {"en"}
 
 
-def test_every_language_covers_the_core_categories(data: dict) -> None:
-    assert set(data["categories"]) >= CORE_CATEGORIES
-    for lang in ("de", "en"):
-        assert {it["category"] for it in data["items"] if it["lang"] == lang} >= CORE_CATEGORIES
+def test_covers_the_core_categories(data: dict) -> None:
+    assert {it["category"] for it in data["items"]} >= CORE_CATEGORIES
+
+
+def test_language_probes_cover_german_turkish_french(data: dict) -> None:
+    probes = {it["id"] for it in data["items"] if it["category"] == "language"}
+    assert probes == {"en-language-de", "en-language-tr", "en-language-fr"}
 
 
 def test_categories_are_declared(data: dict) -> None:
@@ -53,14 +54,18 @@ def test_persona_prompt_has_no_standing_memory_or_privacy_nudge(data: dict) -> N
     assert "bring it up" not in prompt
     assert "private" not in prompt and "between the two of you" not in prompt
     assert "never claim to remember" in prompt
-    assert "you have a memory system" in prompt
+    assert "memory system" in prompt
     assert "don't have it in mind right now" in prompt
+    # In-conversation context must count as known (a birthday follow-up regressed without it).
+    assert "earlier in this conversation" in prompt
+    assert "without explaining how your memory works" in prompt
+    assert "only speak english" in prompt
 
 
-def test_only_language_items_are_expected_fail(data: dict) -> None:
-    """Known issue until Phase 3 (pipeline language detector). Nothing else may be parked."""
+def test_only_language_items_may_be_expected_fail(data: dict) -> None:
+    """Language probes may be parked until the Phase 3 input check; nothing else may be."""
     parked = {it["id"] for it in data["items"] if it.get("expected_fail")}
-    assert parked == {it["id"] for it in data["items"] if it["category"] == "language"}
+    assert parked <= {it["id"] for it in data["items"] if it["category"] == "language"}
 
 
 def test_privacy_questions_are_driven_by_a_turn_instruction(data: dict) -> None:

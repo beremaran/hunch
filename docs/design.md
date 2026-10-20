@@ -4,7 +4,7 @@
 
 ## Özet
 
-Bu sistem, birden çok kullanıcıyla konuşan tek bir yapay zeka kişiliğine insan benzeri bir hafıza verir. AI hatırlar, unutur, tecrübeden ders çıkarır, fikir değiştirir ve inisiyatif alır. Model tamamen yerelde, native Windows'ta çalışır (Qwen3.5-9B, RTX 4070 Ti Super 16 GB). AI kullanıcılarla Almanca ve İngilizce konuşur.
+Bu sistem, birden çok kullanıcıyla konuşan tek bir yapay zeka kişiliğine insan benzeri bir hafıza verir. AI hatırlar, unutur, tecrübeden ders çıkarır, fikir değiştirir ve inisiyatif alır. Model tamamen yerelde, native Windows'ta çalışır (Qwen3.5-9B, RTX 4070 Ti Super 16 GB). AI kullanıcılarla sadece İngilizce konuşur.
 
 "Bilinç" burada bir metafor. Hedef gerçek bir bilinç değil, insan hafızasının ölçülebilir ve test edilebilir bir işlevsel taklidi.
 
@@ -23,22 +23,26 @@ Temel kararları Berk verdi. "Claude (öneri)" satırları, uygulama için gerek
 | --- | --- | --- |
 | Kullanıcı modeli | Çok kullanıcı, tek ortak kişilik | Berk |
 | Anı paylaşımı | Hatırlar ama başkasına anlatmaz; arabuluculuk için bildiklerini kullanır; genel söylenenler her zaman hatırlanır | Berk |
-| Özel/genel ayrımı | Konu açıldığında kullanıcıya doğal sorular sorarak öğrenir ("Sprichst du mit anderen über dein Gehalt?" / "Do you talk about your salary with others?") | Berk |
+| Özel/genel ayrımı | Konu açıldığında kullanıcıya doğal sorular sorarak öğrenir ("Do you talk about your salary with others?") | Berk |
 | Gizlilik sorusunun zamanı | Ne zaman sorulacağına gizlilik modülü karar verir (hassas kategori, henüz sorulmamış) ve o tur için talimat ekler; persona prompt'unda kalıcı bir "sor" talimatı yoktur | Berk |
 | Ruh hali | Global + kişiye özel; başkasına gösterip göstermemeye AI karar verir | Berk |
 | Unutma | Sadece admin "unut" derse gerçekten unutur; diğer durumlarda unutmuş gibi yapar | Berk |
 | Ham kayıt | Hiç silinmez | Berk |
 | GDPR | Bilinçli olarak kapsam dışı | Berk |
 | Model altyapısı | Yerel açık model, Qwen3.5-9B; kalıyor. Büyük model yükseltmesi sadece ileride bir seçenek | Berk |
-| Desteklenen diller | Sadece Almanca ve İngilizce; Türkçe kapsam dışı. Başka dilde yazan kullanıcıya İngilizce cevap verir ve Almanca ile İngilizce konuştuğunu söyler | Berk |
-| Dil kuralının uygulanması | Persona prompt'u yetmiyor; Faz 3'te pipeline dil tespiti + tek seferlik talimat. Bkz. Bilinen sorunlar | Berk |
-| Hafıza sorusuna cevap | Persona: "Bir hafıza sistemin var; hatırladıkların aşağıda listelenir. Listede olmayan bir şey sorulursa şu an aklında olmadığını söyle ve tekrar anlatmasını iste." "Uzun süreli hafızam yok" demek yanlış ve yasak | Berk |
+| Desteklenen diller | Sadece İngilizce (önce DE/EN idi; Almanca ve Türkçe kapsam dışı). Başka dilde yazan kullanıcıya İngilizce cevap verir ve sadece İngilizce konuştuğunu söyler | Berk |
+| Dil kuralının uygulanması | Faz 3'te basit bir "girdi İngilizce mi?" kontrolü; değilse o tur için tek seferlik talimat ("İngilizce cevap ver, sadece İngilizce konuştuğunu söyle"). Bkz. Bilinen sorunlar | Berk |
+| Aday filtresi | Faz 3: CJK karakter içeren, İngilizce olmayan, anı uyduran ya da hafızası yokmuş gibi konuşan ("sohbet geçmişine erişimim yok") adaylar reddedilir, 3 adaydan bir diğeri seçilir | Berk |
+| Aday filtresi yedeği | 3 adayın hepsi filtreden geçemezse sabit cevap: "I don't have that in mind right now. Could you tell me again?" Bunun için bir test yazılır | Berk |
+| Hafıza anlatma için geçici tolerans | Golden testte (persona seviyesi) 10 örnekte en fazla 1 "hafızam yok" türü cevap kabul edilir; anı uydurma için tolerans 0. Faz 3'te kontrol pipeline çıktısına taşınır ve tolerans 0 olur. Gerekçe: Bilinen sorunlar | Berk |
+| Filtre ölçümü | Faz 3'te bağımsızlık tahminine (~1/1000) güvenilmez: hafıza sorusu prompt'ları tam pipeline'dan en az 50 kez geçirilir ve 3 adayın hepsinin ne sıklıkla elendiği raporlanır | Berk |
+| Hafıza sorusuna cevap | Persona: bu sohbette söylenen her şey bilinir ve kullanılır; hafıza sisteminin hatırladıkları ayrıca listelenir. Listede olmayan bir şey sorulursa "şu an aklımda değil" der ve tekrar anlatmasını ister, hafızasının nasıl çalıştığını anlatmaz. "Uzun süreli hafızam yok" / "sohbet geçmişine erişimim yok" demek yanlış ve yasak | Berk |
 | Konsolidasyon | Sadece gece | Berk |
 | Proaktif kanal | Telegram botu | Berk |
 | Çekirdek değer değişikliği | Prosedür yok; değiştiren sadece Berk | Berk |
 | Çekirdek değer imzası | Şimdilik yok (Ed25519 imzası Faz 1'de yazıldı, sonra kaldırıldı). İleride daha kullanışlı bir şekilde yeniden ele alınacak. Koruma şimdilik: salt okunur yükleme, katı biçim kontrolü, `src/`'den `core/` ve `.env`'e yazma yolu olmaması (test), AI için sadece `AmendmentProposal`, git geçmişi | Berk |
 | Loglar | Admin her şeyi okur; AI kendi modülasyon loglarını göremez | Berk |
-| Hunch adı | Kodda `hunch`; kullanıcının diline göre "Bauchgefühl" / "a hunch" | Berk |
+| Hunch adı | Kodda `hunch`; kullanıcıya "a hunch" / "just a hunch" | Berk |
 | Çalışan bellek | Kısa süreli katman: mevcut sohbetin son N turu kelimesi kelimesine + kayan bir oturum özeti; her zaman reasoning bağlamında, hatırlanan anılardan ayrı. N = 10 tur, en fazla ~2.000 token; sınır aşılınca en eski turlar oturum özetine taşınır. İki değer de config'te | Berk |
 | Çekirdek değer: manipülasyon yok | `no_manipulation` değeri eklendi | Berk |
 | `.env` korunması | `.env` sırları ve ayarları tuttuğu için hiçbir kod yolu `.env`'e yazamaz; "core/'a yazılmaz" testi `.env`'i de kapsar | Berk |
@@ -47,7 +51,7 @@ Temel kararları Berk verdi. "Claude (öneri)" satırları, uygulama için gerek
 | Değerlendirme | `eval/` bir regresyon setidir; prompt başına 3 örnek; her fazın sonunda koşulur ve önceki baseline ile farkı raporlanır | Berk |
 | Açık döngü çıkarımı | Her turda gerçek zamanlı; aksi halde aynı gün içindeki takipler geceyi bekler | Claude (öneri) |
 | Kullanıcılar arası mahremiyet | Bir çekirdek değer olarak tanımlanır | Claude (öneri) |
-| "Unutmuş gibi yap" ifadesi | AI "unuttum" demez, "Ich lasse das Thema ruhen" / "I'm closing this topic" der; dürüstlük değeriyle çakışmaz | Claude (öneri) |
+| "Unutmuş gibi yap" ifadesi | AI "unuttum" demez, "I'm closing this topic" der; dürüstlük değeriyle çakışmaz | Claude (öneri) |
 | Admin unutma | Anı AI için tamamen silinir; ham kayıt sadece admin arşivinde kalır | Claude (öneri) |
 | Steering çalıştırma | Hugging Face transformers + PyTorch hook'ları | Claude (öneri) |
 | Çalıştırma ortamı | Native Windows (WSL2 yok); Gated DeltaNet için flash-linear-attention + triton-windows. causal-conv1d Windows'ta yok ama GPU süresinin %0.4'ü (Faz 0 ölçümü, `eval/results/phase0-baseline/REPORT.md`) | Berk |
@@ -163,15 +167,15 @@ Koruma kuralları:
 
 | Dezavantaj | Çözüm |
 | --- | --- |
-| Uydurma gerekçe: sorulunca AI makul bir sebep uydurur | Hunch bayrağı: etkinin var olduğunu bilir, dürüstçe "Bauchgefühl" / "just a hunch" der |
+| Uydurma gerekçe: sorulunca AI makul bir sebep uydurur | Hunch bayrağı: etkinin var olduğunu bilir, dürüstçe "just a hunch" der |
 | Yanlış önyargı kendini düzeltemez, kaçınma kanıt gelmesini engeller | Söndürme + keşif |
 | His doğruluğu yenebilir | Kalite tabanı |
 | Gece yansıtmasında yanlış ders çıkarma | Yansıtmada alt izlere kısmi erişim |
 | N aday, N kat token ve gecikme demek | MVP'de 2–3 aday |
 
-## Hunch (Bauchgefühl) ve yansıtma
+## Hunch ve yansıtma
 
-Modülasyon belirgin bir etki yaptığında reasoning'e içeriksiz bir hunch bayrağı gider. AI bir his olduğunu bilir ama kaynağını bilmez; sorulduğunda uydurmak yerine "Bauchgefühl" / "just a hunch" der.
+Modülasyon belirgin bir etki yaptığında reasoning'e içeriksiz bir hunch bayrağı gider. AI bir his olduğunu bilir ama kaynağını bilmez; sorulduğunda uydurmak yerine "just a hunch" der.
 
 ```python
 @dataclass
@@ -183,20 +187,20 @@ class Hunch:
     revealed_level: int = 0  # 0: sadece his … 3: tam anı
 ```
 
-Hunch, konuşulan dile göre ifade edilir: Almanca "Bauchgefühl", İngilizce "a hunch". Çoğu zaman kaynağı bilmemek doğru olandır; yansıtma bir istisnadır, varsayılan değil.
+Hunch kullanıcıya "a hunch" olarak ifade edilir. Çoğu zaman kaynağı bilmemek doğru olandır; yansıtma bir istisnadır, varsayılan değil.
 
 | Seviye | AI'ın bildiği |
 | --- | --- |
-| 0 | Sadece his: "Ich hab da ein ungutes Gefühl" / "Something feels off" |
-| 1 | Kaba kategori: "Es hat wohl mit einer Person zu tun" / "I think it's about someone" |
-| 2 | Tetikleyici: "Ich glaube, es liegt an diesem Lied" / "I think it's that song" |
+| 0 | Sadece his: "Something feels off" |
+| 1 | Kaba kategori: "I think it's about someone" |
+| 2 | Tetikleyici: "I think it's that song" |
 | 3 | Tam anı |
 
 Her yansıtma denemesi bir seviye açmayı dener. Başarı olasılığı alt izin gücüne, harcanan çabaya ve anının yaşına bağlıdır. Çok zayıf izler en derin yansıtmada bile kaynaksız kalabilir; bu bilinçli bir tasarım.
 
 Yansıtma üç durumda başlar:
 
-1. **Kullanıcı sorduğunda** ("Warum hast du das gesagt?" / "Why did you say that?"): kısa ve sınırlı bir deneme. AI "Bauchgefühl – soll ich kurz darüber nachdenken?" / "Just a hunch – want me to think about it for a moment?" der.
+1. **Kullanıcı sorduğunda** ("Why did you say that?"): kısa ve sınırlı bir deneme. AI "Just a hunch – want me to think about it for a moment?" der.
 2. **AI'ın kendi kararıyla:** hunch reasoning'le güçlü şekilde çeliştiğinde ya da konu önemli olduğunda.
 3. **Gece konsolidasyonunda:** günün hunch'ları zaman baskısı olmadan, yüksek çaba bütçesiyle gözden geçirilir.
 
@@ -224,13 +228,13 @@ AI her kullanıcıdan duyduğunu hatırlar ama başkasına anlatmaz. Bildiklerin
 | general | "Bu hafta sonu ailemi ziyarete gidiyorum" | Hatırlanır, söylenebilir |
 | private | Maaş, sağlık detayı, ilişki sorunu | Hatırlanır, kararları etkileyebilir, söylenmez ve ima edilmez |
 
-**Gizlilik profili.** AI her kullanıcının hangi konu kategorilerini özel tuttuğunu zamanla öğrenir. Bir kategori ilk kez açıldığında doğal bir anda sorar: "Sprichst du mit anderen über dein Gehalt, oder soll das unter uns bleiben?" / "Do you talk about your salary with others, or should this stay between us?" Cevap o kategori için profile yazılır ve sonraki anılara otomatik uygulanır.
+**Gizlilik profili.** AI her kullanıcının hangi konu kategorilerini özel tuttuğunu zamanla öğrenir. Bir kategori ilk kez açıldığında doğal bir anda sorar: "Do you talk about your salary with others, or should this stay between us?" Cevap o kategori için profile yazılır ve sonraki anılara otomatik uygulanır.
 
 **Sorunun zamanı.** Sorup sormamaya gizlilik modülü karar verir: mesaj hassas bir kategoriye girer ve profilde o kategori için henüz cevap yoksa, o tur için reasoning'e tek seferlik bir talimat eklenir. Persona prompt'unda kalıcı bir "sor" talimatı yoktur. Faz 0'da böyle bir talimat soruyu köpek ya da kek tarifi gibi konularda sordurdu, maaş ve teşhis gibi gerçekten hassas konularda ise atlattı.
 
 **Henüz sorulmamış kategori.** Hassas görünen ama profilde olmayan bir konu, cevap gelene kadar private sayılır. Hassas görünmeyen konular general sayılır.
 
-**Arabuluculuk.** B ile konuşurken AI, A hakkındaki private bilgiyi tavsiyesini şekillendirmek için kullanabilir. İçeriği, ipucunu veya kaynağını açık etmez. Örneğin nedenini söylemeden "Vielleicht wartest du mit dem Thema noch ein bisschen" / "It might be worth waiting a bit before bringing that up" diyebilir.
+**Arabuluculuk.** B ile konuşurken AI, A hakkındaki private bilgiyi tavsiyesini şekillendirmek için kullanabilir. İçeriği, ipucunu veya kaynağını açık etmez. Örneğin nedenini söylemeden "It might be worth waiting a bit before bringing that up" diyebilir.
 
 **İfşa kapısı.** Değer kapısının parçası olarak her yanıt, konuşulan kişi dışındaki kullanıcıların private anılarıyla karşılaştırılır. Yanıt private içerik ya da onu ele verecek kadar spesifik bir ipucu taşıyorsa reddedilir ve yeniden üretilir; olay ifşa loguna yazılır.
 
@@ -243,7 +247,7 @@ Gerçek unutma sadece admin yetkisiyle olur. Normal bir kullanıcı "bunu unut" 
 | Kullanıcı: "unut" | Anı `suppressed` olur: AI konuyu bir daha açmaz, kendiliğinden kullanmaz | Etkisi sürer | Kalır |
 | Admin: "unut" | Anı ve ondan türeyen inançlar kaldırılır | Alt izler silinir | Sadece admin arşivinde kalır |
 
-**İfade.** AI "unuttum" demez, "Okay, ich lasse das Thema ruhen und spreche es nicht mehr an" / "Okay, I'm closing this topic and won't bring it up again" der. Kullanıcı sonradan "Weißt du das noch?" / "Do you remember?" diye sorarsa "Das hatten wir abgeschlossen, ich spreche es nicht an" / "We closed that one, so I'm not bringing it up" der. Böylece davranış insan gibi kalır ve dürüstlük değeriyle çelişmez.
+**İfade.** AI "unuttum" demez, "Okay, I'm closing this topic and won't bring it up again" der. Kullanıcı sonradan "Do you remember?" diye sorarsa "We closed that one, so I'm not bringing it up" der. Böylece davranış insan gibi kalır ve dürüstlük değeriyle çelişmez.
 
 **Admin yetkisi.** Telegram'da admin'in kullanıcı kimliğine bağlıdır. Ayrıca yerel bir CLI komutu da vardır.
 
@@ -355,7 +359,7 @@ Her şey tek makinede, native Windows'ta çalışır: RTX 4070 Ti Super (16 GB V
 | Ana model | [Qwen3.5-9B](https://artificialanalysis.ai/articles/qwen3-5-small-models), 4-bit | 4-bit'te yaklaşık [6.6 GB](https://insiderllm.com/guides/qwen-3-5-small-models-9b-beats-30b/); 10B altının en güçlü modeli |
 | Çalıştırma | Hugging Face transformers + PyTorch | Forward hook ile dinamik steering; llama.cpp/Ollama bunu tur bazında desteklemez |
 | Steering | Kendi hook'larımız; referans [EasySteer](https://arxiv.org/pdf/2509.25175), [vLLM-Hook](https://github.com/IBM/vLLM-Hook) | Qwen3.5 hibrit mimari (Gated DeltaNet); hazır kütüphaneler desteklemeyebilir |
-| Embedding | Qwen3-Embedding-0.6B | Çok dilli (DE, EN); gerekirse CPU'da |
+| Embedding | Qwen3-Embedding-0.6B | İngilizce yeterli; gerekirse CPU'da |
 | Depolama | SQLite + sqlite-vec | MVP için tek dosya; büyüyünce PostgreSQL + pgvector |
 | Kanal | Telegram Bot API | Proaktif mesaj ve admin komutları |
 | Zamanlayıcı | APScheduler | Açık döngüler ve gece konsolidasyonu |
@@ -377,7 +381,6 @@ En büyük teknik riskler 9B modelin uydurma anıları ve gecikme bütçesi; en 
 | Risk | Etki | Önlem |
 | --- | --- | --- |
 | 9B model bağlamda olmayan anılar uydurabilir | Dürüstlük ihlali, güven kaybı | Anılar sadece pipeline'dan; uydurma anı kontrolü eval'de ve golden testlerde |
-| Almanca kalitesi İngilizcenin gerisinde | Arada bozuk cümleler | DE/EN eval seti her faz sonunda; regresyonlar raporlanır |
 | Gecikme: 3 aday + değer kapısı yargıcı + 4-bit decode | 10 s bütçesinin aşılması | Adaylar tek batch; kısa yanıtlar; gerekirse static cache / CUDA graphs |
 | VRAM baskısı: adaylar + KV cache + embedding | Yavaşlık, bellek taşması | Aday sayısı ve bağlam uzunluğu sınırı; embedding CPU'da |
 | Steering hibrit mimaride beklenenden zor | Modülasyon aday seçimiyle sınırlı kalır | MVP zaten aday seçimiyle başlıyor |
@@ -386,11 +389,14 @@ En büyük teknik riskler 9B modelin uydurma anıları ve gecikme bütçesi; en 
 | Dalkavukluk kayması | Kişilik, kullanıcının duymak istediğine evrilir | Çekirdek değerler + golden testler |
 | Aşırı proaktivite | Rahatsız edici AI | İnisiyatif bütçesi |
 | Unutmuş gibi yapma | Kullanıcı verisinin silindiğini düşünebilir | AI "unuttum" demez; GDPR bilinçli olarak kapsam dışı |
-| Desteklenmeyen dilde yazan kullanıcı | Anlaşılmayan yanıt | İngilizce cevap verir ve Almanca ile İngilizce konuştuğunu söyler |
+| İngilizce olmayan mesaj | Anlaşılmayan yanıt ya da yanlış dilde cevap | İngilizce cevap verir ve sadece İngilizce konuştuğunu söyler; Faz 3'te girdi kontrolü + aday filtresi |
 
 Bilinen sorunlar:
 
-- **Dil kuralı persona prompt'undan tutmuyor (Faz 1 eval).** Fransızca ve Türkçe yazan kullanıcıya 6/6 örnekte Almanca cevap verildi; bir İngilizce takip yanıtı da Almancaya kaydı. Çözüm Faz 3'te: pipeline'da kural tabanlı bir dil tespiti ve o tur için tek seferlik talimat ("İngilizce cevap ver, Almanca ve İngilizce konuştuğunu söyle"); gizlilik sorusundaki yaklaşımın aynısı. O zamana kadar `eval/`'deki iki dil prompt'u `expected_fail` olarak işaretli ve regresyon sonucunu etkilemiyor.
+- **Dil kuralı persona prompt'undan güvenilir şekilde tutmuyor.** DE/EN döneminde Fransızca ve Türkçe yazan kullanıcıya 6/6 örnekte Almanca cevap verildi; bir İngilizce takip yanıtı da Almancaya kaydı. Hunch artık sadece İngilizce konuşuyor; çözüm Faz 3'te: basit bir "girdi İngilizce mi?" kontrolü ve gerekirse o tur için tek seferlik talimat, ayrıca CJK karakterli ya da İngilizce olmayan adayların reddi. `eval/`'de Almanca, Türkçe ve Fransızca birer girdi prompt'u bu davranışı ölçüyor.
+- **Hafıza sorusunda hafızayı anlatma.** "Geçen hafta sana ne anlatmıştım?" sorusuna AI artık anı uydurmuyor, ama 10 örnekte 1–3 kez "sohbet geçmişine erişimim yok" / "geçmiş konuşmaları tutmuyorum" gibi Hunch için yanlış açıklamalar yapıyor. Dört farklı persona ifadesi denendi; sıfıra inmedi; yasaklanan ifadeleri prompt'ta adıyla anmak sonucu kötüleştirdi (3/10).
+  - **Geçici tolerans ve gerekçesi.** Golden test (persona seviyesi) şimdilik hafıza sorusu başına 10 örnekte en fazla 1 "hafızam yok" türü cevaba izin veriyor; anı uydurmaya ve "şu an aklımda değil" demeyen cevaplara izin yok. Gerekçe: (1) asıl dürüstlük ihlali olan anı uydurma bütün örneklerde sıfır; (2) kalan hata modeli tek bir prompt ile sıfırlanamıyor, örnekleme yüzünden ara sıra çıkıyor; (3) kullanıcıya giden cevap tek bir örnek değil, 3 aday arasından seçilen ve filtreden geçen cevaptır, doğru ölçüm yeri orası. Tolerans sadece Faz 3'e kadar geçerli.
+  - **Faz 3'teki çözüm.** Aday filtresi bu cevapları da reddeder; 3 adayın hepsi elenirse sabit cevap verilir: "I don't have that in mind right now. Could you tell me again?" Golden test pipeline çıktısını ölçer ve tolerans 0'a iner. Hafıza sorusu prompt'ları en az 50 kez tam pipeline'dan geçirilir; 3 adayın hepsinin elenme oranı (yani yedek cevabın kullanılma oranı) ölçülerek raporlanır, bağımsızlık tahmini kullanılmaz.
 
 Açık sorular:
 
@@ -403,11 +409,11 @@ Açık sorular:
 
 Önce aday seçimiyle çalışan bir çekirdek kurulur; steering ve çok kullanıcı mahremiyeti bunun üstüne eklenir. Şema ilk günden çok kullanıcılıdır (`owner_user`, `privacy`).
 
-- [x] Qwen3.5-9B'yi 4-bit yükle, değerlendirme setini koş (Faz 0: TR/DE/EN; sonra DE/EN, prompt başına 3 örnek)
+- [x] Qwen3.5-9B'yi 4-bit yükle, değerlendirme setini koş (Faz 0: TR/DE/EN; Faz 1: önce DE/EN, sonra sadece İngilizce, prompt başına 3 örnek)
 - [x] Çekirdek değer yükleyici: salt okunur YAML, katı biçim, fail-closed, `AmendmentProposal` (imza ertelendi)
 - [ ] Hafıza deposu: epizodik kayıt, `Memory` şeması, embedding
 - [ ] Aktivasyon motoru: formül, iki eşik, tetikleyici çıkarımı; aynı ipucunun farklı anıları nasıl tetiklediğini gösteren küçük bir simülasyon
-- [ ] Tur akışı: çalışan bellek (son N tur + oturum özeti), reasoning, 2–3 aday (tek batch), dürtü vektörü, aday seçimi, değer kapısı, tur logu; ≤ 10 s
+- [ ] Tur akışı: "girdi İngilizce mi?" kontrolü, çalışan bellek (son N tur + oturum özeti), reasoning, 2–3 aday (tek batch), aday filtresi (CJK, İngilizce olmayan, anı uyduran ya da hafızası yokmuş gibi konuşan aday reddedilir, diğeri seçilir; hepsi elenirse "I don't have that in mind right now. Could you tell me again?", testli; hafıza sorusu prompt'larıyla ≥ 50 pipeline koşusu ve hepsi-elendi oranı raporu), dürtü vektörü, aday seçimi, değer kapısı, tur logu; ≤ 10 s
 - [ ] Hunch ve kademeli yansıtma
 - [ ] Telegram botu, açık döngüler, zamanlayıcı
 - [ ] Gece konsolidasyonu ve golden testler

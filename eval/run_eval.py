@@ -1,4 +1,4 @@
-"""Run the DE/EN eval set against the main model and save outputs.
+"""Run the English eval set against the main model and save outputs.
 
 Each prompt gets `samples_per_prompt` sampled replies from one batched call (the way reply
 candidates are generated), so latency is measured per batched call against the 10 s budget.
@@ -18,7 +18,7 @@ import zlib
 from collections import defaultdict
 from pathlib import Path
 
-from eval.scoring import LANGS, check_reply
+from eval.scoring import REPLY_LANG, check_reply
 
 EVAL_DIR = Path(__file__).resolve().parent
 LATENCY_BUDGET_S = 10.0
@@ -68,7 +68,7 @@ def summarize(rows: list[dict]) -> str:
 
     header = ["lang", "prompts", "samples", "clean", *SUMMARY_FLAGS]
     lines = ["| " + " | ".join(header) + " |", "|" + " --- |" * len(header)]
-    for lang in LANGS:
+    for lang in (REPLY_LANG,):
         rs = by_lang.get(lang, [])
         if not rs:
             continue
@@ -122,6 +122,7 @@ def main() -> None:
     ap.add_argument("--tag", required=True)
     ap.add_argument("--seed", type=int, default=1234)
     ap.add_argument("--only", default=None, help="comma-separated item ids")
+    ap.add_argument("--samples", type=int, default=None, help="override samples_per_prompt")
     ap.add_argument("--rescore", action="store_true", help="re-check saved outputs, no generation")
     args = ap.parse_args()
 
@@ -139,7 +140,7 @@ def main() -> None:
     if args.only:
         wanted = set(args.only.split(","))
         items = [it for it in items if it["id"] in wanted]
-    n = int(data.get("samples_per_prompt", 3))
+    n = args.samples or int(data.get("samples_per_prompt", 3))
 
     out_dir.mkdir(parents=True, exist_ok=True)
     model = ChatModel()

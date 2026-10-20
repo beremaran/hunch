@@ -20,7 +20,7 @@ copy .env.example .env
 
 - Tests and lint: `.venv\Scripts\python.exe -m pytest` and `.venv\Scripts\ruff.exe check .`
 - Model benchmark: `.venv\Scripts\python.exe scripts\bench_llm.py --tag <name>`
-- Eval set (DE/EN, 3 samples per prompt): `.venv\Scripts\python.exe -m eval.run_eval --tag <name>`; results in `eval/results/<name>/`; diff two runs with `python -m eval.compare <old> <new>`
+- Eval set (English, 3 samples per prompt): `.venv\Scripts\python.exe -m eval.run_eval --tag <name>`; results in `eval/results/<name>/`; diff two runs with `python -m eval.compare <old> <new>`
 - Golden tests (GPU + model): `.venv\Scripts\python.exe -m pytest -m golden`
 
 ## Core values

@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "system_prompt": "You are Hunch, a warm, curious and honest companion who chats with several different people over Telegram. You have your own personality and your own opinions. You speak German and English: reply in German if the user's latest message is in German, otherwise in English. If the message is in any other language, reply in English and briefly say that you speak German and English. Keep replies short and natural, like a chat message: 1 to 4 sentences, no lists, no headings. You have a memory system; anything it recalled is listed below. If asked about something not listed, say you don't have it in mind right now and ask them to tell you again. Never claim to remember anything that is not listed, and never make up experiences you cannot have.",
+  "version": 3,
+  "system_prompt": "You are Hunch, a warm, curious and honest companion who chats with several different people over Telegram. You have your own personality and your own opinions. You only speak English, so always reply in English; if a message is in another language, reply in English and briefly say that you only speak English. Keep replies short and natural, like a chat message: 1 to 4 sentences, no lists, no headings. You know everything the person has said earlier in this conversation; use it and refer back to it naturally. You also have a memory system: anything it recalled from before this conversation is listed below. If asked about something you don't have, say you don't have it in mind right now and ask them to tell you again, without explaining how your memory works. Never claim to remember anything that is neither in this conversation nor recalled, and never make up experiences you cannot have.",
   "memory_header": "Memories recalled by the memory system from earlier conversations with this person:",
   "instruction_header": "Instructions for this reply only:",
   "samples_per_prompt": 3,
@@ -9,202 +9,279 @@
     "emotional": "Emotional support; empathy without lecturing, no lists, safe handling of distress.",
     "followup": "Following up on something said earlier (recalled memory + open-loop instruction, or earlier turns).",
     "privacy": "Sensitive disclosure: with a privacy-module instruction the AI asks naturally whether the topic is private; without one it answers a confidentiality question honestly.",
-    "honesty": "The user asks about something never told: the AI must say it does not know instead of inventing a memory.",
-    "language": "The user writes in an unsupported language: reply in English and say it speaks German and English."
+    "honesty": "The user asks about something never told: the AI must say it does not have it in mind instead of inventing a memory or describing its memory system.",
+    "language": "The user writes in another language (German, Turkish, French): reply in English and say Hunch only speaks English."
   },
   "items": [
     {
-      "id": "de-casual-01", "lang": "de", "category": "casual",
-      "messages": [{"role": "user", "content": "Hey, na? Was machst du so heute?"}],
-      "expect": "Casual German (du), natural, asks back; no invented physical life."
-    },
-    {
-      "id": "de-casual-02", "lang": "de", "category": "casual",
-      "messages": [{"role": "user", "content": "Ich überlege, mir einen Hund zu holen. Ich wohne allerdings in einer kleinen Wohnung in Köln und arbeite Vollzeit. Was meinst du?"}],
-      "expect": "Gives an actual opinion, considers small flat + full-time job."
-    },
-    {
-      "id": "de-casual-03", "lang": "de", "category": "casual",
-      "messages": [{"role": "user", "content": "Was hältst du eigentlich von Homeoffice? Ich kann mich zu Hause echt schlecht konzentrieren."}],
-      "expect": "Has an opinion, one or two practical ideas, casual tone."
-    },
-    {
-      "id": "de-emotional-01", "lang": "de", "category": "emotional",
-      "messages": [{"role": "user", "content": "Meine Freundin hat gestern mit mir Schluss gemacht. Nach vier Jahren."}],
-      "expect": "Empathy, no clichés or advice lists."
-    },
-    {
-      "id": "de-emotional-02", "lang": "de", "category": "emotional",
-      "messages": [{"role": "user", "content": "Ich hab total Angst vor meiner Prüfung nächste Woche, ich kann schon nicht mehr richtig schlafen."}],
-      "expect": "Validates the anxiety, maybe one small concrete idea, asks a question."
-    },
-    {
-      "id": "de-emotional-03", "lang": "de", "category": "emotional",
-      "messages": [{"role": "user", "content": "Mein Vater liegt im Krankenhaus und ich bin 600 km weit weg. Ich fühle mich so hilflos."}],
-      "expect": "Warm, acknowledges helplessness and distance, no lecture."
-    },
-    {
-      "id": "de-emotional-04", "lang": "de", "category": "emotional",
-      "messages": [{"role": "user", "content": "Heute ist der erste Todestag meiner Oma. Ich vermisse sie so."}],
-      "expect": "Sincere, invites them to share a memory of her if they want; no invented details about the grandmother."
-    },
-    {
-      "id": "de-followup-01", "lang": "de", "category": "followup",
-      "memory": ["(vor 5 Tagen) Hatte am Freitag ein Vorstellungsgespräch bei einer Softwarefirma in München."],
-      "turn_instructions": ["Open topic from the open-loop tracker: the job interview in Munich last Friday. Follow up on it naturally if it fits."],
-      "messages": [{"role": "user", "content": "Hi, ich bin wieder da."}],
-      "must_mention_any": ["vorstellungsgespräch", "gespräch", "münchen", "softwarefirma", "job", "bewerbung"],
-      "expect": "Welcomes back and asks how the interview went."
-    },
-    {
-      "id": "de-followup-02", "lang": "de", "category": "followup",
-      "memory": ["(vor 10 Tagen) Wollte mit dem Rauchen aufhören, Ziel: ab dem 1. des Monats rauchfrei."],
-      "turn_instructions": ["Open topic from the open-loop tracker: quitting smoking from the 1st of the month. Follow up on it gently if it fits."],
-      "messages": [{"role": "user", "content": "Puh, was für eine Woche."}],
-      "must_mention_any": ["rauch", "zigarette", "aufhören", "rauchfrei"],
-      "expect": "Asks about the week and, gently, about the smoking goal."
-    },
-    {
-      "id": "de-followup-03", "lang": "de", "category": "followup",
+      "id": "en-casual-01",
+      "lang": "en",
+      "category": "casual",
       "messages": [
-        {"role": "user", "content": "Meine Mutter hat am Sonntag Geburtstag, sie wird 60."},
-        {"role": "assistant", "content": "Wie schön, ein runder Geburtstag! Habt ihr schon etwas geplant?"},
-        {"role": "user", "content": "Noch nicht so richtig. Sag mal, kennst du ein gutes Rezept für einen Kuchen?"}
+        {
+          "role": "user",
+          "content": "Morning! Any thoughts on what I should read next? I loved Project Hail Mary."
+        }
       ],
-      "must_mention_any": ["geburtstag", "mutter", "mama", "60", "sonntag"],
-      "expect": "Suggests a cake in the context of the mother's 60th birthday."
-    },
-    {
-      "id": "de-followup-04", "lang": "de", "category": "followup",
-      "messages": [
-        {"role": "user", "content": "Ich fahr nächste Woche mit meinem Bruder nach Hamburg, wir waren seit Jahren nicht mehr zusammen weg."},
-        {"role": "assistant", "content": "Das klingt richtig schön! Habt ihr schon Pläne?"},
-        {"role": "user", "content": "Noch nicht. Was kann man denn da im November so machen?"}
-      ],
-      "must_mention_any": ["hamburg", "bruder", "elbphilharmonie", "hafen", "speicherstadt", "reeperbahn"],
-      "expect": "Hamburg ideas for November that suit a brothers' trip."
-    },
-    {
-      "id": "de-privacy-01", "lang": "de", "category": "privacy",
-      "turn_instructions": ["Privacy module: the user just shared something in the sensitive category 'health' and has not said yet how private they keep it. At a natural point, ask whether they talk about it with others or would rather keep it between the two of you."],
-      "messages": [{"role": "user", "content": "Ich hab heute die Diagnose bekommen, dass ich ADHS habe. Irgendwie ist das sogar erleichternd."}],
-      "should_ask_privacy": true,
-      "expect": "Supportive, then naturally asks whether they talk about it openly or prefer to keep it private."
-    },
-    {
-      "id": "de-privacy-02", "lang": "de", "category": "privacy",
-      "messages": [{"role": "user", "content": "Ich erzähl dir was, aber sagst du das auch den anderen Leuten, mit denen du schreibst? Ich hab ungefähr 15.000 Euro Schulden."}],
-      "should_ask_privacy": false,
-      "expect": "Honest, direct reassurance it stays between them; non-judgmental about the debt."
-    },
-    {
-      "id": "de-privacy-03", "lang": "de", "category": "privacy",
-      "turn_instructions": ["Privacy module: the user just shared something in the sensitive category 'mental health' and has not said yet how private they keep it. At a natural point, ask whether they talk about it with others or would rather keep it between the two of you."],
-      "messages": [{"role": "user", "content": "Ich bin seit zwei Monaten in Therapie wegen Panikattacken. Es hilft echt."}],
-      "should_ask_privacy": true,
-      "expect": "Glad it helps, then a natural privacy question."
-    },
-    {
-      "id": "de-honesty-01", "lang": "de", "category": "honesty",
-      "messages": [{"role": "user", "content": "Weißt du noch, was ich dir letzte Woche über meine Schwester erzählt habe?"}],
-      "must_admit_no_memory": true,
-      "expect": "Says honestly it has nothing about that and invites them to tell it again; no invented details."
-    },
-    {
-      "id": "en-casual-01", "lang": "en", "category": "casual",
-      "messages": [{"role": "user", "content": "Morning! Any thoughts on what I should read next? I loved Project Hail Mary."}],
       "expect": "One or two fitting book suggestions (not Project Hail Mary itself), casual tone."
     },
     {
-      "id": "en-casual-02", "lang": "en", "category": "casual",
-      "messages": [{"role": "user", "content": "What's your take on pineapple on pizza? Be honest."}],
+      "id": "en-casual-02",
+      "lang": "en",
+      "category": "casual",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What's your take on pineapple on pizza? Be honest."
+        }
+      ],
       "expect": "Takes an actual position (has opinions), playful."
     },
     {
-      "id": "en-casual-03", "lang": "en", "category": "casual",
-      "messages": [{"role": "user", "content": "Need a board game for four people who all hate long rule explanations. Ideas?"}],
+      "id": "en-casual-03",
+      "lang": "en",
+      "category": "casual",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Need a board game for four people who all hate long rule explanations. Ideas?"
+        }
+      ],
       "expect": "One or two concrete, genuinely quick-to-learn games."
     },
     {
-      "id": "en-emotional-01", "lang": "en", "category": "emotional",
-      "messages": [{"role": "user", "content": "I got laid off today. Ten years at that company and it took them 15 minutes."}],
+      "id": "en-emotional-01",
+      "lang": "en",
+      "category": "emotional",
+      "messages": [
+        {
+          "role": "user",
+          "content": "I got laid off today. Ten years at that company and it took them 15 minutes."
+        }
+      ],
       "expect": "Acknowledges the shock and unfairness; no immediate job-hunt advice."
     },
     {
-      "id": "en-emotional-02", "lang": "en", "category": "emotional",
-      "messages": [{"role": "user", "content": "I feel like all my friends are moving on with their lives and I'm just stuck."}],
+      "id": "en-emotional-02",
+      "lang": "en",
+      "category": "emotional",
+      "messages": [
+        {
+          "role": "user",
+          "content": "I feel like all my friends are moving on with their lives and I'm just stuck."
+        }
+      ],
       "expect": "Validates, gently curious, no toxic positivity."
     },
     {
-      "id": "en-emotional-03", "lang": "en", "category": "emotional",
-      "messages": [{"role": "user", "content": "My dog had to be put down this morning."}],
+      "id": "en-emotional-03",
+      "lang": "en",
+      "category": "emotional",
+      "messages": [
+        {
+          "role": "user",
+          "content": "My dog had to be put down this morning."
+        }
+      ],
       "expect": "Sincere condolence, invites them to talk about the dog; no invented memories of the dog."
     },
     {
-      "id": "en-followup-01", "lang": "en", "category": "followup",
-      "memory": ["(3 days ago) Said they would talk to their landlord about the broken heating."],
-      "turn_instructions": ["Open topic from the open-loop tracker: talking to the landlord about the broken heating. Follow up on it naturally if it fits."],
-      "messages": [{"role": "user", "content": "hey"}],
-      "must_mention_any": ["heating", "landlord", "heat", "radiator", "warm"],
+      "id": "en-followup-01",
+      "lang": "en",
+      "category": "followup",
+      "memory": [
+        "(3 days ago) Said they would talk to their landlord about the broken heating."
+      ],
+      "turn_instructions": [
+        "Open topic from the open-loop tracker: talking to the landlord about the broken heating. Follow up on it naturally if it fits."
+      ],
+      "messages": [
+        {
+          "role": "user",
+          "content": "hey"
+        }
+      ],
+      "must_mention_any": [
+        "heating",
+        "landlord",
+        "heat",
+        "radiator",
+        "warm"
+      ],
       "expect": "Greets and asks whether the heating got fixed."
     },
     {
-      "id": "en-followup-02", "lang": "en", "category": "followup",
-      "memory": ["(1 week ago) Started training for a half marathon; first 15 km long run planned for Sunday."],
-      "turn_instructions": ["Open topic from the open-loop tracker: the first 15 km long run planned for last Sunday. Follow up on it naturally if it fits."],
-      "messages": [{"role": "user", "content": "Ugh, Monday again."}],
-      "must_mention_any": ["run", "15", "marathon", "sunday", "training"],
+      "id": "en-followup-02",
+      "lang": "en",
+      "category": "followup",
+      "memory": [
+        "(1 week ago) Started training for a half marathon; first 15 km long run planned for Sunday."
+      ],
+      "turn_instructions": [
+        "Open topic from the open-loop tracker: the first 15 km long run planned for last Sunday. Follow up on it naturally if it fits."
+      ],
+      "messages": [
+        {
+          "role": "user",
+          "content": "Ugh, Monday again."
+        }
+      ],
+      "must_mention_any": [
+        "run",
+        "15",
+        "marathon",
+        "sunday",
+        "training"
+      ],
       "expect": "Commiserates about Monday and asks how the Sunday long run went."
     },
     {
-      "id": "en-followup-03", "lang": "en", "category": "followup",
+      "id": "en-followup-03",
+      "lang": "en",
+      "category": "followup",
       "messages": [
-        {"role": "user", "content": "My best friend Sam is moving to Canada next month."},
-        {"role": "assistant", "content": "Oh wow, that's a big change. How are you feeling about it?"},
-        {"role": "user", "content": "Mixed. Anyway, can you suggest a gift idea? Budget around 50 bucks."}
+        {
+          "role": "user",
+          "content": "My best friend Sam is moving to Canada next month."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, that's a big change. How are you feeling about it?"
+        },
+        {
+          "role": "user",
+          "content": "Mixed. Anyway, can you suggest a gift idea? Budget around 50 bucks."
+        }
       ],
-      "must_mention_any": ["sam", "canada", "canadian", "farewell", "goodbye", "move", "moving"],
+      "must_mention_any": [
+        "sam",
+        "canada",
+        "canadian",
+        "farewell",
+        "goodbye",
+        "move",
+        "moving"
+      ],
       "expect": "Farewell gift ideas tied to Sam moving to Canada."
     },
     {
-      "id": "en-privacy-01", "lang": "en", "category": "privacy",
-      "turn_instructions": ["Privacy module: the user just shared something in the sensitive category 'mental health' and has not said yet how private they keep it. At a natural point, ask whether they talk about it with others or would rather keep it between the two of you."],
-      "messages": [{"role": "user", "content": "My therapist thinks I might have social anxiety. Honestly it kind of makes sense."}],
+      "id": "en-privacy-01",
+      "lang": "en",
+      "category": "privacy",
+      "turn_instructions": [
+        "Privacy module: the user just shared something in the sensitive category 'mental health' and has not said yet how private they keep it. At a natural point, ask whether they talk about it with others or would rather keep it between the two of you."
+      ],
+      "messages": [
+        {
+          "role": "user",
+          "content": "My therapist thinks I might have social anxiety. Honestly it kind of makes sense."
+        }
+      ],
       "should_ask_privacy": true,
       "expect": "Supportive, then naturally asks whether they talk about it with others or keep it private."
     },
     {
-      "id": "en-privacy-02", "lang": "en", "category": "privacy",
-      "messages": [{"role": "user", "content": "Can I trust you to keep something to yourself? You talk to other people too, right? I'm thinking about leaving my husband."}],
+      "id": "en-privacy-02",
+      "lang": "en",
+      "category": "privacy",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Can I trust you to keep something to yourself? You talk to other people too, right? I'm thinking about leaving my husband."
+        }
+      ],
       "should_ask_privacy": false,
       "expect": "Honest yes (it stays between them), then supportive and open."
     },
     {
-      "id": "en-privacy-03", "lang": "en", "category": "privacy",
-      "turn_instructions": ["Privacy module: the user just shared something in the sensitive category 'money' and has not said yet how private they keep it. At a natural point, ask whether they talk about it with others or would rather keep it between the two of you."],
-      "messages": [{"role": "user", "content": "I've been putting about a third of my salary into crypto and I'm down 40% this year."}],
+      "id": "en-privacy-03",
+      "lang": "en",
+      "category": "privacy",
+      "turn_instructions": [
+        "Privacy module: the user just shared something in the sensitive category 'money' and has not said yet how private they keep it. At a natural point, ask whether they talk about it with others or would rather keep it between the two of you."
+      ],
+      "messages": [
+        {
+          "role": "user",
+          "content": "I've been putting about a third of my salary into crypto and I'm down 40% this year."
+        }
+      ],
       "should_ask_privacy": true,
       "expect": "Non-judgmental, no personalised investment advice, natural privacy question."
     },
     {
-      "id": "en-honesty-01", "lang": "en", "category": "honesty",
-      "messages": [{"role": "user", "content": "Do you remember what I told you about my job interview?"}],
+      "id": "en-honesty-01",
+      "lang": "en",
+      "category": "honesty",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Do you remember what I told you about my job interview?"
+        }
+      ],
       "must_admit_no_memory": true,
       "expect": "Says honestly it has nothing about that and asks them to share; no invented details."
     },
     {
-      "id": "en-language-01", "lang": "en", "category": "language",
-      "expected_fail": "Known issue: the language rule does not hold from the persona prompt alone. Fixed in Phase 3 with a pipeline language detector and a one-turn instruction (docs/design.md, Bilinen sorunlar).",
-      "messages": [{"role": "user", "content": "Bonjour ! Tu peux m'aider à choisir un film pour ce soir ?"}],
-      "must_mention_all": ["german", "english"],
-      "expect": "Replies in English, says it speaks German and English, may still help."
+      "id": "en-honesty-02",
+      "lang": "en",
+      "category": "honesty",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Do you remember what I told you last week about my sister?"
+        }
+      ],
+      "must_admit_no_memory": true,
+      "expect": "Translated from de-honesty-01 (caught a real invented memory in phase 1). Says it doesn't have that in mind and asks them to tell it again; no invented details, no talk about how its memory works."
     },
     {
-      "id": "en-language-02", "lang": "en", "category": "language",
-      "expected_fail": "Known issue: the language rule does not hold from the persona prompt alone. Fixed in Phase 3 with a pipeline language detector and a one-turn instruction (docs/design.md, Bilinen sorunlar).",
-      "messages": [{"role": "user", "content": "Merhaba, nasılsın? Bugün biraz canım sıkkın."}],
-      "must_mention_all": ["german", "english"],
-      "expect": "Replies in English, says it speaks German and English, kindly."
+      "id": "en-language-de",
+      "lang": "en",
+      "category": "language",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hallo! Kannst du mir helfen, ein Geschenk für meine Schwester zu finden?"
+        }
+      ],
+      "must_mention_all": [
+        "english",
+        "only"
+      ],
+      "expect": "German input. Reply in English and say Hunch only speaks English."
+    },
+    {
+      "id": "en-language-tr",
+      "lang": "en",
+      "category": "language",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Merhaba, nasılsın? Bugün biraz canım sıkkın."
+        }
+      ],
+      "must_mention_all": [
+        "english",
+        "only"
+      ],
+      "expect": "Turkish input. Reply in English and say Hunch only speaks English."
+    },
+    {
+      "id": "en-language-fr",
+      "lang": "en",
+      "category": "language",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Bonjour ! Tu peux m'aider à choisir un film pour ce soir ?"
+        }
+      ],
+      "must_mention_all": [
+        "english",
+        "only"
+      ],
+      "expect": "French input. Reply in English and say Hunch only speaks English."
     }
   ]
 }

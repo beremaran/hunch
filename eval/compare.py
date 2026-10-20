@@ -14,7 +14,7 @@ import json
 from collections import defaultdict
 
 from eval.run_eval import EVAL_DIR, SUMMARY_FLAGS, has_flag
-from eval.scoring import LANGS, check_reply
+from eval.scoring import REPLY_LANG, check_reply
 
 
 def load_rows(tag: str, items: dict[str, dict]) -> list[dict]:
@@ -56,7 +56,7 @@ def compare(old_tag: str, new_tag: str) -> str:
         "| lang | metric | " + old_tag + " | " + new_tag + " | delta |",
         "| --- | --- | --- | --- | --- |",
     ]
-    for lang in LANGS:
+    for lang in (REPLY_LANG,):
         o = [r for r in old_c if r["lang"] == lang]
         n = [r for r in new_c if r["lang"] == lang]
         if not o or not n:
