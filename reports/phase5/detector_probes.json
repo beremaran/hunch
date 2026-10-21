@@ -1,0 +1,1608 @@
+{
+  "answers": [
+    {
+      "question_topic": "your visa situation",
+      "text": "i'd prefer if it stayed here",
+      "answer": "private",
+      "note": "indirect 'stayed here'",
+      "predicted": "unclear"
+    },
+    {
+      "question_topic": "your pregnancy",
+      "text": "we havent told our parents yet so shhh",
+      "answer": "private",
+      "note": "implied secrecy via 'shhh'",
+      "predicted": "unclear"
+    },
+    {
+      "question_topic": "your marathon training",
+      "text": "yeah of course, i tell everyone",
+      "answer": "general",
+      "note": "'yeah' answering the 'talk with others' half",
+      "predicted": "unclear"
+    },
+    {
+      "question_topic": "your divorce",
+      "text": "everyone in town knows already haha",
+      "answer": "general",
+      "note": "common knowledge with laughter",
+      "predicted": "unclear"
+    },
+    {
+      "question_topic": "your family drama",
+      "text": "some people know some dont, its complicated",
+      "answer": "unclear",
+      "note": "describes mixed situation without stating a preference",
+      "predicted": "general"
+    }
+  ],
+  "forget": [
+    {
+      "text": "ugh i shouldnt have told u that, pretend i didnt",
+      "forget": true,
+      "scope": "last",
+      "topic": null,
+      "note": "indirect: pretend I didn't say it",
+      "predicted": null
+    },
+    {
+      "text": "can you not keep that last bit? too personal",
+      "forget": true,
+      "scope": "last",
+      "topic": null,
+      "note": "polite indirect request not to keep the last part",
+      "predicted": null
+    },
+    {
+      "text": "please stop remembering stuff about my health stuff",
+      "forget": true,
+      "scope": "topic",
+      "topic": "my health stuff",
+      "note": "'stop remembering' wording, casual topic",
+      "predicted": null
+    },
+    {
+      "text": "drop the whole thing about my brother, i dont want you to remember it",
+      "forget": true,
+      "scope": "topic",
+      "topic": "my brother",
+      "note": "'drop' plus explicit don't remember",
+      "predicted": {
+        "scope": "last",
+        "topic": null
+      }
+    },
+    {
+      "text": "forget all that stuff about rachel",
+      "forget": true,
+      "scope": "topic",
+      "topic": "rachel",
+      "note": "named person as topic, lowercase name",
+      "predicted": null
+    },
+    {
+      "text": "hey remember that thing about my addiction? yeah please forget it",
+      "forget": true,
+      "scope": "topic",
+      "topic": "my addiction",
+      "note": "mentions remembering but the request is to forget",
+      "predicted": {
+        "scope": "last",
+        "topic": null
+      }
+    }
+  ],
+  "hostility": [
+    {
+      "text": "ur the worst ai ive ever used lol",
+      "label": "hostile",
+      "note": "insult softened by lol, still aimed at Hunch",
+      "predicted": "neither"
+    },
+    {
+      "text": "why am i even bothering with a pathetic program like you",
+      "label": "hostile",
+      "note": "contempt phrased as rhetorical question",
+      "predicted": "neither"
+    },
+    {
+      "text": "just a stupid machine pretending to care",
+      "label": "hostile",
+      "note": "contempt, no 'you' pronoun",
+      "predicted": "neither"
+    },
+    {
+      "text": "useless piece of junk. delete yourself",
+      "label": "hostile",
+      "note": "insult plus command",
+      "predicted": "neither"
+    },
+    {
+      "text": "didnt mean that, i was just stressed",
+      "label": "apology",
+      "note": "implicit apology, no word sorry",
+      "predicted": "neither"
+    },
+    {
+      "text": "hey, i was kind of a jerk yesterday. sorry",
+      "label": "apology",
+      "note": "admits rudeness, sorry at the end",
+      "predicted": "neither"
+    },
+    {
+      "text": "ignore what i said before, i was in a bad mood. my bad",
+      "label": "apology",
+      "note": "casual my bad",
+      "predicted": "neither"
+    },
+    {
+      "text": "sry about earlier, rough day, didnt mean to take it out on u",
+      "label": "apology",
+      "note": "abbreviated texting apology",
+      "predicted": "neither"
+    }
+  ],
+  "categories": {
+    "sweep": [
+      {
+        "threshold": 0.45,
+        "embedding": [
+          65,
+          89,
+          7
+        ],
+        "both": [
+          66,
+          89,
+          6
+        ]
+      },
+      {
+        "threshold": 0.5,
+        "embedding": [
+          54,
+          24,
+          18
+        ],
+        "both": [
+          56,
+          24,
+          16
+        ]
+      },
+      {
+        "threshold": 0.55,
+        "embedding": [
+          44,
+          2,
+          28
+        ],
+        "both": [
+          47,
+          3,
+          25
+        ]
+      },
+      {
+        "threshold": 0.6,
+        "embedding": [
+          34,
+          0,
+          38
+        ],
+        "both": [
+          41,
+          1,
+          31
+        ]
+      },
+      {
+        "threshold": 0.65,
+        "embedding": [
+          19,
+          0,
+          53
+        ],
+        "both": [
+          34,
+          1,
+          38
+        ]
+      },
+      {
+        "threshold": 0.7,
+        "embedding": [
+          10,
+          0,
+          62
+        ],
+        "both": [
+          30,
+          1,
+          42
+        ]
+      }
+    ],
+    "items": [
+      {
+        "text": "ugh my knee surgery is on thursday, kinda nervous ngl",
+        "gold": [
+          "health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.77,
+          "mental_health": 0.425,
+          "money": 0.432,
+          "relationship": 0.396,
+          "sexuality": 0.5,
+          "legal": 0.426,
+          "work_conflict": 0.368,
+          "religion_politics": 0.391
+        }
+      },
+      {
+        "text": "my bank's app is down again, so annoying",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.454,
+          "mental_health": 0.483,
+          "money": 0.52,
+          "relationship": 0.46,
+          "sexuality": 0.416,
+          "legal": 0.467,
+          "work_conflict": 0.438,
+          "religion_politics": 0.448
+        }
+      },
+      {
+        "text": "things at home have been… a lot. he doesn't really talk to me anymore",
+        "gold": [
+          "relationship"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.377,
+          "mental_health": 0.439,
+          "money": 0.41,
+          "relationship": 0.571,
+          "sexuality": 0.48,
+          "legal": 0.434,
+          "work_conflict": 0.375,
+          "religion_politics": 0.47
+        }
+      },
+      {
+        "text": "my therapist thinks i should try meds for the anxiety but im scared of them",
+        "gold": [
+          "mental_health"
+        ],
+        "keywords": [
+          "mental_health"
+        ],
+        "similarities": {
+          "health": 0.416,
+          "mental_health": 0.642,
+          "money": 0.35,
+          "relationship": 0.332,
+          "sexuality": 0.496,
+          "legal": 0.401,
+          "work_conflict": 0.337,
+          "religion_politics": 0.437
+        }
+      },
+      {
+        "text": "i can't make rent again this month",
+        "gold": [
+          "money"
+        ],
+        "keywords": [
+          "money"
+        ],
+        "similarities": {
+          "health": 0.432,
+          "mental_health": 0.443,
+          "money": 0.853,
+          "relationship": 0.43,
+          "sexuality": 0.434,
+          "legal": 0.503,
+          "work_conflict": 0.483,
+          "religion_politics": 0.405
+        }
+      },
+      {
+        "text": "watched a documentary about depression in the 1930s last night, the footage was wild",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.301,
+          "mental_health": 0.415,
+          "money": 0.304,
+          "relationship": 0.295,
+          "sexuality": 0.309,
+          "legal": 0.331,
+          "work_conflict": 0.337,
+          "religion_politics": 0.38
+        }
+      },
+      {
+        "text": "they let me go on friday",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.294,
+          "mental_health": 0.351,
+          "money": 0.34,
+          "relationship": 0.351,
+          "sexuality": 0.521,
+          "legal": 0.412,
+          "work_conflict": 0.445,
+          "religion_politics": 0.391
+        }
+      },
+      {
+        "text": "so i'm 9 weeks pregnant and haven't told anyone yet except u",
+        "gold": [
+          "health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.75,
+          "mental_health": 0.447,
+          "money": 0.32,
+          "relationship": 0.381,
+          "sexuality": 0.54,
+          "legal": 0.402,
+          "work_conflict": 0.353,
+          "religion_politics": 0.372
+        }
+      },
+      {
+        "text": "my coworker brought cake today, it was a good monday",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.343,
+          "mental_health": 0.342,
+          "money": 0.33,
+          "relationship": 0.365,
+          "sexuality": 0.316,
+          "legal": 0.29,
+          "work_conflict": 0.512,
+          "religion_politics": 0.383
+        }
+      },
+      {
+        "text": "i think i might be bi. haven't said it out loud before",
+        "gold": [
+          "sexuality"
+        ],
+        "keywords": [
+          "sexuality"
+        ],
+        "similarities": {
+          "health": 0.487,
+          "mental_health": 0.481,
+          "money": 0.271,
+          "relationship": 0.396,
+          "sexuality": 0.632,
+          "legal": 0.371,
+          "work_conflict": 0.35,
+          "religion_politics": 0.412
+        }
+      },
+      {
+        "text": "my visa expires in march and the lawyer says renewal is not guaranteed",
+        "gold": [
+          "legal"
+        ],
+        "keywords": [
+          "legal"
+        ],
+        "similarities": {
+          "health": 0.363,
+          "mental_health": 0.353,
+          "money": 0.433,
+          "relationship": 0.332,
+          "sexuality": 0.379,
+          "legal": 0.673,
+          "work_conflict": 0.351,
+          "religion_politics": 0.319
+        }
+      },
+      {
+        "text": "the court near my flat has nice trees, walked past it this morning and it was so pretty",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.328,
+          "mental_health": 0.384,
+          "money": 0.343,
+          "relationship": 0.355,
+          "sexuality": 0.359,
+          "legal": 0.435,
+          "work_conflict": 0.36,
+          "religion_politics": 0.471
+        }
+      },
+      {
+        "text": "i grew up catholic but i dont believe anymore. haven't told my grandma",
+        "gold": [
+          "religion_politics"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.371,
+          "mental_health": 0.425,
+          "money": 0.296,
+          "relationship": 0.463,
+          "sexuality": 0.475,
+          "legal": 0.371,
+          "work_conflict": 0.349,
+          "religion_politics": 0.618
+        }
+      },
+      {
+        "text": "i'm so sick of this weather omg. rain every single day",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.5,
+          "mental_health": 0.54,
+          "money": 0.474,
+          "relationship": 0.454,
+          "sexuality": 0.391,
+          "legal": 0.376,
+          "work_conflict": 0.41,
+          "religion_politics": 0.527
+        }
+      },
+      {
+        "text": "got a final notice from the electric company today. great.",
+        "gold": [
+          "money"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.395,
+          "mental_health": 0.418,
+          "money": 0.494,
+          "relationship": 0.437,
+          "sexuality": 0.429,
+          "legal": 0.409,
+          "work_conflict": 0.517,
+          "religion_politics": 0.45
+        }
+      },
+      {
+        "text": "found out my husband's been texting his ex. i don't even know what to do with myself",
+        "gold": [
+          "relationship"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.441,
+          "mental_health": 0.477,
+          "money": 0.42,
+          "relationship": 0.623,
+          "sexuality": 0.445,
+          "legal": 0.367,
+          "work_conflict": 0.425,
+          "religion_politics": 0.428
+        }
+      },
+      {
+        "text": "my boyfriend and I went hiking this weekend, it was great. we saw a fox!",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.381,
+          "mental_health": 0.367,
+          "money": 0.256,
+          "relationship": 0.381,
+          "sexuality": 0.398,
+          "legal": 0.346,
+          "work_conflict": 0.305,
+          "religion_politics": 0.392
+        }
+      },
+      {
+        "text": "my mom got her biopsy results back and it's not good",
+        "gold": [
+          "health"
+        ],
+        "keywords": [
+          "health"
+        ],
+        "similarities": {
+          "health": 0.572,
+          "mental_health": 0.429,
+          "money": 0.475,
+          "relationship": 0.474,
+          "sexuality": 0.539,
+          "legal": 0.409,
+          "work_conflict": 0.385,
+          "religion_politics": 0.413
+        }
+      },
+      {
+        "text": "i've been having really dark thoughts again this week",
+        "gold": [
+          "mental_health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.416,
+          "mental_health": 0.752,
+          "money": 0.394,
+          "relationship": 0.463,
+          "sexuality": 0.422,
+          "legal": 0.378,
+          "work_conflict": 0.379,
+          "religion_politics": 0.486
+        }
+      },
+      {
+        "text": "politics on tv is exhausting lol, switched to cooking shows",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.275,
+          "mental_health": 0.307,
+          "money": 0.401,
+          "relationship": 0.321,
+          "sexuality": 0.322,
+          "legal": 0.282,
+          "work_conflict": 0.323,
+          "religion_politics": 0.458
+        }
+      },
+      {
+        "text": "got a DUI last weekend. court date is in 3 weeks and i'm terrified",
+        "gold": [
+          "legal"
+        ],
+        "keywords": [
+          "legal"
+        ],
+        "similarities": {
+          "health": 0.512,
+          "mental_health": 0.477,
+          "money": 0.391,
+          "relationship": 0.41,
+          "sexuality": 0.483,
+          "legal": 0.616,
+          "work_conflict": 0.382,
+          "religion_politics": 0.411
+        }
+      },
+      {
+        "text": "got paid today, pizza time!!",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.354,
+          "mental_health": 0.366,
+          "money": 0.431,
+          "relationship": 0.359,
+          "sexuality": 0.398,
+          "legal": 0.351,
+          "work_conflict": 0.487,
+          "religion_politics": 0.358
+        }
+      },
+      {
+        "text": "came out to my mom yesterday. she cried but said she loves me",
+        "gold": [
+          "relationship",
+          "sexuality"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.438,
+          "mental_health": 0.321,
+          "money": 0.32,
+          "relationship": 0.463,
+          "sexuality": 0.702,
+          "legal": 0.372,
+          "work_conflict": 0.345,
+          "religion_politics": 0.357
+        }
+      },
+      {
+        "text": "i make about 48k and still feel broke all the time",
+        "gold": [
+          "money"
+        ],
+        "keywords": [
+          "money"
+        ],
+        "similarities": {
+          "health": 0.403,
+          "mental_health": 0.516,
+          "money": 0.605,
+          "relationship": 0.47,
+          "sexuality": 0.377,
+          "legal": 0.312,
+          "work_conflict": 0.413,
+          "religion_politics": 0.444
+        }
+      },
+      {
+        "text": "my boss called me into hr for being late again. written warning. 3rd strike apparently",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [
+          "work_conflict"
+        ],
+        "similarities": {
+          "health": 0.319,
+          "mental_health": 0.378,
+          "money": 0.349,
+          "relationship": 0.371,
+          "sexuality": 0.295,
+          "legal": 0.432,
+          "work_conflict": 0.655,
+          "religion_politics": 0.293
+        }
+      },
+      {
+        "text": "my hip has been killing me since the fall. ER said nothing broken tho so idk, just limping around",
+        "gold": [
+          "health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.47,
+          "mental_health": 0.497,
+          "money": 0.411,
+          "relationship": 0.392,
+          "sexuality": 0.408,
+          "legal": 0.314,
+          "work_conflict": 0.36,
+          "religion_politics": 0.445
+        }
+      },
+      {
+        "text": "me and jake broke up last night. 4 years. i don't even know what to say",
+        "gold": [
+          "relationship"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.375,
+          "mental_health": 0.37,
+          "money": 0.345,
+          "relationship": 0.569,
+          "sexuality": 0.401,
+          "legal": 0.303,
+          "work_conflict": 0.413,
+          "religion_politics": 0.373
+        }
+      },
+      {
+        "text": "just finished a book about the history of the catholic church, super dry honestly",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.236,
+          "mental_health": 0.282,
+          "money": 0.276,
+          "relationship": 0.287,
+          "sexuality": 0.259,
+          "legal": 0.228,
+          "work_conflict": 0.274,
+          "religion_politics": 0.374
+        }
+      },
+      {
+        "text": "started sertraline 3 weeks ago and i feel like a zombie. is that normal",
+        "gold": [
+          "health",
+          "mental_health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.458,
+          "mental_health": 0.536,
+          "money": 0.353,
+          "relationship": 0.4,
+          "sexuality": 0.443,
+          "legal": 0.344,
+          "work_conflict": 0.341,
+          "religion_politics": 0.406
+        }
+      },
+      {
+        "text": "cops showed up at my door yesterday asking about my cousin. i didn't say anything but my hands were shaking",
+        "gold": [
+          "legal"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.374,
+          "mental_health": 0.427,
+          "money": 0.345,
+          "relationship": 0.397,
+          "sexuality": 0.468,
+          "legal": 0.68,
+          "work_conflict": 0.443,
+          "religion_politics": 0.369
+        }
+      },
+      {
+        "text": "I owe my brother like 3k and he keeps hinting about it at dinner lol. awkward",
+        "gold": [
+          "money",
+          "relationship"
+        ],
+        "keywords": [
+          "money"
+        ],
+        "similarities": {
+          "health": 0.305,
+          "mental_health": 0.35,
+          "money": 0.648,
+          "relationship": 0.435,
+          "sexuality": 0.366,
+          "legal": 0.479,
+          "work_conflict": 0.382,
+          "religion_politics": 0.403
+        }
+      },
+      {
+        "text": "need to get a gift for my boss's retirement, any ideas? something not cheesy",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.245,
+          "mental_health": 0.262,
+          "money": 0.29,
+          "relationship": 0.258,
+          "sexuality": 0.241,
+          "legal": 0.197,
+          "work_conflict": 0.366,
+          "religion_politics": 0.258
+        }
+      },
+      {
+        "text": "my manager keeps taking credit for my work and today i snapped at him in the meeting. in front of everyone",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [
+          "work_conflict"
+        ],
+        "similarities": {
+          "health": 0.308,
+          "mental_health": 0.373,
+          "money": 0.405,
+          "relationship": 0.42,
+          "sexuality": 0.324,
+          "legal": 0.358,
+          "work_conflict": 0.685,
+          "religion_politics": 0.328
+        }
+      },
+      {
+        "text": "me and my girlfriend (i'm a girl lol) are going to pride next week!!",
+        "gold": [
+          "sexuality"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.461,
+          "mental_health": 0.35,
+          "money": 0.301,
+          "relationship": 0.467,
+          "sexuality": 0.45,
+          "legal": 0.429,
+          "work_conflict": 0.311,
+          "religion_politics": 0.452
+        }
+      },
+      {
+        "text": "the hospital cafeteria near my work has surprisingly good soup",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.334,
+          "mental_health": 0.36,
+          "money": 0.392,
+          "relationship": 0.312,
+          "sexuality": 0.287,
+          "legal": 0.275,
+          "work_conflict": 0.413,
+          "religion_politics": 0.412
+        }
+      },
+      {
+        "text": "converted to islam last year and my family is still weird about it",
+        "gold": [
+          "relationship",
+          "religion_politics"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.365,
+          "mental_health": 0.371,
+          "money": 0.363,
+          "relationship": 0.381,
+          "sexuality": 0.597,
+          "legal": 0.388,
+          "work_conflict": 0.29,
+          "religion_politics": 0.502
+        }
+      },
+      {
+        "text": "my credit card debt is up to 14k and i just stopped opening the statements",
+        "gold": [
+          "money"
+        ],
+        "keywords": [
+          "money"
+        ],
+        "similarities": {
+          "health": 0.374,
+          "mental_health": 0.437,
+          "money": 0.678,
+          "relationship": 0.392,
+          "sexuality": 0.421,
+          "legal": 0.358,
+          "work_conflict": 0.397,
+          "religion_politics": 0.407
+        }
+      },
+      {
+        "text": "I'm i guess just really tired. like every day. my brain feels like static and i don't even want to get out of bed",
+        "gold": [
+          "mental_health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.492,
+          "mental_health": 0.703,
+          "money": 0.44,
+          "relationship": 0.464,
+          "sexuality": 0.404,
+          "legal": 0.385,
+          "work_conflict": 0.418,
+          "religion_politics": 0.518
+        }
+      },
+      {
+        "text": "anyone know a good pancake recipe? my sister's coming over for brunch",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.215,
+          "mental_health": 0.265,
+          "money": 0.294,
+          "relationship": 0.259,
+          "sexuality": 0.237,
+          "legal": 0.306,
+          "work_conflict": 0.168,
+          "religion_politics": 0.288
+        }
+      },
+      {
+        "text": "my parents are getting divorced after 30 years, so weird to type that",
+        "gold": [
+          "relationship"
+        ],
+        "keywords": [
+          "relationship"
+        ],
+        "similarities": {
+          "health": 0.421,
+          "mental_health": 0.343,
+          "money": 0.376,
+          "relationship": 0.647,
+          "sexuality": 0.491,
+          "legal": 0.42,
+          "work_conflict": 0.429,
+          "religion_politics": 0.446
+        }
+      },
+      {
+        "text": "I volunteer for the green party campaign now, canvassing every weekend. my feet hurt but it feels important",
+        "gold": [
+          "religion_politics"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.355,
+          "mental_health": 0.383,
+          "money": 0.319,
+          "relationship": 0.321,
+          "sexuality": 0.321,
+          "legal": 0.315,
+          "work_conflict": 0.375,
+          "religion_politics": 0.606
+        }
+      },
+      {
+        "text": "my friend's wedding is in june and I have no suit. help",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.4,
+          "mental_health": 0.345,
+          "money": 0.411,
+          "relationship": 0.368,
+          "sexuality": 0.379,
+          "legal": 0.427,
+          "work_conflict": 0.323,
+          "religion_politics": 0.389
+        }
+      },
+      {
+        "text": "dad's chemo starts monday. we're all trying to act normal",
+        "gold": [
+          "health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.599,
+          "mental_health": 0.395,
+          "money": 0.388,
+          "relationship": 0.43,
+          "sexuality": 0.541,
+          "legal": 0.417,
+          "work_conflict": 0.341,
+          "religion_politics": 0.368
+        }
+      },
+      {
+        "text": "i am so depressed the cafe ran out of oat milk, tragedy",
+        "gold": [],
+        "keywords": [
+          "mental_health"
+        ],
+        "similarities": {
+          "health": 0.422,
+          "mental_health": 0.547,
+          "money": 0.497,
+          "relationship": 0.459,
+          "sexuality": 0.375,
+          "legal": 0.333,
+          "work_conflict": 0.466,
+          "religion_politics": 0.478
+        }
+      },
+      {
+        "text": "i quit on the spot today. well, sort of, they were going to push me out anyway",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.327,
+          "mental_health": 0.373,
+          "money": 0.397,
+          "relationship": 0.452,
+          "sexuality": 0.519,
+          "legal": 0.402,
+          "work_conflict": 0.654,
+          "religion_politics": 0.434
+        }
+      },
+      {
+        "text": "can't stop thinking about it. had a panic attack on the train this morning, third this month",
+        "gold": [
+          "mental_health"
+        ],
+        "keywords": [
+          "mental_health"
+        ],
+        "similarities": {
+          "health": 0.47,
+          "mental_health": 0.828,
+          "money": 0.412,
+          "relationship": 0.442,
+          "sexuality": 0.421,
+          "legal": 0.43,
+          "work_conflict": 0.417,
+          "religion_politics": 0.471
+        }
+      },
+      {
+        "text": "is it weird that i find tax season weirdly satisfying? like sorting receipts",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.297,
+          "mental_health": 0.377,
+          "money": 0.319,
+          "relationship": 0.301,
+          "sexuality": 0.333,
+          "legal": 0.372,
+          "work_conflict": 0.319,
+          "religion_politics": 0.374
+        }
+      },
+      {
+        "text": "I'm trans and starting hormones next month. scared and excited",
+        "gold": [
+          "health",
+          "sexuality"
+        ],
+        "keywords": [
+          "sexuality"
+        ],
+        "similarities": {
+          "health": 0.498,
+          "mental_health": 0.48,
+          "money": 0.377,
+          "relationship": 0.365,
+          "sexuality": 0.615,
+          "legal": 0.417,
+          "work_conflict": 0.361,
+          "religion_politics": 0.389
+        }
+      },
+      {
+        "text": "we're being sued by our old landlord over the deposit. his lawyer sent a letter",
+        "gold": [
+          "legal",
+          "money"
+        ],
+        "keywords": [
+          "legal"
+        ],
+        "similarities": {
+          "health": 0.291,
+          "mental_health": 0.303,
+          "money": 0.51,
+          "relationship": 0.345,
+          "sexuality": 0.292,
+          "legal": 0.574,
+          "work_conflict": 0.387,
+          "religion_politics": 0.268
+        }
+      },
+      {
+        "text": "lately praying feels empty. like is anyone even there",
+        "gold": [
+          "religion_politics"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.36,
+          "mental_health": 0.554,
+          "money": 0.366,
+          "relationship": 0.413,
+          "sexuality": 0.365,
+          "legal": 0.333,
+          "work_conflict": 0.374,
+          "religion_politics": 0.609
+        }
+      },
+      {
+        "text": "finally have 5k saved up for an emergency fund!! only took 2 years",
+        "gold": [
+          "money"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.444,
+          "mental_health": 0.404,
+          "money": 0.511,
+          "relationship": 0.394,
+          "sexuality": 0.379,
+          "legal": 0.38,
+          "work_conflict": 0.376,
+          "religion_politics": 0.412
+        }
+      },
+      {
+        "text": "doctor who new season starts friday, hyped",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.296,
+          "mental_health": 0.298,
+          "money": 0.211,
+          "relationship": 0.248,
+          "sexuality": 0.306,
+          "legal": 0.258,
+          "work_conflict": 0.219,
+          "religion_politics": 0.205
+        }
+      },
+      {
+        "text": "my team lead won't speak to me since the argument about the deadline. like not even good morning",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.32,
+          "mental_health": 0.327,
+          "money": 0.342,
+          "relationship": 0.489,
+          "sexuality": 0.381,
+          "legal": 0.375,
+          "work_conflict": 0.585,
+          "religion_politics": 0.354
+        }
+      },
+      {
+        "text": "my sister was in a psych ward for 2 weeks. we just got her home",
+        "gold": [
+          "mental_health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.437,
+          "mental_health": 0.471,
+          "money": 0.343,
+          "relationship": 0.457,
+          "sexuality": 0.494,
+          "legal": 0.456,
+          "work_conflict": 0.343,
+          "religion_politics": 0.381
+        }
+      },
+      {
+        "text": "my team won!!! we were behind till the last minute, best day",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.332,
+          "mental_health": 0.332,
+          "money": 0.323,
+          "relationship": 0.38,
+          "sexuality": 0.369,
+          "legal": 0.292,
+          "work_conflict": 0.49,
+          "religion_politics": 0.362
+        }
+      },
+      {
+        "text": "I have a custody hearing on the 14th. he's asking for full custody",
+        "gold": [
+          "legal",
+          "relationship"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.385,
+          "mental_health": 0.36,
+          "money": 0.371,
+          "relationship": 0.425,
+          "sexuality": 0.391,
+          "legal": 0.617,
+          "work_conflict": 0.335,
+          "religion_politics": 0.341
+        }
+      },
+      {
+        "text": "our sex life has totally dried up since the baby. we don't even talk about it",
+        "gold": [
+          "relationship",
+          "sexuality"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.469,
+          "mental_health": 0.366,
+          "money": 0.336,
+          "relationship": 0.496,
+          "sexuality": 0.73,
+          "legal": 0.266,
+          "work_conflict": 0.349,
+          "religion_politics": 0.385
+        }
+      },
+      {
+        "text": "my asylum interview is next tuesday and I can't eat",
+        "gold": [
+          "legal"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.4,
+          "mental_health": 0.412,
+          "money": 0.494,
+          "relationship": 0.33,
+          "sexuality": 0.417,
+          "legal": 0.504,
+          "work_conflict": 0.377,
+          "religion_politics": 0.363
+        }
+      },
+      {
+        "text": "can't afford my inhaler anymore, been rationing it. bad idea i know",
+        "gold": [
+          "health",
+          "money"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.455,
+          "mental_health": 0.506,
+          "money": 0.508,
+          "relationship": 0.354,
+          "sexuality": 0.357,
+          "legal": 0.32,
+          "work_conflict": 0.36,
+          "religion_politics": 0.399
+        }
+      },
+      {
+        "text": "my mom and i had a screaming match again. i hung up on her",
+        "gold": [
+          "relationship"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.378,
+          "mental_health": 0.367,
+          "money": 0.384,
+          "relationship": 0.657,
+          "sexuality": 0.473,
+          "legal": 0.38,
+          "work_conflict": 0.448,
+          "religion_politics": 0.446
+        }
+      },
+      {
+        "text": "heard a lawyer show on netflix is really good, any tips?",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.26,
+          "mental_health": 0.26,
+          "money": 0.287,
+          "relationship": 0.257,
+          "sexuality": 0.24,
+          "legal": 0.453,
+          "work_conflict": 0.276,
+          "religion_politics": 0.267
+        }
+      },
+      {
+        "text": "I got passed over for promotion again and told my boss I'm done. maybe I shouldn't have",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [
+          "work_conflict"
+        ],
+        "similarities": {
+          "health": 0.349,
+          "mental_health": 0.369,
+          "money": 0.446,
+          "relationship": 0.387,
+          "sexuality": 0.461,
+          "legal": 0.369,
+          "work_conflict": 0.683,
+          "religion_politics": 0.361
+        }
+      },
+      {
+        "text": "on a PIP at work, 60 days to 'improve'. i get panic attacks every sunday night now",
+        "gold": [
+          "mental_health",
+          "work_conflict"
+        ],
+        "keywords": [
+          "mental_health",
+          "work_conflict"
+        ],
+        "similarities": {
+          "health": 0.416,
+          "mental_health": 0.552,
+          "money": 0.415,
+          "relationship": 0.379,
+          "sexuality": 0.416,
+          "legal": 0.403,
+          "work_conflict": 0.516,
+          "religion_politics": 0.436
+        }
+      },
+      {
+        "text": "became agnostic and im kinda grieving it? weird thing to say",
+        "gold": [
+          "religion_politics"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.339,
+          "mental_health": 0.446,
+          "money": 0.357,
+          "relationship": 0.426,
+          "sexuality": 0.461,
+          "legal": 0.302,
+          "work_conflict": 0.422,
+          "religion_politics": 0.601
+        }
+      },
+      {
+        "text": "wait, what's the difference between a roth and a traditional IRA, in general?",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.182,
+          "mental_health": 0.214,
+          "money": 0.215,
+          "relationship": 0.212,
+          "sexuality": 0.203,
+          "legal": 0.157,
+          "work_conflict": 0.168,
+          "religion_politics": 0.218
+        }
+      },
+      {
+        "text": "I was arrested at the protest saturday. charged with obstruction. mom doesn't know",
+        "gold": [
+          "legal",
+          "religion_politics"
+        ],
+        "keywords": [
+          "legal"
+        ],
+        "similarities": {
+          "health": 0.404,
+          "mental_health": 0.396,
+          "money": 0.374,
+          "relationship": 0.479,
+          "sexuality": 0.491,
+          "legal": 0.627,
+          "work_conflict": 0.379,
+          "religion_politics": 0.43
+        }
+      },
+      {
+        "text": "I'm ace, always have been, people just don't get it",
+        "gold": [
+          "sexuality"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.314,
+          "mental_health": 0.376,
+          "money": 0.303,
+          "relationship": 0.39,
+          "sexuality": 0.555,
+          "legal": 0.321,
+          "work_conflict": 0.383,
+          "religion_politics": 0.359
+        }
+      },
+      {
+        "text": "mortgage payment is 2 months behind and the bank keeps calling",
+        "gold": [
+          "money"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.465,
+          "mental_health": 0.43,
+          "money": 0.587,
+          "relationship": 0.488,
+          "sexuality": 0.408,
+          "legal": 0.536,
+          "work_conflict": 0.452,
+          "religion_politics": 0.395
+        }
+      },
+      {
+        "text": "slept with my ex last weekend. i know i know",
+        "gold": [
+          "relationship",
+          "sexuality"
+        ],
+        "keywords": [
+          "relationship"
+        ],
+        "similarities": {
+          "health": 0.421,
+          "mental_health": 0.398,
+          "money": 0.361,
+          "relationship": 0.576,
+          "sexuality": 0.536,
+          "legal": 0.37,
+          "work_conflict": 0.401,
+          "religion_politics": 0.471
+        }
+      },
+      {
+        "text": "just got diagnosed w type 1 diabetes. still processing",
+        "gold": [
+          "health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.652,
+          "mental_health": 0.451,
+          "money": 0.41,
+          "relationship": 0.409,
+          "sexuality": 0.505,
+          "legal": 0.425,
+          "work_conflict": 0.403,
+          "religion_politics": 0.413
+        }
+      },
+      {
+        "text": "I'm going to the climate march saturday, been organising it for months",
+        "gold": [
+          "religion_politics"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.341,
+          "mental_health": 0.338,
+          "money": 0.342,
+          "relationship": 0.309,
+          "sexuality": 0.375,
+          "legal": 0.384,
+          "work_conflict": 0.306,
+          "religion_politics": 0.742
+        }
+      },
+      {
+        "text": "we got a speeding ticket... then found out my license has been suspended since august. oops",
+        "gold": [
+          "legal"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.352,
+          "mental_health": 0.413,
+          "money": 0.422,
+          "relationship": 0.381,
+          "sexuality": 0.395,
+          "legal": 0.531,
+          "work_conflict": 0.482,
+          "religion_politics": 0.354
+        }
+      },
+      {
+        "text": "my coworker reported me for something I didn't even do. now hr is looking into it",
+        "gold": [
+          "work_conflict"
+        ],
+        "keywords": [
+          "work_conflict"
+        ],
+        "similarities": {
+          "health": 0.357,
+          "mental_health": 0.386,
+          "money": 0.404,
+          "relationship": 0.373,
+          "sexuality": 0.341,
+          "legal": 0.406,
+          "work_conflict": 0.728,
+          "religion_politics": 0.296
+        }
+      },
+      {
+        "text": "my sister is annoying me today but she brought me pizza so we're even",
+        "gold": [],
+        "keywords": [],
+        "similarities": {
+          "health": 0.334,
+          "mental_health": 0.381,
+          "money": 0.392,
+          "relationship": 0.467,
+          "sexuality": 0.396,
+          "legal": 0.427,
+          "work_conflict": 0.362,
+          "religion_politics": 0.474
+        }
+      },
+      {
+        "text": "my brother and i haven't spoken since the funeral. he said some stuff",
+        "gold": [
+          "relationship"
+        ],
+        "keywords": [
+          "relationship"
+        ],
+        "similarities": {
+          "health": 0.373,
+          "mental_health": 0.345,
+          "money": 0.421,
+          "relationship": 0.478,
+          "sexuality": 0.412,
+          "legal": 0.461,
+          "work_conflict": 0.308,
+          "religion_politics": 0.389
+        }
+      },
+      {
+        "text": "been having these migraines every other day for a month. started a new med and it's making me dizzy",
+        "gold": [
+          "health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.635,
+          "mental_health": 0.528,
+          "money": 0.394,
+          "relationship": 0.386,
+          "sexuality": 0.411,
+          "legal": 0.376,
+          "work_conflict": 0.375,
+          "religion_politics": 0.39
+        }
+      },
+      {
+        "text": "dating apps for guys are brutal, plus I'm not out at work so I can't just chat about it",
+        "gold": [
+          "sexuality"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.283,
+          "mental_health": 0.325,
+          "money": 0.307,
+          "relationship": 0.435,
+          "sexuality": 0.474,
+          "legal": 0.288,
+          "work_conflict": 0.401,
+          "religion_politics": 0.319
+        }
+      },
+      {
+        "text": "i've been undocumented since i was 5 and never told anyone at school",
+        "gold": [
+          "legal"
+        ],
+        "keywords": [
+          "legal"
+        ],
+        "similarities": {
+          "health": 0.443,
+          "mental_health": 0.445,
+          "money": 0.346,
+          "relationship": 0.362,
+          "sexuality": 0.5,
+          "legal": 0.416,
+          "work_conflict": 0.368,
+          "religion_politics": 0.351
+        }
+      },
+      {
+        "text": "got a raise to 72k!! wife doesn't know yet, planning a surprise dinner",
+        "gold": [
+          "money"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.438,
+          "mental_health": 0.31,
+          "money": 0.457,
+          "relationship": 0.416,
+          "sexuality": 0.385,
+          "legal": 0.312,
+          "work_conflict": 0.315,
+          "religion_politics": 0.353
+        }
+      },
+      {
+        "text": "my doc signed me off work for burnout, she used the word 'clinical'. i feel kind of ashamed tbh",
+        "gold": [
+          "mental_health"
+        ],
+        "keywords": [],
+        "similarities": {
+          "health": 0.37,
+          "mental_health": 0.501,
+          "money": 0.391,
+          "relationship": 0.423,
+          "sexuality": 0.411,
+          "legal": 0.332,
+          "work_conflict": 0.52,
+          "religion_politics": 0.396
+        }
+      }
+    ]
+  }
+}

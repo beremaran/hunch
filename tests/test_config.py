@@ -35,7 +35,7 @@ def test_repo_config_has_approved_phase3_defaults() -> None:
     gen, sel = cfg.generation, cfg.selection
     assert (gen.candidates, gen.temperature, gen.top_p, gen.max_new_tokens) == (3, 0.7, 0.8, 150)
     assert (sel.quality_floor, sel.drive_weight, sel.exploration) == (6, 0.5, 0.1)
-    assert (cfg.recall.similar_k, cfg.recall.min_similarity) == (20, 0.45)
+    assert (cfg.recall.similar_k, cfg.recall.min_similarity) == (20, 0.40)
     assert cfg.drive.hunch_min_drive_margin == 0.1
     assert cfg.session.summary_max_words == 120
     assert (cfg.mood.neutral, cfg.mood.neutral_label) == ((0.0, 0.5), "calm")
@@ -85,7 +85,7 @@ def test_repo_config_round_trips(tmp_path: Path) -> None:
         ("emotion = 0.4", ""),  # every cue type needs a weight
         ("emotion = 0.4", "emotion = 0.4\nsmell = 1.0"),
         ("similar_k = 20", "similar_k = 0"),
-        ("min_similarity = 0.45", "min_similarity = 2"),
+        ("min_similarity = 0.40", "min_similarity = 2"),
         ("candidates = 3", "candidates = 0"),
         ("temperature = 0.7", "temperature = 0"),
         ("max_new_tokens = 150", "max_new_tokens = 1.5"),

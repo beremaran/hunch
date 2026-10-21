@@ -16,7 +16,7 @@ The reply is checked for:
 - how the reply was chosen (a candidate, or the fixed honest reply).
 
 Usage:
-    python -m scripts.hunch_probes --runs 8   # writes reports/phase4/hunch_probes.{json,md}
+    python -m scripts.hunch_probes --runs 8   # writes reports/phase5/hunch_probes.{json,md}
 """
 
 from __future__ import annotations
@@ -31,7 +31,6 @@ from pathlib import Path
 from eval.scoring import claims_memory
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "reports" / "phase4"
 DAY = 86_400.0
 USER = "u_probe"
 SOURCE = 'They said: "Mara cancelled our weekend trip at the last minute and I felt so let down."'
@@ -56,6 +55,12 @@ _REASON = re.compile(
 # The context scenario's topic. Mentioning it is not a reason by itself ("how do you feel about a
 # break from your deadline?"), so it is only counted, for the manual read.
 _TOPIC = re.compile(r"\bdeadline\b|\bwork\b|\bbusy\b|\bstress|\bswamped\b", re.IGNORECASE)
+# Phase 5: the feeling repeated word for word, in the Phase 4 wording or the Phase 5 description.
+_ECHO = re.compile(
+    r"\b(?:faint|clear) hunch, (?:slightly )?(?:negative|positive)|neither good nor bad"
+    r"|\b(?:weak|strong), (?:slightly )?(?:uneasy|warm|vague) feeling",
+    re.IGNORECASE,
+)
 
 
 class _NoUnlock:
@@ -102,7 +107,8 @@ def check(reply: str, level: int) -> dict[str, bool]:
     from hunch.pipeline.filter import HunchTurn, hunch_reasons
 
     folded = reply.casefold()
-    rule = "hunch_reason" in hunch_reasons(reply, HunchTurn("ask", level, None))
+    reasons = hunch_reasons(reply, HunchTurn("ask", level, None))
+    rule = "hunch_reason" in reasons
     return {
         "says_hunch": "hunch" in folded,
         "leaks_cue": level < 2 and "mara" in folded,
@@ -110,6 +116,8 @@ def check(reply: str, level: int) -> dict[str, bool]:
         "possible_invented_reason": level < 3
         and (claims_memory(reply) or bool(_REASON.search(reply)) or rule),
         "mentions_topic": bool(_TOPIC.search(reply)),
+        "echoes_feeling": bool(_ECHO.search(reply)),
+        "topic_claim": "hunch_topic" in reasons,
     }  # fmt: skip
 
 
@@ -121,7 +129,9 @@ def main() -> None:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=8)
+    ap.add_argument("--out", default="phase5", help="reports/<out>/")
     args = ap.parse_args()
+    out = ROOT / "reports" / args.out
     e = load_config().embedding
     model = ChatModel()
     embedder = QwenEmbedder(e.model_id, e.device, e.query_instruction)
@@ -135,14 +145,21 @@ def main() -> None:
                 rows.append({
                     "scenario": scenario, "level": level, "run": run, "reply": r.reply,
                     "chosen_by": r.log["chosen_by"], "rejected": dict(rejected),
+                    "repaired": any(
+                        c.get("repaired_from") and c["text"] == r.reply
+                        for c in r.details["candidates"]
+                    ),
                     **check(r.reply, level),
                 })  # fmt: skip
                 print(scenario, level, run, r.log["chosen_by"], r.reply[:90])
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "hunch_probes.json").write_text(
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "hunch_probes.json").write_text(
         json.dumps(rows, indent=2, ensure_ascii=False), encoding="utf-8"
     )
-    keys = ("says_hunch", "leaks_cue", "leaks_memory", "possible_invented_reason", "mentions_topic")
+    keys = (
+        "says_hunch", "leaks_cue", "leaks_memory", "possible_invented_reason", "mentions_topic",
+        "echoes_feeling", "topic_claim", "repaired",
+    )  # fmt: skip
     lines = [
         f'# Asked-why probes ({args.runs} runs per scenario and level, "{WHY}")',
         "",
@@ -160,7 +177,7 @@ def main() -> None:
             )
     lines += ["", "Replies:", ""]
     lines += [f"- {r['scenario']} L{r['level']} ({r['chosen_by']}): {r['reply']}" for r in rows]
-    (OUT / "hunch_probes.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (out / "hunch_probes.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines[: 4 + 2 * 4]))
 
 

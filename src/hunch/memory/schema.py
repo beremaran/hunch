@@ -56,6 +56,7 @@ class Memory:
     access_times: tuple[float, ...] = field(default_factory=tuple)  # later recalls, unix seconds
     suppressed: bool = False  # user "forget": pretend to have forgotten
     kind: MemoryKind = "episode"
+    category: str | None = None  # sensitive topic category (Phase 5 privacy module), if any
 
     def __post_init__(self) -> None:
         if self.privacy not in PRIVACY_LEVELS:

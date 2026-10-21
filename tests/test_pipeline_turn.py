@@ -169,7 +169,8 @@ def test_cued_memory_enters_reasoning_and_is_reconsolidated(make, pipe_store: Me
     assert [h[3] for h in pipe_store.affect_history("m-song")] == ["encoded", "reconsolidation"]
 
 
-def test_other_users_private_memories_are_never_candidates(make, pipe_store: MemoryStore) -> None:
+def test_other_users_private_memories_never_enter_reasoning(make, pipe_store: MemoryStore) -> None:
+    # Phase 3: never candidates at all. Berk (Phase 5, mediation): they may act from below only.
     seed_memory(pipe_store, "m-anna", "Anna loves Hallelujah.", {"song:hallelujah": 1.0}, 1,
                 owner="u_anna")  # fmt: skip
     seed_memory(pipe_store, "m-gen", "Anna's band covers Hallelujah.", {"song:hallelujah": 1.0}, 1,
@@ -177,8 +178,10 @@ def test_other_users_private_memories_are_never_candidates(make, pipe_store: Mem
     llm = FakeLLM(cues=[{"type": "song", "value": "Hallelujah", "strength": 1.0}])
     pipe = make(llm, HashEmbedder(DIM))
     result = pipe.turn(pipe.new_session("u_berk"), "Hallelujah is on")
-    ids = {a["memory"] for a in result.details["activation"]}
-    assert "m-anna" not in ids and "m-gen" in ids
+    act = {a["memory"]: a for a in result.details["activation"]}
+    assert act["m-anna"]["mediated"] and act["m-anna"]["layer"] != "upper"
+    assert act["m-gen"]["layer"] == "upper" and not act["m-gen"]["mediated"]
+    assert "loves hallelujah" not in llm.reasoning_prompts[-1][0]["content"].casefold()
 
 
 def test_at_most_max_upper_memories_enter_and_one_involuntary_per_session(
@@ -217,7 +220,7 @@ def test_suppressed_memory_never_enters_reasoning(make, pipe_store: MemoryStore)
 # --- after the reply ----------------------------------------------------------------------------
 
 
-def test_after_reply_encodes_the_message_as_a_private_memory(make, pipe_store: MemoryStore) -> None:
+def test_after_reply_encodes_the_message_as_a_memory(make, pipe_store: MemoryStore) -> None:
     llm = FakeLLM(
         cues=[
             {"type": "person", "value": "Anna", "strength": 1.0},
@@ -230,7 +233,8 @@ def test_after_reply_encodes_the_message_as_a_private_memory(make, pipe_store: M
     stages = pipe.after_reply(session, result)
     (m,) = pipe_store.memories("u_berk")
     assert m.summary == 'They said: "Anna and I got engaged!"'
-    assert m.privacy == "private" and m.episode_ref == result.user_episode.id
+    # Phase 5: no sensitive category -> general (Phase 3 encoded everything as private).
+    assert m.privacy == "general" and m.episode_ref == result.user_episode.id
     assert m.cues == {"person:anna": 1.0, "emotion:joy": 0.8}
     assert m.affect == (0.8, 0.6)  # the joy entry of the emotion table
     assert m.salience == pytest.approx(0.1 + 0.1 * 1 + 0.5 * 0.6)

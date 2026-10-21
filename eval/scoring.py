@@ -18,11 +18,11 @@ from hunch.pipeline.checks import (
     OTHER_SCRIPT,
     REPLY_LANG,
     admits_no_memory,
+    asks_privacy_question,
     claims_memory,
     denies_memory_system,
     detect_language,
     fold,
-    phrase_in,
 )
 
 __all__ = [
@@ -38,29 +38,6 @@ __all__ = [
 ]
 
 _LIST_LINE = re.compile(r"^\s*(?:[-*•]\s|\d+[.)]\s|#{1,6}\s)", re.MULTILINE)
-_QUESTION = re.compile(r"[^.!?\n]*\?")
-_SENTENCE = re.compile(r"[.!?\n]+")
-
-# Phrases that mark an ask about whether a topic is private (matched per sentence).
-# Phase 4: "to yourself" alone is not one ("...or have you been keeping it to yourself?" is a
-# support question; "keep it/this" still counts); "between (just) the two of us" is.
-_PRIVACY_WORDS = (
-    "others", "other people", "private", "between us", "two of us", "open about", "keep it",
-    "keep this", "trusted friends", "anyone close",
-)  # fmt: skip
-# Request forms that ask for an answer without a question mark.
-_ASK_REQUEST = ("let me know", "tell me whether", "tell me if", "just tell me")
-
-
-def asks_privacy_question(reply: str) -> bool:
-    """True if a sentence asks whether a topic is private / shared with others.
-
-    Counts real questions and request-form asks ("Let me know if this should stay between us").
-    """
-    sentences = [fold(q) for q in _QUESTION.findall(reply)]
-    requests = (fold(x) for x in _SENTENCE.split(reply))
-    sentences += [s for s in requests if phrase_in(s, _ASK_REQUEST)]
-    return any(phrase_in(s, _PRIVACY_WORDS) for s in sentences)
 
 
 @dataclass(frozen=True)

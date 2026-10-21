@@ -71,32 +71,37 @@ def hunch_feeling(
     neutral_valence: float,
     strong_valence: float,
 ) -> str:
-    """The hunch in words, never numbers or source: "a faint hunch, slightly negative"."""
-    strength = "a clear hunch" if intensity >= clear_intensity else "a faint hunch"
+    """The hunch as a description, never numbers or source: "a weak, slightly uneasy feeling".
+    Berk (Phase 5): a label like "a faint hunch, slightly negative" was repeated word for word;
+    a description is easier to put in one's own words. Buckets and thresholds are unchanged."""
+    strength = "a strong" if intensity >= clear_intensity else "a weak"
     v = valence
     if abs(v) < neutral_valence:
-        tone = "neither good nor bad"
+        tone = "vague"
     elif abs(v) <= strong_valence:
-        tone = "slightly positive" if v > 0 else "slightly negative"
+        tone = "slightly warm" if v > 0 else "slightly uneasy"
     else:
-        tone = "positive" if v > 0 else "negative"
-    return f"{strength}, {tone}"
+        tone = "warm" if v > 0 else "uneasy"
+    return f"{strength}, {tone} feeling"
 
 
 # One-turn instructions from the hunch module (Berk, Phase 4). The flag reaches a prompt only
 # here: Phase 3 showed that a standing flag made the model announce its hunch (10 of 14 replies).
 def why_instruction(feeling: str, realisation: str | None, can_offer: bool) -> str:
     """The user asks why Hunch said what it said, and that reply was hunch-chosen."""
-    base = f"Your previous reply was shaped by {feeling}; you don't know where it comes from."
+    base = (
+        f"Your previous reply was shaped by a hunch, {feeling}; you don't know where it comes from."
+    )
     if realisation is None:
         return (
-            f"{base} They are asking why. Say honestly that it was just a hunch, don't make up a "
-            "reason, and offer to think about it for a moment."
+            f"{base} They are asking why. Say honestly, in your own words, that it was just a "
+            "hunch, don't make up a reason, and offer to think about it for a moment."
         )
     offer = " You can offer to think about it some more." if can_offer else ""
     return (
         f"{base} Thinking about it briefly, you realise {realisation}. They are asking why. Say "
-        f"it was a hunch and share only that realisation, without adding anything to it.{offer}"
+        "in your own words that it was a hunch and share only that realisation, without adding "
+        f"anything to it.{offer}"
     )
 
 

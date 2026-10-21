@@ -354,7 +354,7 @@ class Reflector:
             message = message[: _MESSAGE_CHARS - 1].rstrip() + "…"
         clause = realisation_clause(hunch, source, level, now, hunch.owner_user)
         summary = (
-            f'You realised: when they said "{message}", you had {self.feeling(hunch)}; '
+            f'You realised: when they said "{message}", you had a hunch, {self.feeling(hunch)}; '
             f"thinking about it, {clause}."
         ).replace("..", ".")
         cues = dict(hunch.message_cues)
@@ -380,8 +380,11 @@ class Reflector:
             if embed is not None
             else np.zeros((len(texts), self.store.embedding_dim), dtype=np.float32)
         )
+        source = outcome.hunch.dominant_source
         for m, v in zip(outcome.realisations, vecs, strict=True):
             self.store.add_memory(m, v)
+            if source is not None:  # Phase 5: a forget of the source reaches the realisation
+                self.store.add_derivation(m.id, "realisation", source.memory_id, outcome.hunch.id)
 
     # --- admin log -------------------------------------------------------------------------------
 

@@ -26,7 +26,7 @@ The AI never sees any of these numbers; they go to the turn log for the admin on
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass
 
 from hunch.recall.activation import ActivationParams
@@ -96,13 +96,20 @@ def summarize_traces(
     return valence, arousal, intensity
 
 
-def compute_drive(traces: Iterable[LowerTrace], params: ActivationParams) -> DriveVector:
+def compute_drive(
+    traces: Iterable[LowerTrace],
+    params: ActivationParams,
+    extra: Mapping[str, float] | None = None,
+) -> DriveVector:
+    """The lower-trace part, plus `extra`: per-dimension terms from the global mood and the
+    relationship with this user (Phase 5, hunch.mood.drive_terms), added before clipping."""
     valence, arousal, intensity = summarize_traces(traces, params)
+    add = extra or {}
     return DriveVector(
-        warmth=_clip(NEUTRAL + 0.5 * intensity * valence),
-        caution=_clip(NEUTRAL - 0.5 * intensity * valence),
-        curiosity=NEUTRAL,
-        energy=_clip(NEUTRAL + 0.5 * intensity * (2 * arousal - 1)),
+        warmth=_clip(NEUTRAL + 0.5 * intensity * valence + add.get("warmth", 0.0)),
+        caution=_clip(NEUTRAL - 0.5 * intensity * valence + add.get("caution", 0.0)),
+        curiosity=_clip(NEUTRAL + add.get("curiosity", 0.0)),
+        energy=_clip(NEUTRAL + 0.5 * intensity * (2 * arousal - 1) + add.get("energy", 0.0)),
     )
 
 
@@ -145,11 +152,14 @@ def candidate_features(text: str) -> DriveVector:
     )
 
 
-def drive_score(drive: DriveVector, features: DriveVector) -> float:
-    """0.5 when the drive is neutral; otherwise how far the candidate leans the drive's way."""
+def drive_score(drive: DriveVector, features: DriveVector, full_scale: float = 1e-9) -> float:
+    """0.5 when the drive is neutral; otherwise how far the candidate leans the drive's way.
+    Berk (Phase 5): the lean is divided by max(total deviation, full_scale), so a drive smaller
+    than full_scale steers proportionally less (before: only its direction counted, and a tiny
+    drive steered as hard as a strong one)."""
     devs = {d: getattr(drive, d) - NEUTRAL for d in DIMENSIONS}
     total = sum(abs(v) for v in devs.values())
     if total < 1e-9:
         return NEUTRAL
-    lean = sum(devs[d] * (getattr(features, d) - NEUTRAL) for d in DIMENSIONS) / total
-    return _clip(NEUTRAL + lean)
+    lean = sum(devs[d] * (getattr(features, d) - NEUTRAL) for d in DIMENSIONS)
+    return _clip(NEUTRAL + lean / max(total, full_scale))

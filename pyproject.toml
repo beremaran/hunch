@@ -53,6 +53,9 @@ markers = [
     "honesty: invented memory, memory denial, honest admissions (area)",
     "evalset: eval/ runner, scoring, the eval set itself (area)",
     "infra: config, LLM kernels (area)",
+    "mood: global mood, relationship state, hostility/apology signals (area)",
+    "privacy: privacy profile, categories, mediation, disclosure gate (area)",
+    "forget: user and admin forget (area)",
 ]
 
 [tool.ruff]

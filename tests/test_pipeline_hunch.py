@@ -219,7 +219,7 @@ def test_all_candidates_failing_the_hunch_check_get_the_fixed_honest_reply(
     llm.candidates = ("Because you seem tired.",) * 3
     r = pipe.turn(session, "Why did you say that?")
     rep = pipe_cfg.replies
-    assert r.reply == f"{rep.hunch_fallback} {rep.hunch_offer}"
+    assert r.reply in {f"{f} {o}" for f in rep.hunch_fallback for o in rep.hunch_offer}
     assert r.log["chosen_by"] == "hunch_fallback"
     assert session.offered_hunch_id is not None  # the fixed reply offers to think, too
 
@@ -236,8 +236,9 @@ def test_level_one_must_pass_the_category_on_unchanged(make, pipe_store, pipe_cf
     rejected = {c["id"]: c["rejected"] for c in r.details["candidates"]}
     assert "hunch_distorted" in rejected["a"] and "hunch_realisation_missing" in rejected["b"]
     rep = pipe_cfg.replies
-    expected = rep.hunch_fallback_realised.format(realisation="it seemed to be about someone")
-    assert r.reply == f"{expected} {rep.hunch_offer}"
+    realised = [f.format(realisation="it seemed to be about someone")
+                for f in rep.hunch_fallback_realised]  # fmt: skip
+    assert r.reply in {f"{f} {o}" for f in realised for o in rep.hunch_offer}
 
 
 def test_think_more_fixed_reply_is_honest_at_level_zero(make, pipe_store, pipe_cfg) -> None:
@@ -246,7 +247,37 @@ def test_think_more_fixed_reply_is_honest_at_level_zero(make, pipe_store, pipe_c
     llm.candidates = ("Because you seem tired.",) * 3
     pipe.after_reply(session, pipe.turn(session, "Why?"))
     r = pipe.turn(session, "Sure, think about it")
-    assert r.reply == pipe_cfg.replies.hunch_think_nothing
+    assert r.reply in pipe_cfg.replies.hunch_think_nothing
+
+
+def test_fixed_reply_variants_vary_and_are_seeded(make, pipe_store, pipe_cfg) -> None:
+    pipe, llm, session, _ = _hunch_session(make, pipe_store)
+    pipe.reflector.rng = _NoDraws()
+    llm.candidates = ("Because you seem tired.",) * 3
+    replies = set()
+    for _ in range(8):
+        r = pipe.turn(session, "Why did you say that?")
+        session.last_hunch_id = r.reflection.hunch.id  # ask about the same hunch again
+        replies.add(r.reply)
+    assert len(replies) > 1
+
+
+def test_a_reason_clause_is_repaired_instead_of_the_fixed_reply(make, pipe_store) -> None:
+    pipe, llm, session, _ = _hunch_session(make, pipe_store)
+    pipe.reflector.rng = _NoDraws()
+    llm.candidates = (
+        "It was just a hunch, because you seem tired. Want me to think about it?",
+        "Because you seem tired.",
+        "That was just a hunch I had about the timing.",
+    )
+    r = pipe.turn(session, "Why did you say that?")
+    cands = {c["id"]: c for c in r.details["candidates"]}
+    assert cands["a"]["text"] == "It was just a hunch. Want me to think about it?"
+    assert cands["a"]["repaired_from"].startswith("It was just a hunch, because")
+    assert cands["c"]["rejected"] == ["hunch_topic"]  # no clause boundary: not repairable
+    assert cands["b"]["rejected"] and "repaired_from" not in cands["b"]
+    assert r.reply == cands["a"]["text"]
+    assert r.log["chosen_by"] != "hunch_fallback"
 
 
 def test_ordinary_turns_are_not_hunch_checked(make, pipe_store) -> None:

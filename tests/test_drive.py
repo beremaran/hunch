@@ -133,3 +133,23 @@ def test_gated_traces_count_by_their_relevance() -> None:
     assert gated_weight(None, 0.45) == 0.0
     gated = LowerTrace(2.0, -0.9, 0.9, 0.9, weight=0.1)
     assert trace_weight(gated, PARAMS) == pytest.approx(0.1)
+
+
+def test_drive_score_counts_the_drive_size_below_full_scale() -> None:
+    # Berk (Phase 5): a drive smaller than full_scale steers proportionally less.
+    from hunch.drive.drive import NEUTRAL
+
+    careful = DriveVector(warmth=0.0, caution=1.0, curiosity=0.5, energy=0.5)
+    big = DriveVector(warmth=0.45, caution=0.55)  # total deviation 0.1
+    tiny = DriveVector(warmth=0.49, caution=0.51)  # total deviation 0.02
+    lean_big = drive_score(big, careful, 0.1) - NEUTRAL
+    lean_tiny = drive_score(tiny, careful, 0.1) - NEUTRAL
+    assert lean_big > 0 and abs(lean_tiny - lean_big * 0.2) < 1e-9
+    # At or above full_scale only the direction counts, as in Phases 3-4.
+    assert drive_score(big, careful, 0.1) == drive_score(big, careful)
+
+
+def test_compute_drive_adds_mood_terms_before_clipping() -> None:
+    params = load_config().activation
+    d = compute_drive([], params, {"warmth": 0.2, "curiosity": -0.1, "caution": 0.9})
+    assert (d.warmth, d.curiosity, d.caution, d.energy) == (0.7, 0.4, 1.0, 0.5)

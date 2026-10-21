@@ -16,6 +16,7 @@ CUE_PROMPT_START = "You extract memory cues"
 JUDGE_PROMPT_START = "You review reply candidates"
 SUMMARY_PROMPT_START = "You keep a running summary"
 SECOND_OPINION_START = "You check one reply"
+DISCLOSURE_START = "You guard the privacy"
 
 
 def _system(messages: list[dict[str, str]]) -> str:
@@ -35,6 +36,7 @@ class FakeLLM:
     judge: Callable[[list[str]], str] | None = None  # candidate ids -> judge reply
     summary: str = "They talked about their week."
     second_opinion: str = "yes"  # the value is broken: keeps the judge's no (Phase 3 behaviour)
+    disclosure: str | Callable[[str], str] = "no"  # disclosure judge (Phase 5): reply -> yes/no
     hit_cap: tuple[bool, ...] = ()
     prompts: list[list[dict[str, str]]] = field(default_factory=list)
     calls: list[str] = field(default_factory=list)
@@ -63,6 +65,11 @@ class FakeLLM:
         if system.startswith(SECOND_OPINION_START):
             self.calls.append("second_opinion")
             return self._result(self.second_opinion)
+        if system.startswith(DISCLOSURE_START):
+            self.calls.append("disclosure")
+            reply = messages[-1]["content"].rsplit("Hunch's reply:\n", 1)[-1]
+            verdict = self.disclosure(reply) if callable(self.disclosure) else self.disclosure
+            return self._result(verdict)
         if system.startswith(SUMMARY_PROMPT_START):
             self.calls.append("summary")
             return self._result(self.summary)

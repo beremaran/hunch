@@ -6,7 +6,8 @@ from the turn's cue extraction:
 - cues -> bonds (their strength in the message);
 - affect = mean of the emotion cues' table entries, or the default affect without emotions;
 - salience = base + per named cue (person, place, song, film, date, phrase) + arousal share.
-Privacy is "private" until the Phase 5 privacy module decides per category.
+Privacy and category come from the Phase 5 privacy module (hunch.privacy.profile); "private"
+by default. A forget request's own memory is encoded suppressed (it names the closed topic).
 """
 
 from __future__ import annotations
@@ -49,12 +50,17 @@ def encode_memory(
     cues: Mapping[str, float],
     created_at: float,
     cfg: EncodingConfig,
+    privacy: str = "private",
+    category: str | None = None,
+    suppressed: bool = False,
 ) -> Memory:
     affect = encode_affect(cues, cfg)
     return Memory(
         id=memory_id,
         owner_user=owner_user,
-        privacy="private",
+        privacy=privacy,  # type: ignore[arg-type]
+        category=category,
+        suppressed=suppressed,
         episode_ref=episode_id,
         summary=memory_summary(text),
         cues={cue: min(max(s, 0.0), 1.0) for cue, s in cues.items()},

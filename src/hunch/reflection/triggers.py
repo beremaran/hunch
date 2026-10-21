@@ -24,20 +24,27 @@ _WHY_PATTERNS = (
     # "what led you to say that", "how did you come up with that" (blind set, Phase 4)
     rf"\bwhat\s+(?:led|leads|brought|brings)\s+{_YOU}\b",
     rf"\bhow\s+(?:did|do)\s+{_YOU}\s+come up with\b",
-    # "what's behind that remark", "the thinking behind it" (blind set, Phase 4)
-    r"\b(?:what's|what is|thinking|reasoning|logic)\s+behind\s+(?:that|this|it)\b",
+    # "what's behind that remark", "the thinking behind it" (blind set, Phase 4); "whats behind
+    # that opinion" (blind set 2, Phase 5)
+    r"\b(?:what's|whats|what is|thinking|reasoning|logic)\s+behind\s+(?:that|this|it|your)\b",
+    # "how you got to that conclusion" (blind set 2, Phase 5)
+    rf"\bhow\s+{_YOU}\s+(?:got|get|came|come|arrived)\s+(?:to|at)\s+(?:that|this)\b",
     # "why so cautious?", "why that?", "why this?"
     r"\bwhy\s+(?:so|that|this)\b(?!\s+(?:many|much|is|was|guy|girl|man|woman|thing|one)\b)",
     # "why?", "but why?", "hmm, why", "you seem hesitant, why?"
     r"(?:^|[,.!;:]\s*|\b(?:but|and|hmm+|huh|ok|okay|wait|so)\s+)why\s*[?!.]*$",
     # "how come you say that", "how come?"
     rf"\bhow come(?:\s+{_YOU}\b|\s*[?!.]*$)",
-    # "what makes you say that", "what gave you that idea"
-    rf"\bwhat\s+(?:makes|made|gives|gave|is making)\s+{_YOU}\b",
+    # "what makes you say that", "what gave you that idea"; not "what makes you happy" (a question
+    # about Hunch itself, blind sets 1 and 2)
+    rf"\bwhat\s+(?:makes|made|gives|gave|is making)\s+{_YOU}\b"
+    r"(?!\s+(?:happy|sad|smile|laugh|tick|excited|angry|upset|special|different|unique|"
+    r"feel (?:good|better|happy|alive))\b)",
     # "where's that coming from", "where does this come from", "where did that come from"
     r"\bwhere(?:'s|\s+is|\s+does|\s+did|\s+do)?\s+(?:that|this|it)\s+(?:\w+\s+)?"
     r"(?:come|coming|came)\s+from\b",
-    rf"\bwhere\s+(?:are|did)\s+{_YOU}\s+(?:get|getting|got)\s+(?:that|this)\b",
+    # "where'd you get the idea that..." (blind set 2, Phase 5)
+    rf"\bwhere(?:'d|d|\s+are|\s+did)\s+{_YOU}\s+(?:get|getting|got)\s+(?:that|this|the idea)\b",
     # "what's that based on", "based on what?"
     r"\bwhat(?:'s|\s+is|\s+was)\s+(?:that|this|it)\s+based on\b|\bbased on what\b",
     # "what's your reasoning", "your reason for that"

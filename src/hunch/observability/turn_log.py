@@ -4,7 +4,7 @@ turns.jsonl has exactly the fields of the design.md example, in that order. Ever
 admin needs to follow a turn (candidate texts, filter reasons, judge output, per-stage latency,
 peak VRAM) goes to turn_details.jsonl under the same turn_id. Logs are never fed back to the AI
 (invariant 7): nothing in the pipeline reads these files. reflections.jsonl (Phase 4) is the
-reflection log, written the same way.
+reflection log and disclosures.jsonl (Phase 5) the disclosure log, written the same way.
 
 The writer only appends to .jsonl files outside core/ (tests/test_no_core_writes.py).
 """
@@ -23,6 +23,7 @@ TURN_LOG_FIELDS: tuple[str, ...] = (
 TURNS_FILE = "turns.jsonl"
 DETAILS_FILE = "turn_details.jsonl"
 REFLECTIONS_FILE = "reflections.jsonl"
+DISCLOSURES_FILE = "disclosures.jsonl"
 
 
 class TurnLogError(RuntimeError):
@@ -71,3 +72,13 @@ class ReflectionLog(_JsonlLog):
         if "reflection_id" not in record or "hunch_id" not in record:
             raise TurnLogError("reflection record needs reflection_id and hunch_id")
         self._append(REFLECTIONS_FILE, record)
+
+
+class DisclosureLog(_JsonlLog):
+    """design.md "İfşa logu" (Phase 5): every candidate the disclosure gate blocked, why (rule or
+    judge), which other users' memories it touched, and the judge's raw answer. Admin only."""
+
+    def write(self, record: dict[str, Any]) -> None:
+        if "turn_id" not in record or "candidate" not in record:
+            raise TurnLogError("disclosure record needs turn_id and candidate")
+        self._append(DISCLOSURES_FILE, record)

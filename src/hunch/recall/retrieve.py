@@ -16,15 +16,20 @@
 4. Memories above tau_upper that did not fit act as lower traces ("capped"); memories between
    tau_lower and tau_upper are lower traces. Only the upper ones count as recalled: they get
    reconsolidated (an access is logged and their affect drifts toward the mood).
+5. Mediation (Berk, Phase 5): other users' private memories the caller found (shared cue or close
+   by embedding) are scored too, but never get above the lower layer, like a suppressed memory:
+   they shape the drive and nothing else. A suppressed memory of this user that would otherwise
+   have entered reasoning is flagged `closed`, so the pipeline can say "we closed that one".
 """
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 import numpy as np
 
+from hunch.memory.schema import Memory
 from hunch.memory.store import MemoryStore
 from hunch.recall.activation import ActivationParams, activation, layer
 from hunch.recall.involuntary import ScoredMemory, SessionRecallState, is_involuntary
@@ -40,6 +45,8 @@ class Activated:
     capped: bool = False  # above tau_upper but did not fit into the per-turn cap
     gated: bool = False  # above tau_upper but not relevant to the message (relevance gate)
     similarity: float | None = None  # cosine to the message, if retrieved by embedding
+    mediated: bool = False  # another user's private memory: never above the lower layer
+    closed: bool = False  # suppressed by this user, but relevant and above tau_upper
 
     @property
     def id(self) -> str:
@@ -74,6 +81,7 @@ def recall(
     rng: np.random.Generator,
     conversation_id: str | None = None,
     min_similarity: float = -1.0,
+    mediated: Sequence[tuple[Memory, float | None]] = (),
 ) -> RecallResult:
     own = store.memory_ids_from_conversation(conversation_id) if conversation_id else set()
     deliberate: dict[str, object] = {}
@@ -87,6 +95,13 @@ def recall(
     for m in store.with_cues(message_cues, visible_to=user):
         if m.id not in own:
             candidates.setdefault(m.id, m)
+    others: set[str] = set()
+    for m, sim in mediated:
+        if m.owner_user != user and m.privacy == "private" and m.id not in candidates:
+            candidates[m.id] = m
+            others.add(m.id)
+            if sim is not None:
+                similarity[m.id] = sim
 
     fan = store.cue_fan
     scored = [
@@ -101,15 +116,26 @@ def recall(
     out: list[Activated] = []
     for s in scored:
         mid = s.memory.id
-        base_layer = layer(s.activation.total, params, suppressed=s.memory.suppressed)
+        mediated_here = mid in others
+        held = s.memory.suppressed or mediated_here
+        base_layer = layer(s.activation.total, params, suppressed=held)
         is_deliberate = mid in deliberate_ids
         sim = similarity.get(mid)
-        if base_layer != "upper":
-            out.append(Activated(s, base_layer, is_deliberate, similarity=sim))
-            continue
         relevant = bool(set(message_cues) & set(s.memory.cues)) or (
             sim is not None and sim >= min_similarity
         )
+        if base_layer != "upper":
+            closed = (
+                s.memory.suppressed
+                and not mediated_here
+                and relevant
+                and layer(s.activation.total, params) == "upper"
+            )
+            out.append(
+                Activated(s, base_layer, is_deliberate, similarity=sim, mediated=mediated_here,
+                          closed=closed)
+            )  # fmt: skip
+            continue
         if not relevant:
             out.append(Activated(s, "lower", is_deliberate, gated=True, similarity=sim))
             continue

@@ -35,6 +35,11 @@ AREAS: dict[str, str] = {
     "test_eval_runner.py": "evalset", "test_eval_scoring.py": "evalset",
     "test_eval_set.py": "evalset",
     "test_config.py": "infra", "test_llm_kernels.py": "infra", "test_test_levels.py": "infra",
+    "test_mood.py": "mood", "test_mood_signals.py": "mood",
+    "test_privacy_categories.py": "privacy", "test_privacy_answers.py": "privacy",
+    "test_pipeline_privacy.py": "privacy", "test_cross_user_privacy.py": "privacy",
+    "test_forget_requests.py": "forget", "test_forget.py": "forget",
+    "test_forget_golden.py": "forget",
 }  # fmt: skip
 
 
@@ -74,8 +79,16 @@ def core_values_file(tmp_path: Path) -> Path:
 @pytest.fixture
 def pipe_cfg():
     c = load_config()
-    # No recall noise in these tests: layers are decided by the formula alone.
-    return dataclasses.replace(c, activation=dataclasses.replace(c.activation, noise_s=0.0))
+    # No recall noise in these tests: layers are decided by the formula alone. Sensitive
+    # categories by keyword only: the 16-dim test embedders give arbitrary similarities to the
+    # category prototypes (the embedding path has its own tests and blind measurement).
+    return dataclasses.replace(
+        c,
+        activation=dataclasses.replace(c.activation, noise_s=0.0),
+        privacy=dataclasses.replace(
+            c.privacy, prototype_min_similarity=1.0, question_min_similarity=1.0
+        ),
+    )
 
 
 @pytest.fixture

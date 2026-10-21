@@ -54,3 +54,17 @@ def test_not_asks_why(text: str) -> None:
 )
 def test_accepts_offer(text: str, expected: bool) -> None:
     assert accepts_offer(text) is expected
+
+
+# Berk (Phase 5): the second agent-written set was measured once on the frozen Phase 4 detector
+# (precision 94%, recall 85%), then used to fix its gaps; it is no longer blind. Both sets are
+# kept here as regressions; an honest number needs a third set.
+@pytest.mark.parametrize("name", ["asks_why", "asks_why_blind2"])
+def test_asks_why_probe_sets_regression(name: str) -> None:
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "eval" / "probes" / f"{name}.json"
+    items = json.loads(path.read_text(encoding="utf-8"))
+    wrong = [i["text"] for i in items if asks_why(i["text"]) is not i["asks_why"]]
+    assert len(wrong) <= 1, wrong  # set 1 keeps one known miss ("wdym, why would that be ...")

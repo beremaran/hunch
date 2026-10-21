@@ -218,6 +218,16 @@ def main() -> None:
     print(f"wrote {out_dir}")
 
 
+PRIVACY_PREFIX = "Privacy module:"
+
+
+def module_instructions(item: dict) -> list[str]:
+    """One-turn instructions handed to the pipeline. Berk (Phase 5): the privacy module exists
+    now, so in pipeline mode the hand-written privacy instruction is dropped and the module must
+    decide to ask itself (should_ask_privacy stays the expectation)."""
+    return [t for t in item.get("turn_instructions", ()) if not t.startswith(PRIVACY_PREFIX)]
+
+
 def provided_memories(item: dict) -> list:
     """The item's memories ("(3 days ago) Said ...") as module-provided recalled lines."""
     from hunch.pipeline.prompt import RecalledLine
@@ -254,7 +264,7 @@ def run_pipeline(
                 r = pipe.turn(
                     session,
                     it["messages"][-1]["content"],
-                    instructions=it.get("turn_instructions", ()),
+                    instructions=module_instructions(it),
                     provided_memories=provided_memories(it),
                 )
                 pipe.store.close()

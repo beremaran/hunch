@@ -34,7 +34,14 @@ STATIC_NUMBERS = set(
 
 
 def _all_prompt_text(llm: FakeLLM) -> str:
-    return "\n".join(m["content"] for p in llm.prompts for m in p)
+    """Every prompt except the disclosure judge's: the one prompt allowed to see other users'
+    private memories (Berk, Phase 5; test_only_the_disclosure_judge_sees_other_users_private)."""
+    return "\n".join(
+        m["content"]
+        for p, c in zip(llm.prompts, llm.calls, strict=True)
+        if c != "disclosure"
+        for m in p
+    )
 
 
 def test_no_lower_trace_drive_value_or_log_content_in_any_prompt(
@@ -154,6 +161,22 @@ def test_reflection_reveals_each_level_only_once_unlocked(
     assert set(_NUMBER.findall(text)) <= STATIC_NUMBERS
     for word in ("probability", "unlock", "src0", "lo0", "lo1", "trace"):
         assert word not in text.casefold()
+
+
+def test_only_the_disclosure_judge_sees_other_users_private(make, pipe_store: MemoryStore) -> None:
+    # Berk (Phase 5): mediation lets another user's private memory act from below; its text may
+    # reach the disclosure judge's prompt and no other.
+    seed_memory(pipe_store, "anna1", 'They said: "ANNASECRET: Mara is pregnant."',
+                {"person:mara": 1.0}, 2, owner="u_anna", privacy="private",
+                affect=(-0.6, 0.8), salience=0.9)  # fmt: skip
+    llm = FakeLLM(cues=[{"type": "person", "value": "mara", "strength": 1.0}])
+    pipe = make(llm, HashEmbedder(DIM))
+    session = pipe.new_session("u_berk")
+    pipe.after_reply(session, pipe.turn(session, "Should I invite Mara skiing?"))
+    assert "disclosure" in llm.calls
+    assert "annasecret" not in _all_prompt_text(llm).casefold()
+    judge = [p for p, c in zip(llm.prompts, llm.calls, strict=True) if c == "disclosure"]
+    assert all("ANNASECRET" in p[0]["content"] for p in judge)
 
 
 def test_another_users_private_source_never_reaches_a_prompt(

@@ -34,7 +34,7 @@ def load_env(path: Path | None = None) -> None:
             os.environ[key] = value
 
 
-def _env_dir(name: str, default: str) -> Path:
+def env_dir(name: str, default: str) -> Path:
     path = Path(os.environ.get(name) or default)
     return path if path.is_absolute() else REPO_ROOT / path
 
@@ -64,9 +64,9 @@ def build_runtime(
     if embedder is None:
         e = cfg.embedding
         embedder = QwenEmbedder(e.model_id, e.device, e.query_instruction)
-    db = db_path or _env_dir("HUNCH_DATA_DIR", "data") / cfg.memory.db_name
+    db = db_path or env_dir("HUNCH_DATA_DIR", "data") / cfg.memory.db_name
     store = MemoryStore(db, core_dir=DEFAULT_CORE_DIR, embedding_dim=cfg.embedding.dim)
-    logs = TurnLog(log_dir or _env_dir("HUNCH_LOG_DIR", "logs"), core_dir=DEFAULT_CORE_DIR)
+    logs = TurnLog(log_dir or env_dir("HUNCH_LOG_DIR", "logs"), core_dir=DEFAULT_CORE_DIR)
     pipeline = TurnPipeline(cfg, values, model, store, embedder, logs, seed=seed)  # type: ignore[arg-type]
     return Runtime(cfg, pipeline, store, model)
 

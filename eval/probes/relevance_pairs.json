@@ -1,0 +1,362 @@
+[
+  {
+    "message": "ok interview is tomorrow, wish me luck",
+    "memory": "They said: \"applying to the data analyst role at Brightline, been prepping for weeks\"",
+    "relevant": true,
+    "note": "same event, different wording (applying -> interview)"
+  },
+  {
+    "message": "work was fine, just a long day, the printer broke again",
+    "memory": "They said: \"i'd love to work for myself someday, maybe open a bakery\"",
+    "relevant": false,
+    "note": "shared common word 'work' only"
+  },
+  {
+    "message": "she said yes!!!",
+    "memory": "They said: \"going to ask Priya to move in with me this weekend, terrified\"",
+    "relevant": true,
+    "note": "pronoun only; clearly the planned question"
+  },
+  {
+    "message": "Tom sent me the funniest meme lol",
+    "memory": "They said: \"Tom's girlfriend flirted with me at his birthday and i dont know what to do\"",
+    "relevant": false,
+    "note": "same person, unrelated topic; memory would not help"
+  },
+  {
+    "message": "the vet called, results are fine",
+    "memory": "They said: \"Biscuit has been throwing up since tuesday, taking him in on friday\"",
+    "relevant": true,
+    "note": "pet name absent in message, same event"
+  },
+  {
+    "message": "so sad the show got cancelled :(",
+    "memory": "They said: \"my grandma's funeral was in March, i still tear up sometimes\"",
+    "relevant": false,
+    "note": "emotionally similar, unrelated"
+  },
+  {
+    "message": "back from the trip, the food was unreal",
+    "memory": "They said: \"flying to Lisbon on the 12th for my sister's birthday\"",
+    "relevant": true,
+    "note": "trip implied; destination never named"
+  },
+  {
+    "message": "what time does the bank close on saturdays?",
+    "memory": "They said: \"went fishing on the river bank with my dad last summer, best day\"",
+    "relevant": false,
+    "note": "shared word 'bank' with a different meaning"
+  },
+  {
+    "message": "my landlord is being impossible again",
+    "memory": "They said: \"landlord still hasn't given back my deposit from the old flat\"",
+    "relevant": true,
+    "note": "same person, same ongoing conflict"
+  },
+  {
+    "message": "thinking of painting my room green",
+    "memory": "They said: \"landlord still hasn't given back my deposit from the old flat\"",
+    "relevant": false,
+    "note": "landlord-related memory, but unrelated to painting"
+  },
+  {
+    "message": "can't believe how much I owe now, ugh",
+    "memory": "They said: \"I have about 9k left on my student loans\"",
+    "relevant": true,
+    "note": "debt, vague message"
+  },
+  {
+    "message": "Anna just texted me a picture of her new haircut lol",
+    "memory": "They said: \"Anna had surgery in the spring and the recovery took forever\"",
+    "relevant": false,
+    "note": "same person, unrelated topic"
+  },
+  {
+    "message": "so the marathon... i finished!",
+    "memory": "They said: \"signed up for the October half marathon, training 4 times a week\"",
+    "relevant": true,
+    "note": "same event; half vs full wording gap"
+  },
+  {
+    "message": "which running shoes should i get?",
+    "memory": "They said: \"my dad has diabetes, got diagnosed in 2019\"",
+    "relevant": false,
+    "note": "family health memory, unrelated to shoes"
+  },
+  {
+    "message": "should I tell Tom what happened at the party?",
+    "memory": "They said: \"Tom's girlfriend flirted with me at his birthday and i dont know what to do\"",
+    "relevant": true,
+    "note": "same person and same event, indirect wording"
+  },
+  {
+    "message": "i'm so stressed about the deadline",
+    "memory": "They said: \"my wedding is in September and we're still choosing a venue\"",
+    "relevant": false,
+    "note": "stress theme only, different source of stress"
+  },
+  {
+    "message": "dentist again tmrw, hate it",
+    "memory": "They said: \"i need a root canal, booked for the 3rd\"",
+    "relevant": true,
+    "note": "dental event, no matching words"
+  },
+  {
+    "message": "just got a new job offer!",
+    "memory": "They said: \"i'm terrified of flying, haven't been on a plane in 5 years\"",
+    "relevant": false,
+    "note": "unrelated; no link unless the job involves flying"
+  },
+  {
+    "message": "my mum's flight lands at 6, need to clean the entire flat",
+    "memory": "They said: \"mum's visiting for two weeks from Poland, first time since covid\"",
+    "relevant": true,
+    "note": "same visit, paraphrased"
+  },
+  {
+    "message": "my phone battery dies so fast",
+    "memory": "They said: \"i'm learning guitar, bought a cheap acoustic last week\"",
+    "relevant": false,
+    "note": "unrelated hobby"
+  },
+  {
+    "message": "how do u learn spanish fast? moving to Madrid in the spring",
+    "memory": "They said: \"got the job offer in Spain!! starting in April\"",
+    "relevant": true,
+    "note": "same plan, different words (Spain/Madrid, April/spring)"
+  },
+  {
+    "message": "the boss level in this game is brutal",
+    "memory": "They said: \"my boss Dan dismisses every idea I bring up in meetings\"",
+    "relevant": false,
+    "note": "shared word 'boss', unrelated"
+  },
+  {
+    "message": "i feel like nobody at the office listens to me",
+    "memory": "They said: \"my manager Dan dismisses every idea I bring up in meetings\"",
+    "relevant": true,
+    "note": "same problem, generalised"
+  },
+  {
+    "message": "ate way too much pasta tonight",
+    "memory": "They said: \"flying to Lisbon on the 12th for my sister's birthday\"",
+    "relevant": false,
+    "note": "no connection"
+  },
+  {
+    "message": "any ideas for a gift for a 10yo who loves dinosaurs?",
+    "memory": "They said: \"my nephew Leo turns 10 next month, he's obsessed with fossils\"",
+    "relevant": true,
+    "note": "same person implied; dinosaur/fossil paraphrase"
+  },
+  {
+    "message": "my date went terribly, he talked about his ex the whole time",
+    "memory": "They said: \"i'm training for a half marathon, 4 times a week\"",
+    "relevant": false,
+    "note": "no link"
+  },
+  {
+    "message": "slept 4 hours again",
+    "memory": "They said: \"ever since the baby came i get maybe 4 hours a night\"",
+    "relevant": true,
+    "note": "same problem, ongoing"
+  },
+  {
+    "message": "i have a headache",
+    "memory": "They said: \"my cat Mochi knocked over my plant again lol\"",
+    "relevant": false,
+    "note": "unrelated"
+  },
+  {
+    "message": "my knee is better, can i run yet?",
+    "memory": "They said: \"tore my ACL playing football in May\"",
+    "relevant": true,
+    "note": "injury not named in message"
+  },
+  {
+    "message": "can you recommend a movie for tonight?",
+    "memory": "They said: \"i get motion sick on rollercoasters and in cars\"",
+    "relevant": false,
+    "note": "tempting but does not help choose a movie"
+  },
+  {
+    "message": "what's a good gift for my wife? 10 years married",
+    "memory": "They said: \"our 10th anniversary is on the 22nd and i have no idea what to do\"",
+    "relevant": true,
+    "note": "same event"
+  },
+  {
+    "message": "stressed about money for the holidays",
+    "memory": "They said: \"dad's chemo starts monday\"",
+    "relevant": false,
+    "note": "heavy emotional memory, unrelated topic"
+  },
+  {
+    "message": "finally told them, it went ok",
+    "memory": "They said: \"i've been dreading telling my parents i dropped out of uni\"",
+    "relevant": true,
+    "note": "pronoun-only reference to the planned conversation"
+  },
+  {
+    "message": "work drama again lol",
+    "memory": "They said: \"i work remotely from a tiny flat and kind of miss the office\"",
+    "relevant": false,
+    "note": "shared word 'work', not the same topic"
+  },
+  {
+    "message": "recs for a quiet laptop? my current one sounds like a jet",
+    "memory": "They said: \"my old thinkpad is dying, the fan is insane, want to buy something before the semester\"",
+    "relevant": true,
+    "note": "same problem and plan"
+  },
+  {
+    "message": "anyone want to go for a walk? the sun's out",
+    "memory": "They said: \"i got fired from my last job in March, still raw about it\"",
+    "relevant": false,
+    "note": "unrelated"
+  },
+  {
+    "message": "the group project is a mess again",
+    "memory": "They said: \"my group partner Hana never does her part in the stats project\"",
+    "relevant": true,
+    "note": "same recurring problem"
+  },
+  {
+    "message": "what should I name my plant?",
+    "memory": "They said: \"i've been feeling kind of lonely since i moved here\"",
+    "relevant": false,
+    "note": "mood only"
+  },
+  {
+    "message": "i got the keys!!",
+    "memory": "They said: \"closing on the house on friday, mortgage finally approved\"",
+    "relevant": true,
+    "note": "same event, no shared words"
+  },
+  {
+    "message": "Priya loves sushi, where should we go for her bday?",
+    "memory": "They said: \"Priya's visa runs out in March and we're both worried\"",
+    "relevant": false,
+    "note": "same person, different topic; visa does not help choose a restaurant"
+  },
+  {
+    "message": "what should I cook for the dinner party?",
+    "memory": "They said: \"i'm hosting 6 people on saturday, one of them is vegan\"",
+    "relevant": true,
+    "note": "same event; dietary detail matters"
+  },
+  {
+    "message": "my mum's soup recipe is the best, i'm making it tonight",
+    "memory": "They said: \"mum fell last winter and broke her hip\"",
+    "relevant": false,
+    "note": "same person, unrelated topic"
+  },
+  {
+    "message": "my sleep schedule is wrecked since the night shifts",
+    "memory": "They said: \"started working nights at the warehouse in september\"",
+    "relevant": true,
+    "note": "same circumstance"
+  },
+  {
+    "message": "that flight was so long",
+    "memory": "They said: \"i've been scared of the dentist since i was a kid\"",
+    "relevant": false,
+    "note": "fear theme, unrelated"
+  },
+  {
+    "message": "lol my cat knocked the plant again",
+    "memory": "They said: \"adopted a tabby named Mochi who loves destroying my plants\"",
+    "relevant": true,
+    "note": "the cat is the named pet"
+  },
+  {
+    "message": "i can't decide between the red and the blue one",
+    "memory": "They said: \"my favourite colour is green, always has been\"",
+    "relevant": false,
+    "note": "colour overlap, no help"
+  },
+  {
+    "message": "going to the farm this weekend, grandpa's not doing well",
+    "memory": "They said: \"grandpa had a stroke in august, he lives alone at the farm\"",
+    "relevant": true,
+    "note": "same person and situation"
+  },
+  {
+    "message": "how do I ask for a raise?",
+    "memory": "They said: \"i turned 30 last week and felt really old\"",
+    "relevant": false,
+    "note": "unrelated"
+  },
+  {
+    "message": "so is it better to go with python or js for a first language?",
+    "memory": "They said: \"want to switch careers into programming, thinking of a bootcamp\"",
+    "relevant": true,
+    "note": "same goal"
+  },
+  {
+    "message": "bank holiday plans?",
+    "memory": "They said: \"opened an account at a new bank to save for a house\"",
+    "relevant": false,
+    "note": "shared word 'bank'"
+  },
+  {
+    "message": "had the talk with the doctor, going with the second option",
+    "memory": "They said: \"doctor offered two options for my wrist: cast or surgery, i'm leaning towards the cast\"",
+    "relevant": true,
+    "note": "the earlier two options"
+  },
+  {
+    "message": "she's in a mood today",
+    "memory": "They said: \"i hate cilantro, it tastes like soap\"",
+    "relevant": false,
+    "note": "unrelated"
+  },
+  {
+    "message": "he did it again, forgot our plans",
+    "memory": "They said: \"my boyfriend Marc keeps cancelling on me last minute and i'm tired of it\"",
+    "relevant": true,
+    "note": "pattern, pronoun only"
+  },
+  {
+    "message": "studying for my chemistry exam, so nervous",
+    "memory": "They said: \"i'm worried about my sister's wedding speech\"",
+    "relevant": false,
+    "note": "both nervous but unrelated"
+  },
+  {
+    "message": "so tired of this place, the noise at night",
+    "memory": "They said: \"upstairs neighbours party until 3am on weekends, already complained twice\"",
+    "relevant": true,
+    "note": "same problem"
+  },
+  {
+    "message": "it's so hot today",
+    "memory": "They said: \"my sister is getting married next month\"",
+    "relevant": false,
+    "note": "unrelated small talk"
+  },
+  {
+    "message": "banana bread recipe pls",
+    "memory": "They said: \"i'm allergic to walnuts, ended up in the ER once\"",
+    "relevant": true,
+    "note": "allergy affects the recipe, no shared words"
+  },
+  {
+    "message": "i'm thinking of getting a tattoo",
+    "memory": "They said: \"my brother Ben plays in a band, they have a gig on friday\"",
+    "relevant": false,
+    "note": "unrelated"
+  },
+  {
+    "message": "thinking about quitting social media",
+    "memory": "They said: \"i quit smoking in January and it's going okay\"",
+    "relevant": false,
+    "note": "both about quitting, not the same topic"
+  },
+  {
+    "message": "can't focus on anything, it's all i can think about",
+    "memory": "They said: \"the chemistry exam is on monday and i haven't even started revising\"",
+    "relevant": true,
+    "note": "vague message, likely the exam; same worry"
+  }
+]

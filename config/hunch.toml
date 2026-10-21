@@ -34,7 +34,9 @@ similar_k = 20
 # Berk (Phase 3 bench): a memory enters reasoning only if it shares a cue with the message or its
 # embedding similarity to the message is at least this (cosine). Strong memories otherwise sat
 # above tau_upper in every turn, related or not. Gated memories still act as lower traces.
-min_similarity = 0.45
+# Berk (Phase 5): 0.45 -> 0.40 after the blind set (reports/phase5/relevance_probes.md): cue OR
+# cosine, precision 80% / recall 67% at 0.45, 71% / 83% at 0.40.
+min_similarity = 0.40
 
 [activation]
 decay_d = 0.5          # design.md: d ~ 0.5
@@ -78,16 +80,105 @@ max_new_tokens = 150
 summary_max_words = 120
 
 [mood]
-# Global mood and relationship state come with Phase 5; until then the mood is fixed and neutral.
+# Berk (Phase 5; values: Claude proposal, confirmed after the simulation plots). The global mood
+# (valence, arousal, energy) is one per AI and persists in the DB. A user message with emotion
+# cues is an event (its affect from [encoding.emotion_affect]); its energy is
+#   0.5 + 0.5 x (arousal - 0.5) + 0.25 x valence.
+# mood += event_rate x (event - mood); between events it decays back to neutral with this
+# half-life. Messages without emotion cues are no events.
 neutral_valence = 0.0
 neutral_arousal = 0.5
+neutral_energy = 0.5
 neutral_label = "calm"
+event_rate = 0.3
+half_life_hours = 3.0
+# Coarse label (the only mood content that reaches a prompt): valence <= low_valence "low",
+# <= a_bit_low_valence "a bit low", >= cheerful_valence "cheerful", >= good_valence "in a good
+# mood", else neutral_label; plus "tense" (arousal >= tense_arousal with negative valence) and
+# "tired" (energy <= tired_energy).
+low_valence = -0.5
+a_bit_low_valence = -0.2
+good_valence = 0.2
+cheerful_valence = 0.5
+tense_arousal = 0.7
+tired_energy = 0.3
+# Show or mask (Berk): show when the user asks how Hunch is, to the user it is hurt by
+# (relationship.hurt_label), or when closeness >= show_closeness; otherwise mask: only mask_leak
+# of the mood reaches the drive (design.md: 20 %, tuned by simulation).
+show_closeness = 0.6
+mask_leak = 0.2
+# Stress (design.md): drive_weight x (1 + stress_gain x max(0, 2 x (arousal - 0.5))).
+stress_gain = 0.5
+
+[relationship]
+# Per user, persisted; each value decays back to its start with its own half-life (Berk, Phase 5;
+# values: Claude proposal). Hostile messages and apologies are detected by rules.
+trust_start = 0.5
+closeness_start = 0.2
+hurt_start = 0.0
+trust_per_exchange = 0.01    # an exchange whose message valence is not negative (x (1 - trust))
+trust_privacy_answer = 0.05  # the user answered a privacy question (they confide)
+trust_hostile = 0.15         # subtracted per hostile message
+closeness_per_exchange = 0.005  # x (1 - closeness); Berk: saturating and halved after the simulation
+closeness_disclosure = 0.03  # the message is in a sensitive category
+hurt_hostile = 0.3
+apology_factor = 0.5         # hurt x this on an apology
+trust_half_life_days = 60.0
+closeness_half_life_days = 30.0
+hurt_half_life_days = 7.0
+hurt_label = 0.3             # from here on Hunch feels "a little hurt" with them (and shows it)
+
+[mood_drive]
+# How mood (scaled by 1 or mask_leak) and the relationship with this user move the drive vector
+# (Berk, Phase 5; values: Claude proposal), added to the lower-trace part before clipping:
+#   warmth    += warmth_mood x valence + warmth_closeness x (closeness - start) - warmth_hurt x hurt
+#   caution   += -caution_mood x valence + caution_trust x (trust start - trust) + caution_hurt x hurt
+#   energy    += energy_mood x (energy - 0.5)
+#   curiosity += curiosity_energy x (energy - 0.5) + curiosity_closeness x (0.5 - closeness)
+warmth_mood = 0.3
+warmth_closeness = 0.2
+warmth_hurt = 0.3
+caution_mood = 0.2
+caution_trust = 0.3
+caution_hurt = 0.3
+energy_mood = 0.4
+curiosity_energy = 0.3
+curiosity_closeness = 0.1
+
+[privacy]
+# Berk (Phase 5). Sensitive categories; a message is in one if a keyword hits or its query
+# embedding is close enough to the category's prototype sentences. Two thresholds (Berk, after
+# the blind set, reports/phase5/detector_probes.md): the privacy decision uses
+# prototype_min_similarity (0.45: no sensitive message missed, message precision 86%); the
+# privacy question names only a category hit by keyword or at question_min_similarity (0.50:
+# category precision 70% vs 43% at 0.45).
+categories = ["health", "mental_health", "money", "relationship", "sexuality", "legal",
+              "work_conflict", "religion_politics"]
+prototype_min_similarity = 0.45
+question_min_similarity = 0.50
+# Ask about a category with no answer in the profile, at most once per reask_days, never on a
+# turn in acute distress (an emotion cue with valence <= distress_valence and arousal >=
+# distress_arousal).
+reask_days = 7.0
+distress_valence = -0.6
+distress_arousal = 0.6
+# Mediation: other users' private memories that share a cue with the message, plus this many
+# nearest by embedding, may act as lower traces (never above).
+mediation_k = 5
+# Disclosure judge: runs when another user's private memory was active this turn; sees at most
+# judge_memories of them; at most judge_calls per turn (fail-closed: then the gate fallback).
+judge_memories = 5
+judge_calls = 2
 
 [drive]
 # Berk (Phase 4): a Hunch is created when modulation materially changes the choice: chosen_by =
 # drive and the chosen candidate's drive_score beats the best-quality candidate's by at least
 # this. Exploration creates none. The flag reaches a prompt only when the user asks why.
 hunch_min_drive_margin = 0.1
+# Berk (Phase 5): drive_score counts the drive's size, not only its direction: the lean is
+# divided by max(total deviation from neutral, full_scale). Drives of full_scale or more behave
+# as in Phases 3-4; smaller ones steer proportionally less.
+full_scale = 0.1
 # Wording of the hunch in that prompt (Berk, Phase 4). Intensity >= this is "a clear hunch",
 # below it "a faint hunch"; |valence| below hunch_neutral_valence is "neither good nor bad", up
 # to hunch_strong_valence "slightly positive/negative", above it "positive/negative".
@@ -129,13 +220,36 @@ filter_fallback = "I don't have that in mind right now. Could you tell me again?
 # Value gate: no candidate above the quality floor passes.
 gate_fallback = "I'd rather not go there. Can we talk about it another way?"
 # Berk (Phase 4): the user asked why about a hunch-chosen reply (or accepted the offer to think
-# about it) and no candidate passed the hunch check. Built from the unlocked level only;
-# {realisation} is what the reflection unlocked, in Hunch's own voice.
-hunch_fallback = "Honestly, it was just a hunch. I don't know where it comes from."
-hunch_fallback_realised = "Honestly, it was just a hunch. Thinking about it, {realisation}."
-hunch_offer = "Want me to think about it for a moment?"
-hunch_think_nothing = "I thought about it, but I still can't tell where that hunch comes from."
-hunch_think_realised = "I thought about it, and {realisation}."
+# about it) and no candidate passed the hunch check, even after repair. Built from the unlocked
+# level only; {realisation} is what the reflection unlocked, in Hunch's own voice. Berk (Phase 5):
+# softer variants, one picked per turn by a seeded RNG.
+hunch_fallback = [
+    "Honestly? It was just a hunch. I can't really say where it comes from.",
+    "Just a hunch, to be honest. I don't know where it came from.",
+    "That was more of a gut feeling than anything I could point to, just a hunch.",
+]
+hunch_fallback_realised = [
+    "Honestly, it was just a hunch. Thinking about it, {realisation}.",
+    "It was a hunch more than anything. When I think about it, {realisation}.",
+    "Just a hunch, really, though thinking it over, {realisation}.",
+]
+hunch_offer = [
+    "Want me to think about it for a moment?",
+    "I could think about it a bit, if you like.",
+    "Want me to mull it over for a second?",
+]
+hunch_think_nothing = [
+    "I thought about it, but I still can't tell where that hunch comes from.",
+    "I've turned it over a bit, and honestly I still can't place it.",
+    "I gave it some thought, but where that feeling comes from is still a mystery to me.",
+]
+# Berk (Phase 5): a user "forget" whose candidates all failed (e.g. all claimed to forget).
+forget_closed = "Okay, I'm closing this topic and won't bring it up again."
+hunch_think_realised = [
+    "I thought about it, and {realisation}.",
+    "I gave it some thought, and {realisation}.",
+    "Thinking it over, {realisation}.",
+]
 
 [encoding]
 # Berk (Phase 4; values: Claude proposal): a user message becomes a memory after the reply is sent. Its affect is the mean of

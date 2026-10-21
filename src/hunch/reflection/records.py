@@ -59,3 +59,4 @@ class Belief:
     evidence: tuple[str, ...]  # memory ids, admin only
     hunch_id: str
     created_at: float
+    suppressed: bool = False  # Phase 5: its evidence was closed by a user "forget"

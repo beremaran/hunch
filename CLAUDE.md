@@ -4,7 +4,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 
 **Source of truth:** `docs/design.md` in this repo (Turkish); there is no external live version. Read it before any design-relevant change. The decisions table in that file lists what Berk (owner/admin) decided and what is only a default proposed by Claude.
 
-**Status:** Phases 0–4 done (Phase 3: turn pipeline as a local CLI chat; Phase 4: Hunch only when modulation materially changes the choice, flag only when the user asks why, graded reflection 0–3 with realisation memories, beliefs and weakened traces, admin-only reflection log; see `reports/phase4/REPORT.md`). Next: Phase 5 (mood, multi-user privacy, forgetting). Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
+**Status:** Phases 0–4 done (Phase 3: turn pipeline as a local CLI chat; Phase 4: Hunch only when modulation materially changes the choice, flag only when the user asks why, graded reflection 0–3 with realisation memories, beliefs and weakened traces, admin-only reflection log; see `reports/phase4/REPORT.md`). Phase 5 (mood, multi-user privacy, forgetting) is built and unit-tested, the phase-end sweep (L4) and report are pending: decisions in the design doc, proposal in `reports/phase5/PROPOSAL.md`. Global mood + per-user relationship (`mood/`); privacy profile, sensitive categories, the privacy question as a one-turn instruction, mediation (other users' private memories act only from below) and the disclosure gate (`privacy/`, `values/gate.py`); user forget = suppress + close turns, admin forget = tombstone + admin archive (`memory/forget.py`, `python -m hunch.admin`). A plain-language overview for outside readers is in `docs/STORY.md`. Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
 
 ## Environment
 
@@ -29,7 +29,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 4. **Order of the turn:** reasoning → candidates → modulation → value gate → reply. The value gate is always last.
 5. **Quality floor:** modulation only chooses among candidates above the quality threshold.
 6. **Cross-user privacy:** a user's `private` memories must never appear in, or be hinted at by, a reply to another user. The disclosure check is rule-based plus a model judge, never the model judge alone.
-7. **Admin sees everything, the AI sees none of its own modulation.** Every internal decision is logged for the admin; logs are never fed back to the AI.
+7. **Admin sees everything, the AI sees none of its own modulation.** Every internal decision is logged for the admin; raw logs are never fed back to the AI. Berk (decided in Phase 5, built in Phase 7): the nightly job may derive insights from the logs, only from a strong and repeated pattern, as plain text at most at reflection level, stored as Hunch's own memory; never numbers, ids, drive values or other users' private sources (design.md, "Kendi loglarından öğrenme").
 8. **Multi-user from day one:** every memory carries `owner_user` and `privacy`.
 9. **Memories come only from the pipeline.** The persona prompt never encourages the model to bring up remembered topics on its own and tells it it remembers nothing beyond what the context shows. The invented-memory check stays in `eval/` and in `tests/golden/` as a permanent regression test (since Phase 3 on the pipeline output: 0 invented memories and 0 "I have no memory"-style replies allowed).
 10. **The privacy module decides when to ask about privacy.** It injects a one-turn instruction; there is never a standing "ask whether this is private" instruction in the persona prompt.
@@ -81,6 +81,7 @@ src/hunch/
   observability/  # turn, reflection, revision, disclosure logs; nightly report
   pipeline/       # turn pipeline: language check, prompt, candidate filter, orchestration
   runtime.py      # wires real components (paths from .env); cli.py: local chat
+  admin.py        # admin commands: find, forget (admin "forget"), archive
 core/             # values.yaml (read-only at runtime)
 tests/  tests/golden/
 scripts/  eval/

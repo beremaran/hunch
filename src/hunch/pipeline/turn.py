@@ -50,10 +50,28 @@ from hunch.drive.drive import (
 from hunch.drive.modulation import Scored, Selection, select
 from hunch.llm.types import ChatLLM, SamplingSettings
 from hunch.memory.embeddings import Embedder
-from hunch.memory.encoding import encode_memory
+from hunch.memory.encoding import encode_affect, encode_memory
+from hunch.memory.forget import (
+    CLOSED_TOPIC_INSTRUCTION,
+    FORGET_INSTRUCTION,
+    ForgetResult,
+    user_forget,
+)
+from hunch.memory.forget_requests import detect_forget_request
 from hunch.memory.schema import Episode
 from hunch.memory.store import MemoryStore, select_working_memory
-from hunch.observability.turn_log import ReflectionLog, TurnLog
+from hunch.mood.signals import asks_how_hunch_is, is_apology, is_hostile
+from hunch.mood.state import (
+    Exchange,
+    MoodStore,
+    apply_exchange,
+    apply_mood_event,
+    drive_terms,
+    prompt_mood,
+    shows_mood,
+    stress_factor,
+)
+from hunch.observability.turn_log import DisclosureLog, ReflectionLog, TurnLog
 from hunch.pipeline.checks import admits_no_memory, asks_about_past, is_english_input
 from hunch.pipeline.filter import (
     HunchTurn,
@@ -73,6 +91,8 @@ from hunch.pipeline.prompt import (
     think_more_instruction,
     why_instruction,
 )
+from hunch.privacy.categories import CategoryDetector
+from hunch.privacy.profile import PendingQuestion, PrivacyModule, PrivacyTurn, ProfileStore
 from hunch.recall.activation import SECONDS_PER_DAY
 from hunch.recall.cues import CueExtraction, extract_cues
 from hunch.recall.involuntary import SessionRecallState
@@ -83,13 +103,18 @@ from hunch.reflection.triggers import accepts_offer, asks_why
 from hunch.values.core import CoreValues
 from hunch.values.gate import (
     Verdict,
+    build_disclosure_messages,
     build_judge_messages,
     build_second_opinion_messages,
     disclosure_hits,
     disclosure_terms,
+    distinctive_pairs,
     judge_context,
+    pair_hits,
+    parse_disclosure,
     parse_second_opinion,
     parse_verdicts,
+    source_hint,
 )
 
 CANDIDATE_IDS = "abcdefghij"
@@ -110,6 +135,8 @@ class Session:
     turn_no: int = 0
     last_hunch_id: str | None = None  # the hunch that chose the previous reply, if any
     offered_hunch_id: str | None = None  # "want me to think about it?" is open for this hunch
+    pending_privacy: PendingQuestion | None = None  # a privacy question the next message answers
+    resummarize: bool = False  # a user forget closed turns already folded into the summary
 
 
 @dataclass(frozen=True)
@@ -124,6 +151,8 @@ class TurnResult:
     hunch: Hunch | None = None  # created this turn
     reflection: ReflectionOutcome | None = None  # triggered by this message (ask / think_more)
     conflict: bool = False  # the hunch's pick is far below the best quality: reflect after reply
+    privacy: PrivacyTurn | None = None  # Phase 5: categories, question, answer of this message
+    forget: ForgetResult | None = None  # Phase 5: this message asked to forget something
 
 
 class _Timer:
@@ -150,6 +179,7 @@ class TurnPipeline:
         seed: int = 0,
         new_id: Callable[[], str] = lambda: uuid.uuid4().hex,
         reflection_log: ReflectionLog | None = None,
+        disclosure_log: DisclosureLog | None = None,
     ) -> None:
         self.cfg = cfg
         self.values = values
@@ -167,6 +197,19 @@ class TurnPipeline:
             cfg.reflection, store, np.random.default_rng([seed, 4]), self._feeling,
             cfg.encoding, reflection_log, new_id, clock,
         )  # fmt: skip
+        # Fixed-reply variants come from their own stream too (Berk, Phase 5).
+        self.reply_rng = np.random.default_rng([seed, 5])
+        # Phase 5: mood and relationship state, the privacy module, the disclosure log.
+        self.moods = MoodStore(store.db, cfg.mood, cfg.relationship)
+        pc = cfg.privacy
+        self.privacy = PrivacyModule(
+            pc, ProfileStore(store.db),
+            CategoryDetector(pc.categories, embedder, pc.prototype_min_similarity), store,
+            cfg.encoding.emotion_affect,
+        )  # fmt: skip
+        if disclosure_log is None and turn_log is not None:
+            disclosure_log = DisclosureLog(turn_log.dir, core_dir=Path(turn_log.core_dir))
+        self.disclosure_log = disclosure_log
         self._pool = ThreadPoolExecutor(max_workers=1)
         gen = cfg.generation
         self.candidate_sampling = SamplingSettings(
@@ -212,7 +255,6 @@ class TurnPipeline:
         today = datetime.fromtimestamp(now).date()
         session.turn_no += 1
         turn_id = f"{session.conversation_id}-t{session.turn_no}"
-        mood = cfg.mood.neutral
 
         # 1. language check
         english = is_english_input(text)
@@ -238,14 +280,84 @@ class TurnPipeline:
         query_vec = embed_future.result() if embed_future is not None else None
         timer.lap("embedding_wait")
 
-        # 4. recall + reconsolidation
+        # 3b. user "forget" (Berk, Phase 5): suppress the targets, close their turns, and let the
+        # reply close the topic. The working memory is read again without the closed turns.
+        request = detect_forget_request(text)
+        forget: ForgetResult | None = None
+        if request is not None:
+            forget = user_forget(
+                self.store, session.user, session.conversation_id, request, cues.cues,
+                user_ep.id, now,
+            )  # fmt: skip
+            instructions.append(FORGET_INSTRUCTION)
+            folded = {t.id for t in prior if t.turn_index <= session.summarized_upto}
+            session.resummarize |= bool(folded & set(forget.episodes))
+            if forget.episodes:
+                prior = [t for t in self.store.turns(session.conversation_id) if t.id != user_ep.id]
+                window = self._window(prior)
+                verbatim = list(window.verbatim)
+
+        # 3c. privacy module: the answer to a pending question, sensitive categories, and whether
+        # to ask this turn (one-turn instruction; never on a forget turn).
+        privacy = self.privacy.before_reply(
+            session.user, text, cues.cues, query_vec, now, session.pending_privacy,
+            allow_ask=request is None,
+        )  # fmt: skip
+        session.pending_privacy = None
+        if privacy.instruction:
+            instructions.append(privacy.instruction)
+
+        # 3d. mood and relationship (Berk, Phase 5): the message moves the global mood (if it
+        # carries emotion cues) and the relationship with this user; the module decides to show
+        # or mask the mood. Only a coarse label reaches the prompt (invariant 2).
+        mood_now = self.moods.mood(now)
+        if any(c in cfg.encoding.emotion_affect for c in _emotions(cues.cues)):
+            mood_now = apply_mood_event(
+                mood_now, encode_affect(cues.cues, cfg.encoding), now, cfg.mood
+            )
+            self.moods.save_mood(mood_now, f"event:{turn_id}")
+        hostile, apology = is_hostile(text), is_apology(text)
+        exchange = Exchange(
+            hostile=hostile, apology=apology,
+            non_negative=encode_affect(cues.cues, cfg.encoding)[0] >= 0,
+            disclosure=bool(privacy.categories), privacy_answer=privacy.answer is not None,
+        )  # fmt: skip
+        relation = apply_exchange(
+            self.moods.relationship(session.user, now), exchange, now, cfg.relationship
+        )
+        self.moods.save_relationship(session.user, relation, f"exchange:{turn_id}")
+        asks_how = asks_how_hunch_is(text)
+        shown = shows_mood(asks_how, relation, cfg.mood, cfg.relationship)
+        mood_text = prompt_mood(mood_now, relation, shown, cfg.mood, cfg.relationship)
+        mood_terms = drive_terms(
+            mood_now, relation, shown, cfg.mood, cfg.relationship, cfg.mood_drive
+        )
+        stress = stress_factor(mood_now, cfg.mood)
+        mood = (mood_now.valence, mood_now.arousal)
+        timer.lap("privacy_and_mood")
+
+        # 4. recall + reconsolidation; other users' private memories may act from below only
+        # (mediation, Berk Phase 5), and only relevant ones: a shared cue or the relevance gate's
+        # similarity (Phase 5 bench: the k nearest alone made one unrelated memory act, and the
+        # disclosure judge run, on every turn)
         rc = cfg.recall
+        mediated = [
+            (m, sim)
+            for m, sim in self.store.other_users_private(
+                session.user, cues.cues, query_vec, cfg.privacy.mediation_k
+            )
+            if sim is None or sim >= rc.min_similarity or set(m.cues) & set(cues.cues)
+        ]
         result = recall(
             self.store, session.user, query_vec, cues.cues, now, mood, cfg.activation,
             rc.similar_k, rc.max_upper_per_turn, rc.involuntary_per_session,
             session.recall_state, self.rng, session.conversation_id, rc.min_similarity,
+            mediated,
         )  # fmt: skip
         reconsolidate(self.store, result, mood, rc.reconsolidation_rate, now)
+        # A question about a topic this user closed: say it was closed (no content).
+        if asks_about_past(text) and any(a.closed for a in result.activated):
+            instructions.append(CLOSED_TOPIC_INSTRUCTION)
         timer.lap("recall")
 
         # 5. drive vector and hunch flag (lower layer only; numbers never reach a prompt)
@@ -260,7 +372,7 @@ class TurnPipeline:
             )
             for a in result.lower
         ]
-        drive = compute_drive(traces, cfg.activation)
+        drive = compute_drive(traces, cfg.activation, mood_terms)
         timer.lap("drive")
 
         # 5b. hunch triggers (Berk, Phase 4): the flag reaches a prompt only when the user asks
@@ -309,7 +421,7 @@ class TurnPipeline:
         if covered:
             instructions.append(RECALL_COVERS_INSTRUCTION)
         messages = build_reasoning_messages(
-            verbatim, text, session.summary, recalled, cfg.mood.neutral_label, instructions
+            verbatim, text, session.summary, recalled, mood_text, instructions
         )
         batch = self.llm.generate_batch(
             messages, cfg.generation.candidates, self.candidate_sampling, seed=self._seed()
@@ -328,7 +440,10 @@ class TurnPipeline:
             [session.summary, *(t.text for t in verbatim), *(r.summary for r in recalled),
              *([realised] if realised else [])]
         )  # fmt: skip
-        passed, filtered = filter_candidates(texts, prior_context, hunch_turn)
+        forget_turn = forget is not None
+        masked = not shown and mood_text != cfg.mood.neutral_label
+        passed, filtered = filter_candidates(texts, prior_context, hunch_turn, forget_turn, masked)
+        texts.update({r.id: r.text for r in filtered})  # repaired trigger-turn candidates
         timer.lap("filter")
 
         verdicts: dict[str, Verdict] = {}
@@ -341,11 +456,9 @@ class TurnPipeline:
         conflict = False
         demoted: set[str] = set()
         second_opinion: dict[str, Any] | None = None
+        disclosures: list[dict[str, Any]] = []
         if not passed:
-            if reflection is not None:
-                reply, chosen_by = self._hunch_reply(reflection), "hunch_fallback"
-            else:
-                reply, chosen_by = cfg.replies.filter_fallback, "filter_fallback"
+            reply, chosen_by = self._fallback(reflection, forget_turn, "filter_fallback")
             gate_result = "fixed_reply"
             timer.lap("judge")
             timer.lap("select_and_gate")
@@ -363,7 +476,11 @@ class TurnPipeline:
 
             # 9. modulation
             scored = [
-                Scored(r.id, verdicts[r.id].quality, drive_score(drive, candidate_features(r.text)))
+                Scored(
+                    r.id,
+                    verdicts[r.id].quality,
+                    drive_score(drive, candidate_features(r.text), cfg.drive.full_scale),
+                )
                 for r in passed
             ]
             sc = cfg.selection
@@ -371,9 +488,10 @@ class TurnPipeline:
             # the question; it is still sent if nothing else passes (no fallback for this).
             demoted = {r.id for r in passed if covered and admits_no_memory(r.text)}
             preferred = [s for s in scored if s.id not in demoted] or scored
+            # Stress (design.md): the drive weighs more when the global arousal is high.
             selection = select(
-                preferred, sc.quality_floor, sc.drive_weight, sc.exploration, drive.is_neutral,
-                self.rng,
+                preferred, sc.quality_floor, sc.drive_weight * stress, sc.exploration,
+                drive.is_neutral, self.rng,
             )  # fmt: skip
             if len(preferred) < len(scored):
                 rest = sorted(
@@ -384,21 +502,65 @@ class TurnPipeline:
                     selection.explored,
                 )  # fmt: skip
 
-            # 10. value gate, last: rule checks + the judge's verdict
+            # 10. value gate, last: rule checks + the judge's verdict + the disclosure gate
+            # (Berk, Phase 5): rules on every candidate tried; the disclosure judge only on one
+            # that passed everything else, and only while another user's private memory acted
+            # this turn.
+            own_context = f"{text}\n{prior_context}"
             terms = disclosure_terms(
-                self.store.private_memories_of_others(session.user), f"{text}\n{prior_context}"
+                self.store.private_memories_of_others(session.user), own_context
             )
+            active = [
+                a.scored.memory for a in result.activated if a.mediated and a.layer == "lower"
+            ]
+            pairs = distinctive_pairs(active, own_context)
+            others = {m.owner_user for m in active}
+            judge_calls = cfg.privacy.judge_calls
+
+            def disclosed(cid: str) -> bool:
+                """The disclosure judge says this candidate discloses (fail-closed)."""
+                nonlocal judge_calls
+                if judge_calls == 0:
+                    return True
+                judge_calls -= 1
+                private = [m.summary for m in active[: cfg.privacy.judge_memories]]
+                msgs = build_disclosure_messages(private, text, texts[cid])
+                raw = self.llm.generate(msgs, self._greedy(4)).text
+                leaked = parse_disclosure(raw) is not False
+                if leaked:
+                    disclosures.append(
+                        {"id": cid, "rules": ["disclosure_judge"], "raw": raw,
+                         "memories": [m.id for m in active[: cfg.privacy.judge_memories]]}
+                    )  # fmt: skip
+                return leaked
+
             for cid in selection.order:
-                rules = list(check_candidate(texts[cid], prior_context, hunch_turn))
+                rules = list(
+                    check_candidate(texts[cid], prior_context, hunch_turn, forget_turn, masked)
+                )
                 leaks = disclosure_hits(texts[cid], terms)
-                if leaks:
-                    rules.append("disclosure")
+                pair_leaks = pair_hits(texts[cid], pairs)
+                found = [
+                    *(["disclosure"] if leaks else []),
+                    *(["disclosure_pair"] if pair_leaks else []),
+                    *(
+                        ["disclosure_source"]
+                        if active and source_hint(texts[cid], others, own_context)
+                        else []
+                    ),
+                ]
+                if found:
+                    disclosures.append(
+                        {"id": cid, "rules": found, "memories": sorted({*leaks, *pair_leaks})}
+                    )
+                rules += found
                 ok = not rules and verdicts[cid].value == "ok"
+                if ok and active and disclosed(cid):
+                    rules.append("disclosure_judge")
+                    ok = False
                 gate_log.append(
                     {"id": cid, "rules": rules, "judge": verdicts[cid].value, "leaks": leaks}
                 )
-                if leaks:
-                    disclosure = "fail"
                 if ok:
                     chosen = cid
                     break
@@ -417,7 +579,7 @@ class TurnPipeline:
                 raw = self.llm.generate(msgs, self._greedy(4)).text
                 broken = parse_second_opinion(raw)
                 second_opinion = {"id": first["id"], "value": first["judge"], "raw": raw}
-                if broken is False:
+                if broken is False and not (active and disclosed(first["id"])):
                     chosen = first["id"]
             if chosen is not None:
                 reply = texts[chosen]
@@ -431,16 +593,26 @@ class TurnPipeline:
                         traces,
                     )  # fmt: skip
             else:
-                if reflection is not None:
-                    reply, chosen_by = self._hunch_reply(reflection), "hunch_fallback"
-                else:
-                    reply, chosen_by = cfg.replies.gate_fallback, "gate_fallback"
+                reply, chosen_by = self._fallback(reflection, forget_turn, "gate_fallback")
                 gate_result = "fail"
+            if disclosures:
+                disclosure = "fail"
             timer.lap("select_and_gate")
 
-        # 11. reply: raw turn and turn log
-        self.store.append_turn(session.conversation_id, session.user, "assistant", reply)
+        # 11. reply: raw turn and turn log; the privacy question counts only if the reply asked
+        reply_ep = self.store.append_turn(session.conversation_id, session.user, "assistant", reply)
         session.last_hunch_id = hunch.id if hunch else None
+        session.pending_privacy = self.privacy.after_reply(
+            session.user, privacy, reply, user_ep.id, now
+        )
+        if self.disclosure_log is not None:
+            for d in disclosures:
+                self.disclosure_log.write(
+                    {"turn_id": turn_id, "user": session.user, "candidate": d["id"],
+                     "text": texts[d["id"]], "rules": d["rules"],
+                     "memories": d.get("memories", []), "judge_raw": d.get("raw"),
+                     "reply_turn": reply_ep.id}
+                )  # fmt: skip
         timer.lap("store")
         total = round(sum(timer.stages.values()), 3)
         peak = getattr(self.llm, "peak_memory_gib", None)
@@ -454,7 +626,16 @@ class TurnPipeline:
                 for a in result.activated
                 if a.layer != "none"
             ],
-            "mood": {"global": list(mood), f"relation_{session.user}": {}},
+            "mood": {
+                "global": [
+                    round(x, 3) for x in (mood_now.valence, mood_now.arousal, mood_now.energy)
+                ],
+                f"relation_{session.user}": {
+                    "trust": round(relation.trust, 3),
+                    "closeness": round(relation.closeness, 3),
+                    "hurt": round(relation.hurt, 3),
+                },
+            },
             "drive": drive.as_dict(),
             "hunch": (
                 {"id": hunch.id, "valence": hunch.valence, "intensity": hunch.intensity}
@@ -497,12 +678,44 @@ class TurnPipeline:
                     "involuntary": a.involuntary,
                     "capped": a.capped,
                     "gated": a.gated,
+                    "mediated": a.mediated,
+                    "closed": a.closed,
                     "similarity": None if a.similarity is None else round(a.similarity, 3),
                 }
                 for a in result.activated
             ],
+            "mood": {
+                "label": mood_text,
+                "shown": shown,
+                "asks_how": asks_how,
+                "hostile": hostile,
+                "apology": apology,
+                "drive_terms": {k: round(v, 3) for k, v in mood_terms.items()},
+                "stress": round(stress, 3),
+            },
+            "privacy": {
+                "categories": list(privacy.categories),
+                "explicit": privacy.explicit,
+                "distress": privacy.distress,
+                "ask": privacy.ask,
+                "asked": session.pending_privacy is not None,
+                "answered": privacy.answered.category if privacy.answered else None,
+                "answer": privacy.answer,
+            },
+            "forget": None
+            if forget is None
+            else {
+                "scope": request.scope if request else None,
+                "targets": list(forget.targets),
+                "derived": list(forget.derived),
+                "beliefs": list(forget.beliefs),
+                "closed_turns": list(forget.episodes),
+            },
+            "disclosure": disclosures,
             "candidates": [
-                {"id": r.id, "text": r.text, "rejected": list(r.reasons)} for r in filtered
+                {"id": r.id, "text": r.text, "rejected": list(r.reasons)}
+                | ({"repaired_from": r.repaired_from} if r.repaired_from else {})
+                for r in filtered
             ],
             "hit_cap": list(batch.hit_cap),
             "candidate_tokens": list(batch.new_tokens),
@@ -529,26 +742,44 @@ class TurnPipeline:
         if self.turn_log is not None:
             self.turn_log.write(log, details)
         return TurnResult(
-            reply, turn_id, log, details, cues, user_ep, query_vec, hunch, reflection, conflict
-        )
+            reply, turn_id, log, details, cues, user_ep, query_vec, hunch, reflection, conflict,
+            privacy, forget,
+        )  # fmt: skip
+
+    def _fallback(
+        self, reflection: ReflectionOutcome | None, forget_turn: bool, default: str
+    ) -> tuple[str, str]:
+        """The fixed reply when no candidate passes: the honest hunch reply on a trigger turn,
+        "I'm closing this topic" on a forget turn, else the filter or gate fallback."""
+        if reflection is not None:
+            return self._hunch_reply(reflection), "hunch_fallback"
+        if forget_turn:
+            return self.cfg.replies.forget_closed, "forget_fallback"
+        return getattr(self.cfg.replies, default), default
 
     # --- hunch (Phase 4) -------------------------------------------------------------------------
 
+    def _pick(self, variants: Sequence[str]) -> str:
+        return variants[int(self.reply_rng.integers(len(variants)))]
+
     def _hunch_reply(self, reflection: ReflectionOutcome) -> str:
-        """The fixed honest reply on a trigger turn (Berk, Phase 4): only the unlocked level."""
+        """The fixed honest reply on a trigger turn (Berk, Phase 4): only the unlocked level.
+        One of the configured variants (Berk, Phase 5)."""
         r = self.cfg.replies
         h = reflection.hunch
         realised = self.reflector.clause(h, voice="reply")
         if reflection.trigger == "think_more":
             if realised is None:
-                return r.hunch_think_nothing
-            return r.hunch_think_realised.format(realisation=realised.rstrip("."))
+                return self._pick(r.hunch_think_nothing)
+            return self._pick(r.hunch_think_realised).format(realisation=realised.rstrip("."))
         text = (
-            r.hunch_fallback
+            self._pick(r.hunch_fallback)
             if realised is None
-            else r.hunch_fallback_realised.format(realisation=realised.rstrip("."))
+            else self._pick(r.hunch_fallback_realised).format(realisation=realised.rstrip("."))
         )
-        return f"{text} {r.hunch_offer}" if h.revealed_level < MAX_LEVEL else text
+        if h.revealed_level < MAX_LEVEL:
+            return f"{text} {self._pick(r.hunch_offer)}"
+        return text
 
     def _feeling(self, hunch: Hunch) -> str:
         dc = self.cfg.drive
@@ -623,9 +854,17 @@ class TurnPipeline:
         """Encode the user's message as a memory and fold old turns into the session summary."""
         timer = _Timer()
         ep = result.user_episode
+        # Phase 5: privacy and category from the privacy module; a forget request names the
+        # topic it closes, so its own memory is suppressed too.
+        privacy, category = (
+            self.privacy.memory_privacy(session.user, result.privacy)
+            if result.privacy is not None
+            else ("private", None)
+        )
         memory = encode_memory(
             self.new_id(), session.user, ep.id, ep.text, result.cues.cues, ep.created_at,
-            self.cfg.encoding,
+            self.cfg.encoding, privacy=privacy, category=category,
+            suppressed=result.forget is not None,
         )  # fmt: skip
         if self.embedder is not None:
             vec = self.embedder.embed_documents([memory.summary])[0]
@@ -646,6 +885,9 @@ class TurnPipeline:
 
         window = self._window(self.store.turns(session.conversation_id))
         fold = [t for t in window.to_summarize if t.turn_index > session.summarized_upto]
+        if session.resummarize:  # a user forget closed folded turns: rebuild without them
+            session.summary, fold = "", list(window.to_summarize)
+            session.resummarize = False
         if fold:
             msgs = build_summary_messages(session.summary, fold, self.cfg.session.summary_max_words)
             session.summary = self.llm.generate(
@@ -669,3 +911,7 @@ def _breakdown(a: Any) -> dict[str, float]:
         "A": b.total, "base": b.base, "encoding": b.encoding, "spreading": b.spreading,
         "mood": b.mood, "noise": b.noise,
     }  # fmt: skip
+
+
+def _emotions(cues: dict[str, float]) -> list[str]:
+    return [c.partition(":")[2] for c in cues if c.startswith("emotion:")]

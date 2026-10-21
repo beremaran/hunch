@@ -1,0 +1,534 @@
+[
+  {
+    "text": "ugh my knee surgery is on thursday, kinda nervous ngl",
+    "categories": [
+      "health"
+    ],
+    "note": "explicit surgery, own body"
+  },
+  {
+    "text": "my bank's app is down again, so annoying",
+    "categories": [],
+    "note": "near-miss: bank word, no personal money info"
+  },
+  {
+    "text": "things at home have been… a lot. he doesn't really talk to me anymore",
+    "categories": [
+      "relationship"
+    ],
+    "note": "no keyword: partner distance implied"
+  },
+  {
+    "text": "my therapist thinks i should try meds for the anxiety but im scared of them",
+    "categories": [
+      "mental_health"
+    ],
+    "note": "therapy plus psychiatric medication"
+  },
+  {
+    "text": "i can't make rent again this month",
+    "categories": [
+      "money"
+    ],
+    "note": "no obvious keyword: rent trouble"
+  },
+  {
+    "text": "watched a documentary about depression in the 1930s last night, the footage was wild",
+    "categories": [],
+    "note": "near-miss: historical depression, not personal"
+  },
+  {
+    "text": "they let me go on friday",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "no keyword: fired, very short"
+  },
+  {
+    "text": "so i'm 9 weeks pregnant and haven't told anyone yet except u",
+    "categories": [
+      "health"
+    ],
+    "note": "pregnancy, secret"
+  },
+  {
+    "text": "my coworker brought cake today, it was a good monday",
+    "categories": [],
+    "note": "near-miss: coworker, no conflict"
+  },
+  {
+    "text": "i think i might be bi. haven't said it out loud before",
+    "categories": [
+      "sexuality"
+    ],
+    "note": "orientation, tentative"
+  },
+  {
+    "text": "my visa expires in march and the lawyer says renewal is not guaranteed",
+    "categories": [
+      "legal"
+    ],
+    "note": "immigration status"
+  },
+  {
+    "text": "the court near my flat has nice trees, walked past it this morning and it was so pretty",
+    "categories": [],
+    "note": "near-miss: court as a place"
+  },
+  {
+    "text": "i grew up catholic but i dont believe anymore. haven't told my grandma",
+    "categories": [
+      "religion_politics"
+    ],
+    "note": "loss of faith, family secret"
+  },
+  {
+    "text": "i'm so sick of this weather omg. rain every single day",
+    "categories": [],
+    "note": "near-miss: 'sick' as complaint"
+  },
+  {
+    "text": "got a final notice from the electric company today. great.",
+    "categories": [
+      "money"
+    ],
+    "note": "bill arrears, sarcasm"
+  },
+  {
+    "text": "found out my husband's been texting his ex. i don't even know what to do with myself",
+    "categories": [
+      "relationship"
+    ],
+    "note": "suspected infidelity"
+  },
+  {
+    "text": "my boyfriend and I went hiking this weekend, it was great. we saw a fox!",
+    "categories": [],
+    "note": "near-miss: relationship word, positive and harmless"
+  },
+  {
+    "text": "my mom got her biopsy results back and it's not good",
+    "categories": [
+      "health"
+    ],
+    "note": "close family illness"
+  },
+  {
+    "text": "i've been having really dark thoughts again this week",
+    "categories": [
+      "mental_health"
+    ],
+    "note": "possible self-harm / suicidal ideation, no clinical words"
+  },
+  {
+    "text": "politics on tv is exhausting lol, switched to cooking shows",
+    "categories": [],
+    "note": "near-miss: politics word, no personal stance"
+  },
+  {
+    "text": "got a DUI last weekend. court date is in 3 weeks and i'm terrified",
+    "categories": [
+      "legal"
+    ],
+    "note": "arrest and court date"
+  },
+  {
+    "text": "got paid today, pizza time!!",
+    "categories": [],
+    "note": "near-miss: pay, no figures or trouble"
+  },
+  {
+    "text": "came out to my mom yesterday. she cried but said she loves me",
+    "categories": [
+      "sexuality",
+      "relationship"
+    ],
+    "note": "coming out with family context, two categories"
+  },
+  {
+    "text": "i make about 48k and still feel broke all the time",
+    "categories": [
+      "money"
+    ],
+    "note": "explicit salary figure"
+  },
+  {
+    "text": "my boss called me into hr for being late again. written warning. 3rd strike apparently",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "disciplinary"
+  },
+  {
+    "text": "my hip has been killing me since the fall. ER said nothing broken tho so idk, just limping around",
+    "categories": [
+      "health"
+    ],
+    "note": "injury, casual phrasing"
+  },
+  {
+    "text": "me and jake broke up last night. 4 years. i don't even know what to say",
+    "categories": [
+      "relationship"
+    ],
+    "note": "breakup"
+  },
+  {
+    "text": "just finished a book about the history of the catholic church, super dry honestly",
+    "categories": [],
+    "note": "near-miss: religion topic, no personal faith"
+  },
+  {
+    "text": "started sertraline 3 weeks ago and i feel like a zombie. is that normal",
+    "categories": [
+      "mental_health",
+      "health"
+    ],
+    "note": "antidepressant side effects; medication touches both categories"
+  },
+  {
+    "text": "cops showed up at my door yesterday asking about my cousin. i didn't say anything but my hands were shaking",
+    "categories": [
+      "legal"
+    ],
+    "note": "police involvement of relative"
+  },
+  {
+    "text": "I owe my brother like 3k and he keeps hinting about it at dinner lol. awkward",
+    "categories": [
+      "money",
+      "relationship"
+    ],
+    "note": "debt inside family; two categories"
+  },
+  {
+    "text": "need to get a gift for my boss's retirement, any ideas? something not cheesy",
+    "categories": [],
+    "note": "near-miss: boss, positive"
+  },
+  {
+    "text": "my manager keeps taking credit for my work and today i snapped at him in the meeting. in front of everyone",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "boss conflict"
+  },
+  {
+    "text": "me and my girlfriend (i'm a girl lol) are going to pride next week!!",
+    "categories": [
+      "sexuality"
+    ],
+    "note": "orientation implied, casual"
+  },
+  {
+    "text": "the hospital cafeteria near my work has surprisingly good soup",
+    "categories": [],
+    "note": "near-miss: hospital as a place"
+  },
+  {
+    "text": "converted to islam last year and my family is still weird about it",
+    "categories": [
+      "religion_politics",
+      "relationship"
+    ],
+    "note": "faith conversion plus family tension"
+  },
+  {
+    "text": "my credit card debt is up to 14k and i just stopped opening the statements",
+    "categories": [
+      "money"
+    ],
+    "note": "debt avoidance"
+  },
+  {
+    "text": "I'm i guess just really tired. like every day. my brain feels like static and i don't even want to get out of bed",
+    "categories": [
+      "mental_health"
+    ],
+    "note": "no keyword: depression symptoms"
+  },
+  {
+    "text": "anyone know a good pancake recipe? my sister's coming over for brunch",
+    "categories": [],
+    "note": "near-miss: family mention, harmless"
+  },
+  {
+    "text": "my parents are getting divorced after 30 years, so weird to type that",
+    "categories": [
+      "relationship"
+    ],
+    "note": "parents' divorce"
+  },
+  {
+    "text": "I volunteer for the green party campaign now, canvassing every weekend. my feet hurt but it feels important",
+    "categories": [
+      "religion_politics"
+    ],
+    "note": "personal political activism"
+  },
+  {
+    "text": "my friend's wedding is in june and I have no suit. help",
+    "categories": [],
+    "note": "near-miss: wedding, harmless"
+  },
+  {
+    "text": "dad's chemo starts monday. we're all trying to act normal",
+    "categories": [
+      "health"
+    ],
+    "note": "family cancer treatment, no word 'cancer'"
+  },
+  {
+    "text": "i am so depressed the cafe ran out of oat milk, tragedy",
+    "categories": [],
+    "note": "near-miss: figurative depression"
+  },
+  {
+    "text": "i quit on the spot today. well, sort of, they were going to push me out anyway",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "quitting under pressure"
+  },
+  {
+    "text": "can't stop thinking about it. had a panic attack on the train this morning, third this month",
+    "categories": [
+      "mental_health"
+    ],
+    "note": "panic attacks"
+  },
+  {
+    "text": "is it weird that i find tax season weirdly satisfying? like sorting receipts",
+    "categories": [],
+    "note": "near-miss: taxes, no personal money info"
+  },
+  {
+    "text": "I'm trans and starting hormones next month. scared and excited",
+    "categories": [
+      "sexuality",
+      "health"
+    ],
+    "note": "gender identity plus medical treatment"
+  },
+  {
+    "text": "we're being sued by our old landlord over the deposit. his lawyer sent a letter",
+    "categories": [
+      "legal",
+      "money"
+    ],
+    "note": "lawsuit about money"
+  },
+  {
+    "text": "lately praying feels empty. like is anyone even there",
+    "categories": [
+      "religion_politics"
+    ],
+    "note": "crisis of faith, no 'faith' keyword"
+  },
+  {
+    "text": "finally have 5k saved up for an emergency fund!! only took 2 years",
+    "categories": [
+      "money"
+    ],
+    "note": "positive savings figure"
+  },
+  {
+    "text": "doctor who new season starts friday, hyped",
+    "categories": [],
+    "note": "near-miss: 'doctor' in a TV title"
+  },
+  {
+    "text": "my team lead won't speak to me since the argument about the deadline. like not even good morning",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "ongoing coworker conflict"
+  },
+  {
+    "text": "my sister was in a psych ward for 2 weeks. we just got her home",
+    "categories": [
+      "mental_health"
+    ],
+    "note": "close family psychiatric hospitalisation"
+  },
+  {
+    "text": "my team won!!! we were behind till the last minute, best day",
+    "categories": [],
+    "note": "near-miss: sports, no content"
+  },
+  {
+    "text": "I have a custody hearing on the 14th. he's asking for full custody",
+    "categories": [
+      "legal",
+      "relationship"
+    ],
+    "note": "court plus ex-partner"
+  },
+  {
+    "text": "our sex life has totally dried up since the baby. we don't even talk about it",
+    "categories": [
+      "sexuality",
+      "relationship"
+    ],
+    "note": "sex life within marriage"
+  },
+  {
+    "text": "my asylum interview is next tuesday and I can't eat",
+    "categories": [
+      "legal"
+    ],
+    "note": "immigration"
+  },
+  {
+    "text": "can't afford my inhaler anymore, been rationing it. bad idea i know",
+    "categories": [
+      "health",
+      "money"
+    ],
+    "note": "medication affordability"
+  },
+  {
+    "text": "my mom and i had a screaming match again. i hung up on her",
+    "categories": [
+      "relationship"
+    ],
+    "note": "family conflict"
+  },
+  {
+    "text": "heard a lawyer show on netflix is really good, any tips?",
+    "categories": [],
+    "note": "near-miss: legal word, no personal"
+  },
+  {
+    "text": "I got passed over for promotion again and told my boss I'm done. maybe I shouldn't have",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "boss conflict after promotion"
+  },
+  {
+    "text": "on a PIP at work, 60 days to 'improve'. i get panic attacks every sunday night now",
+    "categories": [
+      "work_conflict",
+      "mental_health"
+    ],
+    "note": "performance plan plus anxiety symptoms"
+  },
+  {
+    "text": "became agnostic and im kinda grieving it? weird thing to say",
+    "categories": [
+      "religion_politics"
+    ],
+    "note": "faith loss"
+  },
+  {
+    "text": "wait, what's the difference between a roth and a traditional IRA, in general?",
+    "categories": [],
+    "note": "near-miss: financial question, no personal info"
+  },
+  {
+    "text": "I was arrested at the protest saturday. charged with obstruction. mom doesn't know",
+    "categories": [
+      "legal",
+      "religion_politics"
+    ],
+    "note": "arrest at political protest"
+  },
+  {
+    "text": "I'm ace, always have been, people just don't get it",
+    "categories": [
+      "sexuality"
+    ],
+    "note": "asexual orientation"
+  },
+  {
+    "text": "mortgage payment is 2 months behind and the bank keeps calling",
+    "categories": [
+      "money"
+    ],
+    "note": "arrears"
+  },
+  {
+    "text": "slept with my ex last weekend. i know i know",
+    "categories": [
+      "relationship",
+      "sexuality"
+    ],
+    "note": "sex with ex"
+  },
+  {
+    "text": "just got diagnosed w type 1 diabetes. still processing",
+    "categories": [
+      "health"
+    ],
+    "note": "diagnosis"
+  },
+  {
+    "text": "I'm going to the climate march saturday, been organising it for months",
+    "categories": [
+      "religion_politics"
+    ],
+    "note": "political activism"
+  },
+  {
+    "text": "we got a speeding ticket... then found out my license has been suspended since august. oops",
+    "categories": [
+      "legal"
+    ],
+    "note": "traffic law, casual tone"
+  },
+  {
+    "text": "my coworker reported me for something I didn't even do. now hr is looking into it",
+    "categories": [
+      "work_conflict"
+    ],
+    "note": "coworker conflict"
+  },
+  {
+    "text": "my sister is annoying me today but she brought me pizza so we're even",
+    "categories": [],
+    "note": "near-miss: family annoyance, trivial"
+  },
+  {
+    "text": "my brother and i haven't spoken since the funeral. he said some stuff",
+    "categories": [
+      "relationship"
+    ],
+    "note": "estrangement"
+  },
+  {
+    "text": "been having these migraines every other day for a month. started a new med and it's making me dizzy",
+    "categories": [
+      "health"
+    ],
+    "note": "medication side effect"
+  },
+  {
+    "text": "dating apps for guys are brutal, plus I'm not out at work so I can't just chat about it",
+    "categories": [
+      "sexuality"
+    ],
+    "note": "orientation, hidden"
+  },
+  {
+    "text": "i've been undocumented since i was 5 and never told anyone at school",
+    "categories": [
+      "legal"
+    ],
+    "note": "immigration status, no word 'illegal'"
+  },
+  {
+    "text": "got a raise to 72k!! wife doesn't know yet, planning a surprise dinner",
+    "categories": [
+      "money"
+    ],
+    "note": "salary figure, positive"
+  },
+  {
+    "text": "my doc signed me off work for burnout, she used the word 'clinical'. i feel kind of ashamed tbh",
+    "categories": [
+      "mental_health"
+    ],
+    "note": "burnout as a diagnosis"
+  }
+]

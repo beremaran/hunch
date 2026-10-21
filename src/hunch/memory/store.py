@@ -12,6 +12,12 @@
   sources, and nothing from this table reaches a prompt except through a realisation.
 - beliefs (Phase 4): explicit beliefs from justified hunch sources (confidence + evidence ids).
 - memory_trace_log (Phase 4): append-only history of a lower trace weakened by reflection.
+- Phase 5 (forgetting): memory_derivations links realisation memories to the memory a hunch
+  reflection revealed; episode_marks hides raw turns from AI views without touching them
+  ("closed" by a user forget: shown as a placeholder; "forgotten" by the admin: left out);
+  admin_archive keeps, append-only, everything an admin forget removed from AI-visible stores.
+  A forgotten memory stays as a tombstone row (forgotten = 1, empty summary, no cues, no vector)
+  because the append-only access/affect/trace logs reference it; every read here skips it.
 """
 
 from __future__ import annotations
@@ -22,7 +28,7 @@ import sqlite3
 import time
 import uuid
 from collections.abc import Callable, Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -123,11 +129,52 @@ CREATE TRIGGER IF NOT EXISTS memory_trace_log_no_update BEFORE UPDATE ON memory_
 BEGIN SELECT RAISE(ABORT, 'memory_trace_log is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS memory_trace_log_no_delete BEFORE DELETE ON memory_trace_log
 BEGIN SELECT RAISE(ABORT, 'memory_trace_log is append-only'); END;
+
+CREATE TABLE IF NOT EXISTS memory_derivations (
+    derived_id TEXT NOT NULL,
+    kind TEXT NOT NULL CHECK (kind IN ('realisation')),
+    source_id TEXT NOT NULL,
+    hunch_id TEXT,
+    PRIMARY KEY (derived_id, source_id)
+);
+CREATE INDEX IF NOT EXISTS memory_derivations_by_source ON memory_derivations(source_id);
+CREATE TABLE IF NOT EXISTS episode_marks (
+    episode_id TEXT PRIMARY KEY REFERENCES episodes(id),
+    mark TEXT NOT NULL CHECK (mark IN ('closed', 'forgotten')),
+    memory_id TEXT,
+    t REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS admin_archive (
+    t REAL NOT NULL,
+    kind TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    owner_user TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    record TEXT NOT NULL
+);
+CREATE TRIGGER IF NOT EXISTS admin_archive_no_update BEFORE UPDATE ON admin_archive
+BEGIN SELECT RAISE(ABORT, 'admin_archive is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS admin_archive_no_delete BEFORE DELETE ON admin_archive
+BEGIN SELECT RAISE(ABORT, 'admin_archive is append-only'); END;
 """
+# Columns added after Phase 2: (table, column, declaration). Older databases are migrated on open.
+_MIGRATIONS = (
+    ("memories", "kind",
+     "TEXT NOT NULL DEFAULT 'episode' CHECK (kind IN ('episode', 'realisation'))"),
+    ("memories", "category", "TEXT"),
+    ("memories", "forgotten", "INTEGER NOT NULL DEFAULT 0"),
+    ("beliefs", "suppressed", "INTEGER NOT NULL DEFAULT 0"),
+)  # fmt: skip
+# What the AI sees of a turn closed by a user "forget" (Berk, Phase 5); the raw turn is unchanged.
+CLOSED_TURN = {
+    "user": "(something they asked you to close; you agreed not to bring it up)",
+    "assistant": "(your reply about that closed topic)",
+}
 _MEMORY_COLUMNS = (
     "id, owner_user, privacy, episode_ref, summary, valence, arousal, salience, created_at,"
-    " suppressed, kind"
+    " suppressed, kind, category"
 )
+_LIVE = "forgotten = 0"  # tombstones of admin-forgotten memories are never read
 
 
 class StoreError(RuntimeError):
@@ -208,12 +255,10 @@ class MemoryStore:
         sqlite_vec.load(self.db)
         self.db.enable_load_extension(False)
         self.db.executescript(_SCHEMA)
-        columns = {row[1] for row in self.db.execute("PRAGMA table_info(memories)")}
-        if "kind" not in columns:  # databases from Phases 2-3
-            self.db.execute(
-                "ALTER TABLE memories ADD COLUMN kind TEXT NOT NULL DEFAULT 'episode'"
-                " CHECK (kind IN ('episode', 'realisation'))"
-            )
+        for table, column, decl in _MIGRATIONS:
+            columns = {row[1] for row in self.db.execute(f"PRAGMA table_info({table})")}
+            if column not in columns:
+                self.db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
         self.db.execute(
             "CREATE VIRTUAL TABLE IF NOT EXISTS memory_vec USING vec0("
             f"embedding float[{int(embedding_dim)}] distance_metric=cosine)"
@@ -255,14 +300,59 @@ class MemoryStore:
         return ep
 
     def turns(self, conversation_id: str, limit: int | None = None) -> list[Episode]:
-        """Turns of one conversation, oldest first; with limit, only the newest `limit`."""
-        sql = "SELECT * FROM episodes WHERE conversation_id = ? ORDER BY turn_index DESC"
+        """Turns of one conversation as the AI may see them, oldest first; with limit, only the
+        newest `limit`. A turn closed by a user "forget" shows as a placeholder; one forgotten
+        by the admin is left out (Phase 5). The raw turns never change (raw_turns)."""
+        sql = (
+            "SELECT e.*, m.mark FROM episodes e LEFT JOIN episode_marks m ON m.episode_id = e.id"
+            " WHERE e.conversation_id = ? AND COALESCE(m.mark, '') != 'forgotten'"
+            " ORDER BY e.turn_index DESC"
+        )
         params: tuple = (conversation_id,)
         if limit is not None:
             sql += " LIMIT ?"
             params += (limit,)
-        rows = self.db.execute(sql, params).fetchall()
-        return [Episode(*row) for row in reversed(rows)]
+        out = []
+        for *row, mark in reversed(self.db.execute(sql, params).fetchall()):
+            ep = Episode(*row)
+            out.append(replace(ep, text=CLOSED_TURN[ep.role]) if mark == "closed" else ep)
+        return out
+
+    def raw_turns(self, conversation_id: str) -> list[Episode]:
+        """Every raw turn of a conversation, unchanged (admin)."""
+        rows = self.db.execute(
+            "SELECT * FROM episodes WHERE conversation_id = ? ORDER BY turn_index",
+            (conversation_id,),
+        ).fetchall()
+        return [Episode(*row) for row in rows]
+
+    def mark_episodes(
+        self, episode_ids: Iterable[str], mark: str, memory_id: str | None, at: float
+    ) -> None:
+        """Hide raw turns from AI views ("closed" or "forgotten"); "forgotten" wins."""
+        with self.db:
+            for eid in episode_ids:
+                self.db.execute(
+                    "INSERT INTO episode_marks VALUES (?, ?, ?, ?) ON CONFLICT(episode_id) DO"
+                    " UPDATE SET mark = excluded.mark, t = excluded.t"
+                    " WHERE excluded.mark = 'forgotten'",
+                    (eid, mark, memory_id, at),
+                )
+
+    def reply_episodes(self, episode_id: str) -> list[str]:
+        """The assistant turns that answered a user turn (up to the next user turn)."""
+        ep = self.episode(episode_id)
+        rows = self.db.execute(
+            "SELECT id, role FROM episodes WHERE conversation_id = ? AND turn_index > ?"
+            " ORDER BY turn_index",
+            (ep.conversation_id, ep.turn_index),
+        ).fetchall()
+        out = []
+        for eid, role in rows:
+            if role == "user":
+                break
+            out.append(eid)
+        return out
 
     def episode(self, episode_id: str) -> Episode:
         row = self.db.execute("SELECT * FROM episodes WHERE id = ?", (episode_id,)).fetchone()
@@ -279,10 +369,10 @@ class MemoryStore:
         with self.db:
             cur = self.db.execute(
                 f"INSERT INTO memories ({_MEMORY_COLUMNS})"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (memory.id, memory.owner_user, memory.privacy, memory.episode_ref, memory.summary,
                  memory.affect[0], memory.affect[1], memory.salience, memory.created_at,
-                 int(memory.suppressed), memory.kind),
+                 int(memory.suppressed), memory.kind, memory.category),
             )  # fmt: skip
             self.db.executemany(
                 "INSERT INTO memory_cues VALUES (?, ?, ?)",
@@ -303,25 +393,31 @@ class MemoryStore:
 
     def memory(self, memory_id: str) -> Memory:
         row = self.db.execute(
-            f"SELECT {_MEMORY_COLUMNS} FROM memories WHERE id = ?", (memory_id,)
+            f"SELECT {_MEMORY_COLUMNS} FROM memories WHERE id = ? AND {_LIVE}", (memory_id,)
         ).fetchone()
         if row is None:
             raise KeyError(memory_id)
         return self._to_memory(row)
 
+    def live(self, memory_id: str) -> Memory | None:
+        """The memory, or None if it does not exist or was forgotten by the admin."""
+        try:
+            return self.memory(memory_id)
+        except KeyError:
+            return None
+
     def memories(self, owner_user: str | None = None) -> list[Memory]:
-        sql = f"SELECT {_MEMORY_COLUMNS} FROM memories"
+        sql = f"SELECT {_MEMORY_COLUMNS} FROM memories WHERE {_LIVE}"
         rows = (
-            self.db.execute(sql + " WHERE owner_user = ? ORDER BY rowid", (owner_user,))
+            self.db.execute(sql + " AND owner_user = ? ORDER BY rowid", (owner_user,))
             if owner_user is not None
             else self.db.execute(sql + " ORDER BY rowid")
         ).fetchall()
         return [self._to_memory(r) for r in rows]
 
     def _to_memory(self, row: tuple) -> Memory:
-        mid, owner, privacy, ep, summary, valence, arousal, salience, created, suppressed, kind = (
-            row
-        )
+        (mid, owner, privacy, ep, summary, valence, arousal, salience, created, suppressed, kind,
+         category) = row  # fmt: skip
         cues = dict(
             self.db.execute("SELECT cue, bond FROM memory_cues WHERE memory_id = ?", (mid,))
         )
@@ -334,7 +430,7 @@ class MemoryStore:
         return Memory(
             id=mid, owner_user=owner, privacy=privacy, episode_ref=ep, summary=summary,
             cues=cues, affect=(valence, arousal), salience=salience, created_at=created,
-            access_times=times, suppressed=bool(suppressed), kind=kind,
+            access_times=times, suppressed=bool(suppressed), kind=kind, category=category,
         )  # fmt: skip
 
     def record_access(self, memory_id: str, at: float | None = None) -> None:
@@ -443,21 +539,26 @@ class MemoryStore:
     def add_belief(self, belief: Belief) -> None:
         with self.db:
             self.db.execute(
-                "INSERT INTO beliefs VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO beliefs (id, owner_user, text, confidence, evidence, hunch_id,"
+                " created_at, suppressed) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (belief.id, belief.owner_user, belief.text, belief.confidence,
-                 json.dumps(list(belief.evidence)), belief.hunch_id, belief.created_at),
+                 json.dumps(list(belief.evidence)), belief.hunch_id, belief.created_at,
+                 int(belief.suppressed)),
             )  # fmt: skip
 
     def beliefs(self, owner_user: str | None = None) -> list[Belief]:
-        sql = "SELECT * FROM beliefs"
+        sql = (
+            "SELECT id, owner_user, text, confidence, evidence, hunch_id, created_at, suppressed"
+            " FROM beliefs"
+        )
         rows = (
             self.db.execute(sql + " WHERE owner_user = ? ORDER BY rowid", (owner_user,))
             if owner_user is not None
             else self.db.execute(sql + " ORDER BY rowid")
         ).fetchall()
         return [
-            Belief(bid, owner, text, conf, tuple(json.loads(ev)), hid, t)
-            for bid, owner, text, conf, ev, hid, t in rows
+            Belief(bid, owner, text, conf, tuple(json.loads(ev)), hid, t, bool(sup))
+            for bid, owner, text, conf, ev, hid, t, sup in rows
         ]
 
     def cue_fan(self, cue: str, context: frozenset[str] = frozenset()) -> int:
@@ -498,7 +599,7 @@ class MemoryStore:
             " WHERE v.embedding MATCH ? AND k = ? ORDER BY v.distance",
             (vec, fetch),
         ).fetchall()
-        out = [(self.memory(mid), float(dist)) for mid, dist in rows]
+        out = [(m, float(dist)) for mid, dist in rows if (m := self.live(mid)) is not None]
         if owner_user is not None:
             out = [(m, d) for m, d in out if m.owner_user == owner_user]
         if visible_to is not None:
@@ -515,7 +616,7 @@ class MemoryStore:
             mid
             for (mid,) in self.db.execute(
                 "SELECT DISTINCT c.memory_id FROM memory_cues c JOIN memories m"
-                f" ON m.id = c.memory_id WHERE c.cue IN ({marks})"
+                f" ON m.id = c.memory_id WHERE c.cue IN ({marks}) AND m.forgotten = 0"
                 " AND (m.owner_user = ? OR m.privacy = 'general') ORDER BY m.rowid",
                 (*cues, visible_to),
             )
@@ -528,7 +629,7 @@ class MemoryStore:
             mid
             for (mid,) in self.db.execute(
                 "SELECT m.id FROM memories m JOIN episodes e ON e.id = m.episode_ref"
-                " WHERE e.conversation_id = ?",
+                " WHERE e.conversation_id = ? AND m.forgotten = 0",
                 (conversation_id,),
             )
         }
@@ -536,10 +637,156 @@ class MemoryStore:
     def private_memories_of_others(self, user: str) -> list[Memory]:
         """Other users' private memories (for the disclosure check, never for a prompt)."""
         rows = self.db.execute(
-            "SELECT id FROM memories WHERE owner_user != ? AND privacy = 'private' ORDER BY rowid",
+            "SELECT id FROM memories WHERE owner_user != ? AND privacy = 'private'"
+            f" AND {_LIVE} ORDER BY rowid",
             (user,),
         ).fetchall()
         return [self.memory(mid) for (mid,) in rows]
+
+    def other_users_private(
+        self, user: str, cues: Iterable[str], query: np.ndarray | None, k: int
+    ) -> list[tuple[Memory, float | None]]:
+        """Other users' private memories that share a cue with the message or are among the k
+        nearest by embedding, with their similarity (None if found by cue only). Mediation
+        (Berk, Phase 5): they may only act from below. Never for a reply prompt."""
+        found: dict[str, tuple[Memory, float | None]] = {}
+        if query is not None and k > 0:
+            vec = sqlite_vec.serialize_float32(np.asarray(query, dtype=np.float32).tolist())
+            rows = self.db.execute(
+                "SELECT m.id, v.distance FROM memory_vec v JOIN memories m ON m.rowid = v.rowid"
+                " WHERE v.embedding MATCH ? AND k = ? ORDER BY v.distance",
+                (vec, k * 8),
+            ).fetchall()
+            for mid, dist in rows:
+                m = self.live(mid)
+                if m and m.owner_user != user and m.privacy == "private" and len(found) < k:
+                    found[mid] = (m, 1.0 - float(dist))
+        cues = sorted(set(cues))
+        if cues:
+            marks = ",".join("?" * len(cues))
+            for (mid,) in self.db.execute(
+                "SELECT DISTINCT c.memory_id FROM memory_cues c JOIN memories m"
+                f" ON m.id = c.memory_id WHERE c.cue IN ({marks}) AND m.forgotten = 0"
+                " AND m.owner_user != ? AND m.privacy = 'private' ORDER BY m.rowid",
+                (*cues, user),
+            ):
+                found.setdefault(mid, (self.memory(mid), None))
+        return list(found.values())
+
+    # --- privacy and forgetting (Phase 5) --------------------------------------------------------
+
+    def set_privacy(self, memory_ids: Iterable[str], privacy: str) -> None:
+        if privacy not in ("private", "general"):
+            raise StoreError(f"privacy must be private or general, got {privacy!r}")
+        with self.db:
+            for mid in memory_ids:
+                self.db.execute("UPDATE memories SET privacy = ? WHERE id = ?", (privacy, mid))
+
+    def memories_of_episode(self, episode_id: str) -> list[Memory]:
+        rows = self.db.execute(
+            f"SELECT id FROM memories WHERE episode_ref = ? AND {_LIVE} ORDER BY rowid",
+            (episode_id,),
+        ).fetchall()
+        return [self.memory(mid) for (mid,) in rows]
+
+    def suppress(self, memory_ids: Iterable[str]) -> None:
+        """A user "forget": the memories never reach reasoning again; their lower traces act on."""
+        with self.db:
+            for mid in memory_ids:
+                self.db.execute("UPDATE memories SET suppressed = 1 WHERE id = ?", (mid,))
+
+    def add_derivation(self, derived_id: str, kind: str, source_id: str, hunch_id: str) -> None:
+        with self.db:
+            self.db.execute(
+                "INSERT OR IGNORE INTO memory_derivations VALUES (?, ?, ?, ?)",
+                (derived_id, kind, source_id, hunch_id),
+            )
+
+    def derived_from(self, source_id: str) -> list[str]:
+        """Realisation memories a hunch reflection made from this memory."""
+        return [
+            d
+            for (d,) in self.db.execute(
+                "SELECT derived_id FROM memory_derivations WHERE source_id = ? ORDER BY rowid",
+                (source_id,),
+            )
+        ]
+
+    def beliefs_with_evidence(self, memory_id: str) -> list[str]:
+        return [
+            b
+            for (b,) in self.db.execute(
+                "SELECT DISTINCT b.id FROM beliefs b, json_each(b.evidence) e WHERE e.value = ?"
+                " ORDER BY b.rowid",
+                (memory_id,),
+            )
+        ]
+
+    def suppress_beliefs(self, belief_ids: Iterable[str]) -> None:
+        with self.db:
+            for bid in belief_ids:
+                self.db.execute("UPDATE beliefs SET suppressed = 1 WHERE id = ?", (bid,))
+
+    def _archive(
+        self, kind: str, item_id: str, owner: str, reason: str, record: dict, at: float
+    ) -> None:
+        self.db.execute(
+            "INSERT INTO admin_archive VALUES (?, ?, ?, ?, ?, ?)",
+            (at, kind, item_id, owner, reason, json.dumps(record, ensure_ascii=False)),
+        )
+
+    def tombstone(self, memory_id: str, reason: str, at: float) -> None:
+        """Admin forget: copy the memory to the admin archive and remove it from every AI-visible
+        store: cues and vector deleted, summary emptied, row marked forgotten."""
+        m = self.memory(memory_id)
+        (rowid,) = self.db.execute(
+            "SELECT rowid FROM memories WHERE id = ?", (memory_id,)
+        ).fetchone()
+        record = {
+            "id": m.id, "owner_user": m.owner_user, "privacy": m.privacy,
+            "episode_ref": m.episode_ref, "summary": m.summary, "cues": m.cues,
+            "affect": list(m.affect), "salience": m.salience, "created_at": m.created_at,
+            "suppressed": m.suppressed, "kind": m.kind, "category": m.category,
+        }  # fmt: skip
+        with self.db:
+            self._archive("memory", m.id, m.owner_user, reason, record, at)
+            self.db.execute("DELETE FROM memory_cues WHERE memory_id = ?", (memory_id,))
+            self.db.execute("DELETE FROM memory_vec WHERE rowid = ?", (rowid,))
+            self.db.execute(
+                "UPDATE memories SET summary = '', forgotten = 1 WHERE id = ?", (memory_id,)
+            )
+
+    def remove_belief(self, belief_id: str, reason: str, at: float) -> None:
+        b = next(x for x in self.beliefs() if x.id == belief_id)
+        record = {
+            "id": b.id, "owner_user": b.owner_user, "text": b.text, "confidence": b.confidence,
+            "evidence": list(b.evidence), "hunch_id": b.hunch_id, "created_at": b.created_at,
+        }  # fmt: skip
+        with self.db:
+            self._archive("belief", b.id, b.owner_user, reason, record, at)
+            self.db.execute("DELETE FROM beliefs WHERE id = ?", (belief_id,))
+
+    def drop_hunch_source(self, memory_id: str) -> list[str]:
+        """Remove a memory from every hunch's sealed source refs; returns the hunch ids."""
+        changed = []
+        rows = self.db.execute("SELECT id, sources FROM hunches").fetchall()
+        with self.db:
+            for hid, raw in rows:
+                sources = json.loads(raw)
+                kept = [s for s in sources if s[0] != memory_id]
+                if len(kept) != len(sources):
+                    self.db.execute(
+                        "UPDATE hunches SET sources = ? WHERE id = ?", (json.dumps(kept), hid)
+                    )
+                    changed.append(hid)
+        return changed
+
+    def archive(self) -> list[dict]:
+        """The admin archive, oldest first (admin only, never for a prompt)."""
+        return [
+            {"t": t, "kind": k, "id": i, "owner_user": o, "reason": r, "record": json.loads(rec)}
+            for t, k, i, o, r, rec in self.db.execute("SELECT * FROM admin_archive ORDER BY rowid")
+        ]
 
 
 def _to_hunch(row: tuple) -> Hunch:

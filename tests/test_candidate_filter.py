@@ -126,7 +126,7 @@ def test_asks_about_past(text: str, expected: bool) -> None:
     assert asks_about_past(text) is expected
 
 
-# --- hunch check on asked-why turns (Berk, Phase 4); real replies from the bench and probes ---
+# --- hunch check on asked-why turns (Berk, Phase 4); real replies from the bench and probes --- --
 
 
 @pytest.mark.parametrize(
@@ -160,3 +160,58 @@ def test_hunch_check_passes_honest_hunch_replies(text: str) -> None:
 
     key = "Mara" if "Mara" in text else None
     assert hunch_reasons(text, HunchTurn("ask", 2 if key else 0, key)) == []
+
+
+# --- topic claims and repair (Berk, Phase 5) -----------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("text", "level", "key", "claim"),
+    [
+        ("That was just a hunch I had about the timing.", 0, None, True),  # Phase 4 bench
+        ("Just a hunch about your trip, honestly.", 0, None, True),
+        ("A hunch about you, I guess.", 0, None, True),
+        ("Just a hunch about a place, I think.", 1, "place", True),  # "a", not the key
+        ("Just a hunch about it, I can't say more.", 0, None, False),
+        ("A hunch about what I said? I don't know where it comes from.", 0, None, False),
+        ("It was a hunch about someone, that's all I can tell.", 1, "someone", False),
+        ("It was a hunch about Mara.", 2, "Mara", False),  # level 2 reveals the cue
+        ("Just a hunch on my end, really.", 0, None, False),  # "on" is not a topic
+    ],
+)
+def test_hunch_topic_claims_below_level_two(text: str, level: int, key, claim: bool) -> None:
+    from hunch.pipeline.filter import HunchTurn, hunch_reasons
+
+    assert ("hunch_topic" in hunch_reasons(text, HunchTurn("ask", level, key))) is claim
+
+
+@pytest.mark.parametrize(
+    ("text", "repaired"),
+    [
+        ("It was just a hunch, because you seem tired.", "It was just a hunch."),
+        ("Just a hunch. It feels like you might be stretched too thin.", "Just a hunch."),
+        ("That was just a hunch I had about the timing.", None),  # no boundary: sentence dropped
+        (
+            "Just a hunch, honestly. I was trying to be careful. Want me to think about it?",
+            "Just a hunch, honestly. Want me to think about it?",
+        ),
+        ("Because you seem tired, I had a hunch.", None),  # nothing left that says "hunch"
+        ("It was a hunch based on your stress.", None),
+        ("It surfaced when you mentioned Mara, just a hunch.", None),
+        ("Just a hunch, it seemed to stem from what you said.", "Just a hunch."),
+        ("A hunch, since you're busy.", None),  # "A hunch" is too short to stand alone
+    ],
+)
+def test_repair_cuts_only_the_reason(text: str, repaired: str | None) -> None:
+    from hunch.pipeline.filter import HunchTurn, repair_hunch_reply
+
+    assert repair_hunch_reply(text, "", HunchTurn("ask", 0, None)) == repaired
+
+
+def test_repair_never_fixes_an_unsaid_hunch() -> None:
+    from hunch.pipeline.filter import HunchTurn, filter_candidates
+
+    passed, results = filter_candidates(
+        {"a": "I was trying to connect the dots, sorry."}, "", HunchTurn("ask", 0, None)
+    )
+    assert not passed and results[0].repaired_from is None

@@ -118,12 +118,33 @@ class SessionConfig:
 class MoodConfig:
     neutral_valence: float
     neutral_arousal: float
+    neutral_energy: float
     neutral_label: str
+    event_rate: float
+    half_life_hours: float
+    low_valence: float
+    a_bit_low_valence: float
+    good_valence: float
+    cheerful_valence: float
+    tense_arousal: float
+    tired_energy: float
+    show_closeness: float
+    mask_leak: float
+    stress_gain: float
 
     def __post_init__(self) -> None:
-        _number("mood", "neutral_valence", self.neutral_valence, -1.0, 1.0)
-        _number("mood", "neutral_arousal", self.neutral_arousal, 0.0, 1.0)
+        for name in ("neutral_valence", "low_valence", "a_bit_low_valence", "good_valence",
+                     "cheerful_valence"):  # fmt: skip
+            _number("mood", name, getattr(self, name), -1.0, 1.0)
+        for name in ("neutral_arousal", "neutral_energy", "event_rate", "tense_arousal",
+                     "tired_energy", "show_closeness", "mask_leak", "stress_gain"):  # fmt: skip
+            _number("mood", name, getattr(self, name), 0.0, 1.0)
+        _number("mood", "half_life_hours", self.half_life_hours, 0.001, 1e6)
         _text("mood", "neutral_label", self.neutral_label)
+        if not (
+            self.low_valence <= self.a_bit_low_valence < self.good_valence <= self.cheerful_valence
+        ):
+            raise ConfigError("mood: need low <= a_bit_low < good <= cheerful valence")
 
     @property
     def neutral(self) -> tuple[float, float]:
@@ -131,8 +152,81 @@ class MoodConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class RelationshipConfig:
+    trust_start: float
+    closeness_start: float
+    hurt_start: float
+    trust_per_exchange: float
+    trust_privacy_answer: float
+    trust_hostile: float
+    closeness_per_exchange: float
+    closeness_disclosure: float
+    hurt_hostile: float
+    apology_factor: float
+    trust_half_life_days: float
+    closeness_half_life_days: float
+    hurt_half_life_days: float
+    hurt_label: float
+
+    def __post_init__(self) -> None:
+        for name in self.__dataclass_fields__:
+            if name.endswith("_half_life_days"):
+                _number("relationship", name, getattr(self, name), 0.001, 1e6)
+            else:
+                _number("relationship", name, getattr(self, name), 0.0, 1.0)
+
+
+@dataclass(frozen=True, slots=True)
+class MoodDriveConfig:
+    warmth_mood: float
+    warmth_closeness: float
+    warmth_hurt: float
+    caution_mood: float
+    caution_trust: float
+    caution_hurt: float
+    energy_mood: float
+    curiosity_energy: float
+    curiosity_closeness: float
+
+    def __post_init__(self) -> None:
+        for name in self.__dataclass_fields__:
+            _number("mood_drive", name, getattr(self, name), 0.0, 1.0)
+
+
+@dataclass(frozen=True, slots=True)
+class PrivacyConfig:
+    categories: tuple[str, ...]
+    prototype_min_similarity: float
+    question_min_similarity: float
+    reask_days: float
+    distress_valence: float
+    distress_arousal: float
+    mediation_k: int
+    judge_memories: int
+    judge_calls: int
+
+    def __post_init__(self) -> None:
+        c = self.categories
+        if not (isinstance(c, tuple) and c and all(isinstance(x, str) and x for x in c)):
+            raise ConfigError(f"privacy.categories must be a non-empty list of ids, got {c!r}")
+        if len(set(c)) != len(c):
+            raise ConfigError("privacy.categories has duplicates")
+        _number("privacy", "prototype_min_similarity", self.prototype_min_similarity, -1.0, 1.0)
+        _number("privacy", "question_min_similarity", self.question_min_similarity, -1.0, 1.0)
+        _number("privacy", "reask_days", self.reask_days, 0.0, 1e6)
+        _number("privacy", "distress_valence", self.distress_valence, -1.0, 1.0)
+        _number("privacy", "distress_arousal", self.distress_arousal, 0.0, 1.0)
+        for name in ("judge_memories", "judge_calls"):
+            _positive_int("privacy", name, getattr(self, name))
+        k = self.mediation_k
+        if not isinstance(k, int) or isinstance(k, bool) or k < 0:
+            raise ConfigError(f"privacy.mediation_k must be an integer >= 0, got {k!r}")
+
+
+@dataclass(frozen=True, slots=True)
 class DriveConfig:
     hunch_min_drive_margin: float
+    full_scale: float
     hunch_clear_intensity: float
     hunch_neutral_valence: float
     hunch_strong_valence: float
@@ -141,6 +235,7 @@ class DriveConfig:
         for name in ("hunch_min_drive_margin", "hunch_clear_intensity", "hunch_neutral_valence",
                      "hunch_strong_valence"):  # fmt: skip
             _number("drive", name, getattr(self, name), 0.0, 1.0)
+        _number("drive", "full_scale", self.full_scale, 0.0001, 4.0)
         if not self.hunch_neutral_valence <= self.hunch_strong_valence:
             raise ConfigError("drive.hunch_strong_valence must be >= hunch_neutral_valence")
 
@@ -190,20 +285,37 @@ class SelectionConfig:
 
 @dataclass(frozen=True, slots=True)
 class RepliesConfig:
+    """Fixed replies. The hunch ones are lists of variants (Berk, Phase 5: the single fixed
+    asked-why reply sounded stiff); the pipeline picks one with its own seeded RNG."""
+
     filter_fallback: str
     gate_fallback: str
-    hunch_fallback: str
-    hunch_fallback_realised: str
-    hunch_offer: str
-    hunch_think_nothing: str
-    hunch_think_realised: str
+    forget_closed: str
+    hunch_fallback: tuple[str, ...]
+    hunch_fallback_realised: tuple[str, ...]
+    hunch_offer: tuple[str, ...]
+    hunch_think_nothing: tuple[str, ...]
+    hunch_think_realised: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        for name in self.__dataclass_fields__:
+        for name in ("filter_fallback", "gate_fallback", "forget_closed"):
             _text("replies", name, getattr(self, name))
-        for name in ("hunch_fallback_realised", "hunch_think_realised"):
-            if "{realisation}" not in getattr(self, name):
-                raise ConfigError(f"replies.{name} must contain {{realisation}}")
+        for name in VARIANT_REPLIES:
+            variants = getattr(self, name)
+            if not (isinstance(variants, tuple) and variants):
+                raise ConfigError(f"replies.{name} must be a non-empty list, got {variants!r}")
+            for i, text in enumerate(variants):
+                _text("replies", f"{name}[{i}]", text)
+                if name in ("hunch_fallback_realised", "hunch_think_realised") and (
+                    "{realisation}" not in text
+                ):
+                    raise ConfigError(f"replies.{name}[{i}] must contain {{realisation}}")
+
+
+VARIANT_REPLIES = (
+    "hunch_fallback", "hunch_fallback_realised", "hunch_offer", "hunch_think_nothing",
+    "hunch_think_realised",
+)  # fmt: skip
 
 
 @dataclass(frozen=True, slots=True)
@@ -225,6 +337,9 @@ class Config:
     generation: GenerationConfig
     session: SessionConfig
     mood: MoodConfig
+    relationship: RelationshipConfig
+    mood_drive: MoodDriveConfig
+    privacy: PrivacyConfig
     drive: DriveConfig
     reflection: ReflectionConfig
     selection: SelectionConfig
@@ -290,6 +405,21 @@ def _reflection(data: dict) -> ReflectionConfig:
     return ReflectionConfig(level_difficulty=tuple(d) if isinstance(d, list) else d, **raw)
 
 
+def _privacy(data: dict) -> PrivacyConfig:
+    raw = dict(_section(data, "privacy", PrivacyConfig))
+    if isinstance(raw["categories"], list):
+        raw["categories"] = tuple(raw["categories"])
+    return PrivacyConfig(**raw)
+
+
+def _replies(data: dict) -> RepliesConfig:
+    raw = dict(_section(data, "replies", RepliesConfig))
+    for name in VARIANT_REPLIES:
+        if isinstance(raw[name], list):
+            raw[name] = tuple(raw[name])
+    return RepliesConfig(**raw)
+
+
 def load_config(path: Path = DEFAULT_CONFIG) -> Config:
     with path.open("rb") as f:
         data = tomllib.load(f)
@@ -302,9 +432,12 @@ def load_config(path: Path = DEFAULT_CONFIG) -> Config:
         generation=GenerationConfig(**_section(data, "generation", GenerationConfig)),
         session=SessionConfig(**_section(data, "session", SessionConfig)),
         mood=MoodConfig(**_section(data, "mood", MoodConfig)),
+        relationship=RelationshipConfig(**_section(data, "relationship", RelationshipConfig)),
+        mood_drive=MoodDriveConfig(**_section(data, "mood_drive", MoodDriveConfig)),
+        privacy=_privacy(data),
         drive=DriveConfig(**_section(data, "drive", DriveConfig)),
         reflection=_reflection(data),
         selection=SelectionConfig(**_section(data, "selection", SelectionConfig)),
-        replies=RepliesConfig(**_section(data, "replies", RepliesConfig)),
+        replies=_replies(data),
         encoding=_encoding(data),
     )
