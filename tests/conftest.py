@@ -29,6 +29,7 @@ AREAS: dict[str, str] = {
     "test_involuntary_and_reconsolidation.py": "recall", "test_simulate_recall.py": "recall",
     "test_pipeline_turn.py": "pipeline", "test_pipeline_prompts.py": "pipeline",
     "test_candidate_filter.py": "pipeline", "test_runtime_cli.py": "pipeline",
+    "test_cue_questions.py": "recall",
     "test_drive.py": "hunch", "test_reflection.py": "hunch",
     "test_reflection_triggers.py": "hunch", "test_pipeline_hunch.py": "hunch",
     "test_no_invented_memory.py": "honesty", "test_hunch_why.py": "hunch",
@@ -38,7 +39,7 @@ AREAS: dict[str, str] = {
     "test_mood.py": "mood", "test_mood_signals.py": "mood",
     "test_privacy_categories.py": "privacy", "test_privacy_answers.py": "privacy",
     "test_pipeline_privacy.py": "privacy", "test_cross_user_privacy.py": "privacy",
-    "test_leak_check.py": "privacy",
+    "test_leak_check.py": "privacy", "test_privacy_question.py": "privacy",
     "test_forget_requests.py": "forget", "test_forget.py": "forget",
     "test_forget_golden.py": "forget",
 }  # fmt: skip

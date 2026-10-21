@@ -101,7 +101,7 @@ SYSTEM_PROMPT = """You extract memory cues from one chat message a user sent. Re
 {{"cues": [{{"type": "<type>", "value": "<value>", "strength": <0.0-1.0>}}]}}
 
 Types:
-- person: people the user knows, named in the message (first names or nicknames as used). Not pronouns, not roles like "my mum", "my dad", "my boss", "my little brother". Not celebrities, artists, singers or fictional characters.
+- person: people the user knows, named in the message (first names or nicknames as used), also when the name is in a question or a request ("should I say yes to Anna's trip?" names Anna). Not pronouns, not roles like "my mum", "my dad", "my boss", "my little brother". Not celebrities, artists, singers or fictional characters.
 - place: named places (cities, countries, named venues, parks, lakes). Not generic places like "home" or "the office".
 - song: song titles. Artist names are not songs.
 - film: film or TV series titles.

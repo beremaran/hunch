@@ -123,6 +123,7 @@ Temel kararları Berk verdi. "Claude (öneri)" satırları, uygulama için gerek
 | Tasarım dokümanı | Bu repodaki `docs/design.md` tek kaynaktır; harici canlı sürüm yok | Berk |
 | Telegram konuşmasının sonu (Faz 6) | Bir konuşma 30 dakika mesajsız kalınca biter. O anda oturum özeti katlanır; konuşmaya bağlı durum (çalışan bellek, geri çağırma sınırı, `Session.last_hunch_id` / `offered_hunch_id`) sıfırlanır. Uzun süreli bellek (anılar, inançlar, ruh hali, ilişki) etkilenmez. Yeni mesaj yeni bir konuşma açar | Berk |
 | Özet katlamanın gecikmesi (Faz 6) | Yeni bir mesaj kuyrukta bekliyorsa oturum özeti katlaması ertelenir; kuyruk boşalınca çalışır. Bu sürede çalışan bellek düz metin kalır, 2.000 token sınırı kısa süre aşılabilir. Gecikme bütçesi (≤ 10 s) öncelikli | Berk |
+| İsim soruda da cue sayılır (Faz 5 sonu, karar) | Bench'te "Anna wants to go sailing again next weekend, should I say yes?" cümlesi hiç cue çıkarmadı (`{"cues": []}`); Anna anısı geri çağrılmadı ve bot "bilgim yok" dedi. Karar: cue prompt'unda kişi kuralına "soru ya da istek cümlesinde de sayılır" eklendi; ünlü ve kurgusal karakter dışlaması aynen kaldı. Ölçüm: heldout3 (40 mesaj, ajan kör yazdı; bu ölçümden sonra artık kör değil) genel geri çağırma %90 → %94, kişi %100 her iki durumda; labelled (ayar seti) kişi kesinliği %70 → %78, genel geri çağırma %85 → %83 (bir duygu cue'su kaybı). Kabul: Berk | Berk |
 
 ## Mimari genel bakış
 
