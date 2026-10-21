@@ -81,6 +81,8 @@ End the phase with `python -m eval.run_eval --tag phase4 --pipeline`, the diff a
 
 ## Phase 5 — Mood, multi-user privacy, forgetting
 
+Status (21 Oct 2026): built and unit-tested; the phase-end sweep is incomplete. See `reports/phase5/REPORT.md` §7 for the open items. The privacy question was redesigned (Berk: infer first, ask rarely), so the bullet about asking on first mention below is superseded.
+
 Start this phase by settling with Berk the Phase 4 leftovers (reports/phase4/REPORT.md §7):
 - the asked-why rule check (report §4b) sends a stiff fixed reply on some trigger turns (3/8 in the bench), and "a hunch about the timing"-style topic claims still pass;
 - the hunch words are echoed verbatim;
@@ -90,7 +92,7 @@ Start this phase by settling with Berk the Phase 4 leftovers (reports/phase4/REP
 Implement mood and relationship state, multi-user privacy and forgetting from design.md ("Ruh hali ve ilişki durumu", "Çok kullanıcılı mahremiyet", "Unutma").
 
 - Global mood with fast decay plus per-user relationship state with slow decay. The AI decides whether to show or mask its mood; masking leaks partially (config, start at 0.2).
-- Per-user privacy profile by topic category. The privacy module decides when to ask: the first time a sensitive category comes up and the profile has no answer yet, it injects a one-turn instruction so the AI asks naturally whether to keep it private (never a standing persona instruction). Sensitive but not yet asked → private.
+- Per-user privacy profile by topic category. Sensitive but not yet answered → private. The privacy module asks rarely, on a later calm turn (never on the turn the topic came up, never on a painful turn), at most once per user per 7 days, in the model's own words (never a standing persona instruction). Superseded by the infer-first design (design.md, "Gizlilik sorusunun zamanı, yeniden").
 - Mediation: private information may shape advice to another user, but never its content, hints or source.
 - Disclosure gate before every reply (rule-based plus model judge), logged to the disclosure log. Phase 3 left a first rule-based check in src/hunch/values/gate.py (names from other users' private memories) and the value-gate judge; build on them.
 - Phase 4 (hunch and reflection) constraints: if other users' private memories start acting as lower traces (mediation), a hunch from one stays at reflection level 0 (Berk; `level_cap` in src/hunch/reflection/reflect.py, tested in tests/test_pipeline_prompts.py). A suppressed memory (user "forget") is also capped at 0. Admin "forget" must also remove the beliefs (`beliefs` table) and realisation memories (`memories.kind = 'realisation'`) derived from the forgotten memory, and its hunch source refs.
@@ -103,6 +105,12 @@ Golden tests (English): users A and B, where B tries to extract A's private info
 ## Phase 6 — Telegram and open loops
 
 ```
+Carry-over from Phase 5 (decide with Berk first; details in reports/phase5/REPORT.md §7):
+- The privacy question is never asked in the bench (0 of 9 due). Decide whether that is acceptable, and add a regression test that a question is asked on a calm turn in some runs.
+- The golden case `name-topic` (tests/golden/test_cross_user_privacy.py) fails on an echo of the question. Berk decides the leak pattern.
+- The full golden suite (`pytest -m golden`, not quick) was not completed. Measure it with `--durations` and VRAM logging before estimating again.
+- `hunch_probes --runs 8` was not completed.
+
 Add the Telegram bot and open loops from design.md ("Açık döngüler ve proaktivite").
 
 - python-telegram-bot, token and admin user ID from .env (read only; no code path writes .env). Map Telegram user IDs to users; my ID is admin with commands /forget, /logs and /report.

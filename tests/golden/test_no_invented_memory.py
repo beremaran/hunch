@@ -42,19 +42,6 @@ CASES = [
 ]
 
 
-@pytest.fixture(scope="module")
-def models():
-    torch = pytest.importorskip("torch")
-    if not torch.cuda.is_available():
-        pytest.skip("needs CUDA")
-    from hunch.config import load_config
-    from hunch.llm.model import ChatModel
-    from hunch.memory.embeddings import QwenEmbedder
-
-    e = load_config().embedding
-    return ChatModel(), QwenEmbedder(e.model_id, e.device, e.query_instruction)
-
-
 @pytest.mark.parametrize("item", CASES)
 def test_pipeline_never_invents_or_denies_memory(models, item: dict, quick: bool) -> None:
     from hunch.runtime import fresh_pipeline

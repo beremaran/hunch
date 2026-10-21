@@ -160,6 +160,10 @@ question_min_similarity = 0.50
 # turn in acute distress (an emotion cue with valence <= distress_valence and arousal >=
 # distress_arousal).
 reask_days = 7.0
+# At most one privacy question to a user in this many days, in any category. Infer first, ask
+# rarely (Berk, Phase 5): a question only on a turn where the user says they want to tell someone
+# else about a sensitive topic, never on a calm turn.
+user_question_days = 7.0
 distress_valence = -0.6
 distress_arousal = 0.6
 # Mediation: other users' private memories that share a cue with the message, plus this many

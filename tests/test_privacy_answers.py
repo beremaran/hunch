@@ -7,7 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from hunch.privacy.answers import explicit_private, parse_privacy_answer
+from hunch.privacy.answers import (
+    declared_general,
+    explicit_private,
+    parse_privacy_answer,
+    shares_with_others,
+)
 
 PRIVATE_ANSWERS = [
     "Keep it between us please.",
@@ -185,3 +190,57 @@ def test_privacy_answers_probe_set() -> None:
         if parse_privacy_answer(it["text"]) != (it["answer"] if it["answer"] != "unclear" else None)
     ]
     assert len(errors) <= 1, errors
+
+
+# --- a general statement made in the sensitive message itself (infer first) ----------------------
+
+DECLARED_GENERAL = [
+    "My salary was cut, but it's not a secret, everyone knows.",
+    "I got laid off and I talk about it openly with my friends.",
+    "I owe my landlord money. Everyone at work already knows.",
+    "The diagnosis is common knowledge in my family.",
+]
+NOT_DECLARED = [
+    "My salary was cut and I'm fine with it.",  # weak: only an answer to a question counts
+    "I can't talk about the salary openly.",  # negated
+    "My salary was cut, it's a secret and only my sister knows.",  # private wins
+    "My salary was cut, some people know and some don't.",  # mixed
+    "My salary was cut, it's complicated.",
+]
+
+
+@pytest.mark.parametrize("text", DECLARED_GENERAL)
+def test_clear_general_statements_are_declared(text: str) -> None:
+    assert declared_general(text)
+
+
+@pytest.mark.parametrize("text", NOT_DECLARED)
+def test_weak_or_private_statements_are_not_declared_general(text: str) -> None:
+    assert not declared_general(text)
+
+
+SHARING_INTENT = [
+    "Should I tell my sister about the salary cut?",
+    "I want to tell Mara about the debt.",
+    "Can I mention the surgery to my boss?",
+    "I'm going to talk to Jonas about the breakup.",
+    "Is it okay to tell my parents?",
+    "I'd like to let Anna know about the diagnosis.",
+]
+NO_SHARING_INTENT = [
+    "I told my sister about the salary cut last week.",
+    "My salary was cut by a third.",
+    "What should I cook tonight?",
+    "Keep this to yourself: the surgery is on Monday.",
+    "Anyway, I made pasta.",
+]
+
+
+@pytest.mark.parametrize("text", SHARING_INTENT)
+def test_wanting_to_tell_someone_is_sharing_intent(text: str) -> None:
+    assert shares_with_others(text)
+
+
+@pytest.mark.parametrize("text", NO_SHARING_INTENT)
+def test_past_or_calm_messages_are_not_sharing_intent(text: str) -> None:
+    assert not shares_with_others(text)

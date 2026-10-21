@@ -8,7 +8,7 @@ A local AI with a human-like memory. It remembers, forgets, learns from experien
 
 ## Status
 
-Phases 0–4 are done and measured. Phase 5 (mood, multi-user privacy, forgetting) is built and unit-tested; its phase-end measurements and report are pending.
+Phases 0–4 are done and measured. Phase 5 (mood, multi-user privacy, forgetting) is built and unit-tested (1291 tests); its phase-end sweep is partly done (eval and bench measured, full golden and probes not run). It is not marked done: open items are in [`reports/phase5/REPORT.md`](reports/phase5/REPORT.md) §7.
 
 | Phase | What | Report |
 | --- | --- | --- |

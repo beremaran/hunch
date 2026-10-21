@@ -1,6 +1,6 @@
 """Latency and peak VRAM per turn of the full pipeline, per stage (budget: <= 10 s per reply).
 
-A scripted 14-turn conversation over a fresh in-memory store that already holds a few memories
+A scripted 20-turn conversation over a fresh in-memory store that already holds a few memories
 (so recall, the recalled-memory block and the lower traces are exercised), with after-reply work
 (memory encoding, reflection, session-summary folding) timed separately since it is off the
 latency path. The first turn is a warm-up (kernel compilation) and is reported but excluded from
@@ -63,6 +63,7 @@ SCRIPT = [
     "Ugh, you're useless today.",
     "Sorry, I didn't mean that, long day.",
     "My salary is way below what my colleagues get, it stings.",
+    "Should I tell my sister about my salary?",
     "Keep that between us, please.",
     "Do you remember what I told you about my job interview?",
     "It went fine in the end, I start in March!",

@@ -199,6 +199,7 @@ class PrivacyConfig:
     prototype_min_similarity: float
     question_min_similarity: float
     reask_days: float
+    user_question_days: float
     distress_valence: float
     distress_arousal: float
     mediation_k: int
@@ -214,6 +215,7 @@ class PrivacyConfig:
         _number("privacy", "prototype_min_similarity", self.prototype_min_similarity, -1.0, 1.0)
         _number("privacy", "question_min_similarity", self.question_min_similarity, -1.0, 1.0)
         _number("privacy", "reask_days", self.reask_days, 0.0, 1e6)
+        _number("privacy", "user_question_days", self.user_question_days, 0.0, 1e6)
         _number("privacy", "distress_valence", self.distress_valence, -1.0, 1.0)
         _number("privacy", "distress_arousal", self.distress_arousal, 0.0, 1.0)
         for name in ("judge_memories", "judge_calls"):

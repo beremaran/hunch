@@ -193,3 +193,52 @@ def explicit_private(text: str) -> bool:
     folded = fold(text).strip()
     cleaned = _THIRD_PARTY.sub(" ", folded)
     return bool(_EXPLICIT.search(cleaned))
+
+
+# A general statement made in the sensitive message itself (Berk, Phase 5: "infer first"). Only
+# strong phrases: "it's fine" or "I don't mind" are too weak to loosen a category without a
+# question, so they count only as an answer to one (parse_privacy_answer).
+_DECLARED_GENERAL = re.compile(
+    "|".join(
+        f"(?:{p})"
+        for p in (
+            _NEGATED_PRIVACY.pattern,
+            r"\bevery(?:one|body)(?:\s+\w+){0,3}\s+(?:knows?|knew|is aware)\b",
+            r"\bi (?:tell|told|talk to|share (?:it )?with|show) (?:everyone|everybody|anyone|"
+            r"anybody)\b",
+            r"\bi\s+(?:talk|speak|discuss|joke|chat|vent|post|tell|share)\w*\b[^.!?]{0,30}\b"
+            r"(?:openly|freely|all the time|publicly)\b",
+            r"\bout in the open\b|\bopen book\b|\bcommon knowledge\b|\bnothing to hide\b",
+            r"(?<!some )\bpeople (?:already )?know\b|\bmost people know\b",
+        )
+    )
+)
+
+
+def declared_general(text: str) -> bool:
+    """True when the message itself says the topic is fine to share ("everyone knows")."""
+    folded = fold(text).strip()
+    if _MIXED.search(folded) or _PRIVATE.search(_NEGATED_PRIVACY.sub(" ", folded)):
+        return False
+    return bool(_DECLARED_GENERAL.search(folded))
+
+
+# The user wants to tell someone else (Berk, Phase 5: the privacy question comes only then, on the
+# same turn). Future or question forms only: "I told my sister" is past and is not intent.
+_SHARE_INTENT = re.compile(
+    "|".join(
+        f"(?:{p})"
+        for p in (
+            r"\b(?:should|shall|want to|wanna|going to|gonna|plan to|like to|thinking of|"
+            r"thinking about|may|might|can|could) (?:i |we )?(?:\w+ ){0,2}?"
+            r"(?:tell|share|mention|bring up|talk to|talk about|let)\b",
+            r"\b(?:okay|ok|fine|alright|allowed|right) (?:if i |to |for me to )"
+            r"(?:tell|share|mention|bring up|talk about)\b",
+        )
+    )
+)
+
+
+def shares_with_others(text: str) -> bool:
+    """True when the message says the user wants to tell someone else about something."""
+    return bool(_SHARE_INTENT.search(fold(text)))

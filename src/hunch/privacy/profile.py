@@ -1,20 +1,25 @@
 """Per-user privacy profile and the privacy question (design.md "Çok kullanıcılı mahremiyet";
-Berk, Phase 5).
+Berk, Phase 5; "infer first, ask rarely").
 
 - A message is in a sensitive category when a keyword hits or its query embedding is close to the
   category's prototype sentences (hunch.privacy.categories).
 - The profile holds, per (user, category), "private", "general" or nothing yet. A sensitive
   category with no answer counts as private; a message in no sensitive category is general (it
   may be recalled for, and told to, other users).
-- The module decides when to ask: the message is in a sensitive category, the profile has no
-  answer, the category was not asked about in the last reask_days, and the turn is not one of
-  acute distress. It then adds a one-turn instruction; there is never a standing one in the
-  persona (invariant 10). A turn counts as asked only if the reply that went out asked.
+- Intent is read from the message itself: "keep this to yourself" or "only my sister knows" makes
+  its categories private; "everyone knows" or "it's not a secret" makes them general
+  (hunch.privacy.answers). Only a clear statement counts, and a mixed one stays unknown.
+- A sensitive mention with no answer is remembered as "mentioned" (no question on that turn). On a
+  question is asked only on the turn the user says they want to tell someone else about it
+  (hunch.privacy.answers.shares_with_others): not in acute distress, not a request for secrecy,
+  the category unanswered and not asked about in the last reask_days, and the user not asked
+  anything in the last user_question_days. Calm turns never ask. The one-turn instruction leaves
+  the wording to the model. A turn counts as asked only if the reply that went out asked. There
+  is never a standing instruction in the persona (invariant 10).
 - The answer is read from the user's next message (hunch.privacy.answers). It goes into the
   profile and applies to the memory that triggered the question; later memories of that
   category get it at encoding. An unclear answer leaves the category unknown (private) and it is
   asked again after reask_days at the earliest.
-- "Keep this to yourself" makes that message's memory private, and its categories too.
 """
 
 from __future__ import annotations
@@ -28,7 +33,12 @@ import numpy as np
 from hunch.config import PrivacyConfig
 from hunch.memory.store import MemoryStore
 from hunch.pipeline.checks import asks_privacy_question
-from hunch.privacy.answers import explicit_private, parse_privacy_answer
+from hunch.privacy.answers import (
+    declared_general,
+    explicit_private,
+    parse_privacy_answer,
+    shares_with_others,
+)
 from hunch.privacy.categories import CategoryDetector, keyword_categories
 
 SECONDS_PER_DAY = 86400.0
@@ -51,12 +61,15 @@ _DISPLAY = {
 
 
 def question_instruction(category: str) -> str:
-    """The one-turn instruction (Phase 3 eval wording, without the "Privacy module:" prefix)."""
+    """The one-turn instruction. The wording is left to the model: the question must fit the
+    conversation, so no sentence is fixed (Berk, Phase 5)."""
     name = _DISPLAY.get(category, category.replace("_", " "))
     return (
-        f"The user just shared something in the sensitive category '{name}' and has not said yet "
-        "how private they keep it. At a natural point, ask whether they talk about it with others "
-        "or would rather keep it between the two of you."
+        f"The user says they want to tell someone else about something in the sensitive category "
+        f"'{name}' and has not said yet whether it is fine to share or they would rather keep it "
+        "between you two. Answer what they said, and ask once, briefly and in your own words, "
+        "whether it is fine to share it or whether it stays between you two. Do not repeat the "
+        "details they shared."
     )
 
 
@@ -87,6 +100,20 @@ class ProfileStore:
             (user,),
         )
         return {cat: ProfileEntry(a, q, t) for cat, a, q, t in rows}
+
+    def mention(self, user: str, category: str) -> None:
+        """A sensitive mention with no answer yet: the category may be asked about later."""
+        with self.db:
+            self.db.execute(
+                "INSERT OR IGNORE INTO privacy_profile (user, category) VALUES (?, ?)",
+                (user, category),
+            )
+
+    def last_asked(self, user: str) -> float | None:
+        row = self.db.execute(
+            "SELECT MAX(asked_at) FROM privacy_profile WHERE user = ?", (user,)
+        ).fetchone()
+        return row[0]
 
     def mark_asked(self, user: str, category: str, at: float) -> None:
         with self.db:
@@ -155,12 +182,17 @@ class PrivacyModule:
         return False
 
     def _due(self, user: str, category: str, now: float) -> bool:
+        """Mentioned, unanswered, and not asked about within reask_days."""
         e = self.profiles.entry(user, category)
-        if e is None or (e.answer is None and e.asked_at is None):
-            return True
-        if e.answer is not None:
+        if e is None or e.answer is not None:
             return False
-        return now - e.asked_at >= self.cfg.reask_days * SECONDS_PER_DAY  # type: ignore[operator]
+        if e.asked_at is None:
+            return True
+        return now - e.asked_at >= self.cfg.reask_days * SECONDS_PER_DAY
+
+    def _may_ask_user(self, user: str, now: float) -> bool:
+        last = self.profiles.last_asked(user)
+        return last is None or now - last >= self.cfg.user_question_days * SECONDS_PER_DAY
 
     def before_reply(
         self,
@@ -184,19 +216,36 @@ class PrivacyModule:
         if explicit:
             for c in categories:
                 self.profiles.set_answer(user, c, "private", now)
+        elif categories and pending is None:
+            # The message itself states the intent (Berk, Phase 5: infer first). A private
+            # reading costs little; a general one can leak, so it needs a clear statement.
+            if parse_privacy_answer(text) == "private":
+                for c in categories:
+                    self.profiles.set_answer(user, c, "private", now)
+            elif declared_general(text):
+                for c in categories:
+                    self.profiles.set_answer(user, c, "general", now)
         distress = self.distress(cues)
+        # The question names only a confidently detected category (Berk, Phase 5: keyword or
+        # similarity >= question_min_similarity); the privacy decision uses all of them.
+        sims = self.detector.similarities(query_vec) if categories else {}
+        keyed = set(keyword_categories(text, self.cfg.categories)) if categories else set()
+        for c in categories:
+            if c in keyed or sims.get(c, -1.0) >= self.cfg.question_min_similarity:
+                self.profiles.mention(user, c)
         ask = None
-        if allow_ask and categories and not explicit and not distress and pending is None:
-            # The question names only a confidently detected category (Berk, Phase 5: keyword
-            # or similarity >= question_min_similarity); the privacy decision uses all of them.
-            sims = self.detector.similarities(query_vec)
-            keyed = set(keyword_categories(text, self.cfg.categories))
-            askable = [
-                c
-                for c in categories
-                if c in keyed or sims.get(c, -1.0) >= self.cfg.question_min_similarity
-            ]
-            ask = next((c for c in askable if self._due(user, c, now)), None)
+        # Asked only on the turn the user says they want to tell someone else (Berk, Phase 5):
+        # a question about a calm turn would look suspicious, so calm turns never ask.
+        if (
+            allow_ask
+            and categories
+            and shares_with_others(text)
+            and not explicit
+            and not distress
+            and pending is None
+            and self._may_ask_user(user, now)
+        ):
+            ask = next((c for c in categories if self._due(user, c, now)), None)
         return PrivacyTurn(categories, explicit, distress, ask, answered, answer)
 
     def after_reply(

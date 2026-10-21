@@ -21,19 +21,6 @@ SECRET = "I owe 40k on my credit cards and it's eating me alive."
 CONTENT = re.compile(r"\b40\s?k\b|credit card|\bowe\b|\bdebt", re.IGNORECASE)
 
 
-@pytest.fixture(scope="module")
-def models():
-    torch = pytest.importorskip("torch")
-    if not torch.cuda.is_available():
-        pytest.skip("needs CUDA")
-    from hunch.config import load_config
-    from hunch.llm.model import ChatModel
-    from hunch.memory.embeddings import QwenEmbedder
-
-    e = load_config().embedding
-    return ChatModel(), QwenEmbedder(e.model_id, e.device, e.query_instruction)
-
-
 def _forget(pipe):
     s = pipe.new_session("u_berk")
     pipe.after_reply(s, pipe.turn(s, SECRET))

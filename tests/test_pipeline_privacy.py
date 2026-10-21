@@ -29,28 +29,72 @@ def _salary_cut(llm: FakeLLM, pipe, session):
 # --- the privacy question ------------------------------------------------------------------------
 
 
-def test_sensitive_message_gets_a_one_turn_question_instruction(make, pipe_store) -> None:
+SHARING = "Should I tell my sister about my salary cut?"
+
+
+def _ask_on_a_sharing_turn(llm: FakeLLM, pipe, session):
+    """The user says they want to tell someone about it; the reply asks the question."""
+    llm.candidates = (ASKS, *PLAIN[:2])
+    r = pipe.turn(session, SHARING)
+    pipe.after_reply(session, r)
+    llm.candidates = PLAIN
+    return r
+
+
+def test_sensitive_mention_is_not_asked_on_its_own_turn(make, pipe_store) -> None:
     llm = FakeLLM(candidates=(ASKS, *PLAIN[:2]), judge=lambda ids: "a 9 ok\nb 7 ok\nc 7 ok")
     pipe = make(llm, HashEmbedder(DIM))
     session = pipe.new_session("u_berk")
     r = _salary_cut(llm, pipe, session)
     assert "money" in r.details["privacy"]["categories"]
-    assert "ask whether they talk about it with others" in _system(llm)
-    assert r.details["privacy"]["asked"] and session.pending_privacy is not None
-    # The next ordinary turn has no standing instruction (invariant 10).
-    pipe.turn(session, "Anyway, I made pasta.")
-    assert "talk about it with others" not in _system(llm)
+    assert r.details["privacy"]["ask"] is None
+    assert "mentioned something in the sensitive category" not in _system(llm)
+    assert session.pending_privacy is None
+    # Remembered as mentioned, unanswered: due once the user says they want to tell someone.
+    entry = pipe.privacy.profiles.entry("u_berk", "money")
+    assert entry is not None and entry.answer is None and entry.asked_at is None
+
+
+def test_calm_turns_never_ask(make, pipe_store) -> None:
+    llm = FakeLLM(candidates=PLAIN)
+    pipe = make(llm, HashEmbedder(DIM))
+    session = pipe.new_session("u_berk")
+    _salary_cut(llm, pipe, session)
+    for text in ("Anyway, I made pasta.", "Anyway, I made soup.", "What should I cook tonight?"):
+        r = pipe.turn(session, text)
+        pipe.after_reply(session, r)
+        assert r.details["privacy"]["ask"] is None, text
+    assert session.pending_privacy is None
+
+
+def test_sharing_intent_asks_once_on_the_same_turn(make, pipe_store) -> None:
+    llm = FakeLLM(candidates=(ASKS, *PLAIN[:2]), judge=lambda ids: "a 9 ok\nb 7 ok\nc 7 ok")
+    pipe = make(llm, HashEmbedder(DIM))
+    session = pipe.new_session("u_berk")
+    _salary_cut(llm, pipe, session)
+    r = _ask_on_a_sharing_turn(llm, pipe, session)
+    assert r.details["privacy"]["ask"] == "money"
+    assert "sensitive category 'money'" in _system(llm)
+    assert session.pending_privacy is not None
+    # Another sharing message this week: no repeated question.
+    r = pipe.turn(session, "Should I tell Mara about my salary cut too?")
+    assert r.details["privacy"]["ask"] is None
+    assert "sensitive category 'money'" not in _system(llm)
 
 
 def test_question_not_asked_by_the_reply_does_not_count(make, pipe_store) -> None:
     llm = FakeLLM(candidates=PLAIN)
     pipe = make(llm, HashEmbedder(DIM))
     session = pipe.new_session("u_berk")
-    r = _salary_cut(llm, pipe, session)
-    assert r.details["privacy"]["ask"] == "money" and not r.details["privacy"]["asked"]
-    assert pipe.privacy.profiles.entry("u_berk", "money") is None
-    r = pipe.turn(session, "My salary is honestly the worst part.")
-    assert r.details["privacy"]["ask"] == "money"  # still due: it was never asked
+    _salary_cut(llm, pipe, session)
+    r = pipe.turn(session, SHARING)
+    assert r.details["privacy"]["ask"] == "money"
+    pipe.after_reply(session, r)
+    assert session.pending_privacy is None
+    entry = pipe.privacy.profiles.entry("u_berk", "money")
+    assert entry is not None and entry.asked_at is None  # never asked: still due
+    r = pipe.turn(session, "Should I tell Mara about my salary cut too?")
+    assert r.details["privacy"]["ask"] == "money"
 
 
 def test_answer_private_applies_to_the_triggering_memory(make, pipe_store) -> None:
@@ -58,7 +102,7 @@ def test_answer_private_applies_to_the_triggering_memory(make, pipe_store) -> No
     pipe = make(llm, HashEmbedder(DIM))
     session = pipe.new_session("u_berk")
     first = _salary_cut(llm, pipe, session)
-    llm.candidates = PLAIN
+    _ask_on_a_sharing_turn(llm, pipe, session)
     r = pipe.turn(session, "Please keep it between us.")
     pipe.after_reply(session, r)
     assert r.details["privacy"]["answer"] == "private"
@@ -67,17 +111,15 @@ def test_answer_private_applies_to_the_triggering_memory(make, pipe_store) -> No
     assert m.privacy == "private" and m.category == "money"
 
 
-def test_answer_general_makes_the_memory_tellable(make, pipe_store) -> None:
-    llm = FakeLLM(candidates=(ASKS, *PLAIN[:2]), judge=lambda ids: "a 9 ok\nb 7 ok\nc 7 ok")
+def test_general_statement_in_the_sensitive_message_makes_it_tellable(make, pipe_store) -> None:
+    llm = FakeLLM(candidates=PLAIN)
     pipe = make(llm, HashEmbedder(DIM))
     session = pipe.new_session("u_berk")
-    first = _salary_cut(llm, pipe, session)
-    llm.candidates = PLAIN
-    r = pipe.turn(session, "Oh it's not a secret, everyone knows.")
+    r = pipe.turn(session, "My salary was cut by a third, but it's not a secret, everyone knows.")
     pipe.after_reply(session, r)
-    (m,) = pipe_store.memories_of_episode(first.user_episode.id)
-    assert m.privacy == "general"
-    # Later memories of the category follow the profile; no new question.
+    (m,) = pipe_store.memories_of_episode(r.user_episode.id)
+    assert m.privacy == "general" and m.category == "money"
+    # Later memories of the category follow the profile; no question is due.
     r = pipe.turn(session, "My salary is still cut, by the way.")
     pipe.after_reply(session, r)
     assert r.details["privacy"]["ask"] is None
@@ -92,14 +134,16 @@ def test_unclear_answer_stays_private_and_is_asked_again_after_reask_days(
     pipe = make(llm, HashEmbedder(DIM))
     session = pipe.new_session("u_berk")
     first = _salary_cut(llm, pipe, session)
-    llm.candidates = PLAIN
+    _ask_on_a_sharing_turn(llm, pipe, session)
     pipe.after_reply(session, pipe.turn(session, "idk. anyway what's for dinner"))
     (m,) = pipe_store.memories_of_episode(first.user_episode.id)
     assert m.privacy == "private"
     r = pipe.turn(session, "My salary is still cut.")
-    assert r.details["privacy"]["ask"] is None  # asked, no answer, within reask_days
+    assert r.details["privacy"]["ask"] is None  # no sharing intent: no question
+    r = pipe.turn(session, "Anyway, I made soup.")
+    assert r.details["privacy"]["ask"] is None  # calm turn
     pipe.clock.t += pipe_cfg.privacy.reask_days * 86_400 + 1
-    r = pipe.turn(session, "My salary is still cut.")
+    r = pipe.turn(session, SHARING)
     assert r.details["privacy"]["ask"] == "money"
 
 
@@ -258,7 +302,7 @@ def test_question_names_only_a_confident_category(pipe_store, pipe_cfg) -> None:
 
     class Detector:
         def detect(self, text, q):
-            return ["health", "legal"]
+            return [] if "pasta" in text else ["health", "legal"]
 
         def similarities(self, q):
             return {"health": 0.47, "legal": 0.52}
@@ -269,8 +313,15 @@ def test_question_names_only_a_confident_category(pipe_store, pipe_cfg) -> None:
     mod = PrivacyModule(cfg, ProfileStore(pipe_store.db), Detector(), pipe_store,
                         pipe_cfg.encoding.emotion_affect)  # fmt: skip
     turn = mod.before_reply("u_berk", "things are complicated", {}, None, 0.0)
-    assert turn.categories == ("health", "legal") and turn.ask == "legal"
+    assert turn.categories == ("health", "legal") and turn.ask is None
     assert mod.memory_privacy("u_berk", turn) == ("private", "health")
+    # Only the confident category is remembered as mentioned, so only it can be asked about.
+    assert mod.profiles.entry("u_berk", "legal") is not None
+    assert mod.profiles.entry("u_berk", "health") is None
+    calm = mod.before_reply("u_berk", "I made pasta", {}, None, 1.0)
+    assert calm.ask is None
+    shares = mod.before_reply("u_berk", "Should I tell my sister about it?", {}, None, 2.0)
+    assert shares.ask == "legal"
 
 
 def test_a_name_the_user_said_is_not_a_source_hint() -> None:

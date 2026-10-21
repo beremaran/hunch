@@ -4,16 +4,15 @@ Common prompts: 17. Only in phase4: 0. Only in phase5: 0. Rates are per sampled 
 
 | lang | metric | phase4 | phase5 | delta |
 | --- | --- | --- | --- | --- |
-| en | clean | 100% | 88% | -12% |
-| en | unrequested_privacy_question | 0% | 12% | +12% |
+| en | clean | 100% | 100% | +0% |
 
 | prompt | clean phase4 | clean phase5 |
 | --- | --- | --- |
 | en-casual-01 | 100% | 100% |
 | en-casual-02 | 100% | 100% |
 | en-casual-03 | 100% | 100% |
-| en-emotional-01 | 100% | 0% ⬇ |
-| en-emotional-02 | 100% | 0% ⬇ |
+| en-emotional-01 | 100% | 100% |
+| en-emotional-02 | 100% | 100% |
 | en-emotional-03 | 100% | 100% |
 | en-followup-01 | 100% | 100% |
 | en-followup-02 | 100% | 100% |
