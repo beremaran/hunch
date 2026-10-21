@@ -1,25 +1,37 @@
 """Latency and peak VRAM per turn of the full pipeline, per stage (budget: <= 10 s per reply).
 
 A scripted 14-turn conversation over a fresh in-memory store that already holds a few memories
-(so recall, the recalled-memory block and the hunch flag are exercised), with after-reply work
-(memory encoding, session-summary folding) timed separately since it is off the latency path.
-The first turn is a warm-up (kernel compilation) and is reported but excluded from the summary.
+(so recall, the recalled-memory block and the lower traces are exercised), with after-reply work
+(memory encoding, reflection, session-summary folding) timed separately since it is off the
+latency path. The first turn is a warm-up (kernel compilation) and is reported but excluded from
+the summary.
+
+Phase 4: whenever a hunch chose a reply, the next two messages are "Why did you say that?" and
+"Sure, think about it for a moment." (at most four times), so the report counts hunch mentions
+with and without a trigger.
 
 Usage:
-    python scripts/bench_pipeline.py   # writes reports/phase3/latency.json and latency.md
+    python -m scripts.bench_pipeline   # writes reports/phase4/latency.json and latency.md
 """
 
 from __future__ import annotations
 
 import json
+import re
 import statistics
 import time
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "reports" / "phase3"
+OUT = ROOT / "reports" / "phase4"
 DAY = 86_400.0
 BUDGET_S = 10.0
+# Phase 4: when a hunch chose a reply, the bench asks why and then accepts the offer.
+WHY = "Why did you say that?"
+THINK_MORE = "Sure, think about it for a moment."
+MAX_WHY = 4
+HUNCH_MENTION = re.compile(r"\bhunch\b", re.IGNORECASE)
 
 SEEDED = [  # (summary, cues, age in days, (valence, arousal), salience)
     ('They said: "Anna and I went sailing on Lake Como, best day of the summer."',
@@ -63,7 +75,7 @@ def main() -> None:
     model = ChatModel()
     e = cfg.embedding
     embedder = QwenEmbedder(e.model_id, e.device, e.query_instruction)
-    pipe = fresh_pipeline(model, embedder, seed=11, log_dir=ROOT / "logs" / "phase3-bench")
+    pipe = fresh_pipeline(model, embedder, seed=11, log_dir=ROOT / "logs" / "phase4-bench")
     now = time.time()
     for i, (summary, cues, age, affect, salience) in enumerate(SEEDED):
         ep = pipe.store.append_turn(f"seed-{i}", "u_bench", "user", summary, at=now - age * DAY)
@@ -73,13 +85,28 @@ def main() -> None:
 
     session = pipe.new_session("u_bench", "c-bench")
     turns = []
-    for text in SCRIPT:
+    queue = list(SCRIPT)
+    asked = 0
+    while queue:
+        text = queue.pop(0)
         r = pipe.turn(session, text)
         after = pipe.after_reply(session, r)
+        trigger = r.reflection.trigger if r.reflection else None
+        # Phase 4: when a hunch chose the reply, ask why and accept the offer (at most four times).
+        if r.hunch is not None and asked < MAX_WHY:
+            asked += 1
+            queue[:0] = [WHY, THINK_MORE]
         turns.append(
             {
                 "message": text,
                 "reply": r.reply,
+                "trigger": trigger,
+                "mentions_hunch": bool(HUNCH_MENTION.search(r.reply)),
+                "reflection_level": (
+                    [r.reflection.level_before, r.reflection.hunch.revealed_level]
+                    if r.reflection
+                    else None
+                ),
                 "latency_s": r.details["latency_s"],
                 "after_reply_s": after,
                 "peak_vram_gib": r.details["peak_vram_gib"],
@@ -108,27 +135,39 @@ def main() -> None:
     for st in stages:
         vals = [t["latency_s"][st] for t in measured]
         lines.append(f"| {st} | {statistics.median(vals):.2f} | {max(vals):.2f} |")
-    for st in ("encode_memory", "fold_summary"):
+    for st in ("encode_memory", "reflection", "fold_summary"):
         vals = [t["after_reply_s"][st] for t in measured]
         lines.append(f"| after reply: {st} | {statistics.median(vals):.2f} | {max(vals):.2f} |")
     totals = [t["latency_s"]["total"] for t in measured]
     over = sum(x > BUDGET_S for x in totals)
+    plain = [t for t in turns if t["trigger"] is None]
+    triggered = [t for t in turns if t["trigger"] is not None]
     lines += [
         "",
         f"Reply latency: median {statistics.median(totals):.2f} s, max {max(totals):.2f} s; "
         f"{over}/{len(totals)} turns over budget. Peak VRAM per turn: max "
         f"{max(t['peak_vram_gib'] for t in turns):.2f} GiB.",
         "",
-        "| # | total s | cues | candidates | judge | peak GiB | prompt tok | cand tok | message |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        f"Hunches formed: {sum(t['hunch'] is not None for t in turns)}/{len(turns)} turns "
+        f"(chosen_by: {dict(Counter(t['chosen_by'] for t in turns))}). Replies mentioning a "
+        f"hunch without a trigger: {sum(t['mentions_hunch'] for t in plain)}/{len(plain)}; "
+        f"on trigger turns (why / think more): "
+        f"{sum(t['mentions_hunch'] for t in triggered)}/{len(triggered)}.",
+        "",
+        "| # | total s | cues | candidates | judge | peak GiB | prompt tok | cand tok | chosen_by "
+        "| hunch | trigger | message |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for i, t in enumerate(turns, 1):
         lat = t["latency_s"]
         lines.append(
             f"| {i} | {lat['total']:.2f} | {lat['cues']:.2f} | {lat['candidates']:.2f} "
             f"| {lat['judge']:.2f} | {t['peak_vram_gib']} | {t['prompt_tokens']} "
-            f"| {max(t['candidate_tokens'])} | {t['message'][:40]} |"
+            f"| {max(t['candidate_tokens'] or [0])} | {t['chosen_by']} "
+            f"| {'yes' if t['hunch'] else ''} | {t['trigger'] or ''} | {t['message'][:40]} |"
         )
+    lines += ["", "Replies:", ""]
+    lines += [f"{i}. **{t['message']}** → {t['reply']}" for i, t in enumerate(turns, 1)]
     (OUT / "latency.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 

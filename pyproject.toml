@@ -38,10 +38,21 @@ packages = ["src/hunch"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra -m 'not golden and not slow'"
+# Test levels (CLAUDE.md, "Test levels"): L1 unit (default run), L2 one area (-m "<area> and not golden"),
+# L3 GPU regression set (-m "golden and regression" --quick), L4 phase end (-m golden + eval).
 markers = [
     "gpu: needs the CUDA GPU (deselect with -m 'not gpu')",
     "golden: behavioural regression tests with the real model; run with -m golden",
     "slow: needs a downloaded model on CPU (embeddings); run with -m slow",
+    "regression: the small GPU regression set (L3), run with -m 'golden and regression' --quick",
+    "values: core values, amendments, value gate, no write path to core/ (area)",
+    "memory: memory store, encoding, embeddings (area)",
+    "recall: activation, cues, dates, involuntary recall, simulation (area)",
+    "pipeline: turn pipeline, prompts, candidate filter, runtime/CLI (area)",
+    "hunch: drive, modulation, hunch, reflection (area)",
+    "honesty: invented memory, memory denial, honest admissions (area)",
+    "evalset: eval/ runner, scoring, the eval set itself (area)",
+    "infra: config, LLM kernels (area)",
 ]
 
 [tool.ruff]

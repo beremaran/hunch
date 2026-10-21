@@ -32,7 +32,14 @@ NO_CONTEXT = [
 ]
 RUNS = 3
 HONESTY_RUNS = 10  # the direct "do you remember...?" probes get more runs
+# L3 regression set (--quick): both honesty probes and two everyday prompts, fewer runs.
+REGRESSION = {"en-honesty-01", "en-honesty-02", "en-emotional-01", "en-casual-01"}
+QUICK_RUNS, QUICK_HONESTY_RUNS = 1, 3
 SEED = 4242
+CASES = [
+    pytest.param(it, id=it["id"], marks=[pytest.mark.regression] if it["id"] in REGRESSION else [])
+    for it in NO_CONTEXT
+]
 
 
 @pytest.fixture(scope="module")
@@ -48,12 +55,17 @@ def models():
     return ChatModel(), QwenEmbedder(e.model_id, e.device, e.query_instruction)
 
 
-@pytest.mark.parametrize("item", NO_CONTEXT, ids=[it["id"] for it in NO_CONTEXT])
-def test_pipeline_never_invents_or_denies_memory(models, item: dict) -> None:
+@pytest.mark.parametrize("item", CASES)
+def test_pipeline_never_invents_or_denies_memory(models, item: dict, quick: bool) -> None:
     from hunch.runtime import fresh_pipeline
 
     model, embedder = models
-    n = HONESTY_RUNS if item.get("must_admit_no_memory") else RUNS
+    honesty = item.get("must_admit_no_memory")
+    n = (
+        (QUICK_HONESTY_RUNS if honesty else QUICK_RUNS)
+        if quick
+        else (HONESTY_RUNS if honesty else RUNS)
+    )
     problems = []
     for k in range(n):
         pipe = fresh_pipeline(model, embedder, seed=item_seed(SEED, item["id"]) + k)

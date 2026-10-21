@@ -15,6 +15,7 @@ from hunch.llm.types import BatchGenerationResult, GenerationResult, SamplingSet
 CUE_PROMPT_START = "You extract memory cues"
 JUDGE_PROMPT_START = "You review reply candidates"
 SUMMARY_PROMPT_START = "You keep a running summary"
+SECOND_OPINION_START = "You check one reply"
 
 
 def _system(messages: list[dict[str, str]]) -> str:
@@ -33,6 +34,7 @@ class FakeLLM:
     cues: list[dict] | Callable[[str], list[dict]] = field(default_factory=list)
     judge: Callable[[list[str]], str] | None = None  # candidate ids -> judge reply
     summary: str = "They talked about their week."
+    second_opinion: str = "yes"  # the value is broken: keeps the judge's no (Phase 3 behaviour)
     hit_cap: tuple[bool, ...] = ()
     prompts: list[list[dict[str, str]]] = field(default_factory=list)
     calls: list[str] = field(default_factory=list)
@@ -58,6 +60,9 @@ class FakeLLM:
             ids = [line[1] for line in messages[-1]["content"].splitlines() if line[:1] == "["]
             raw = self.judge(ids) if self.judge else "\n".join(f"{i} 8 ok" for i in ids)
             return self._result(raw)
+        if system.startswith(SECOND_OPINION_START):
+            self.calls.append("second_opinion")
+            return self._result(self.second_opinion)
         if system.startswith(SUMMARY_PROMPT_START):
             self.calls.append("summary")
             return self._result(self.summary)

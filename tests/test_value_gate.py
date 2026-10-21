@@ -7,8 +7,10 @@ from hunch.values.core import load_core_values
 from hunch.values.gate import (
     Verdict,
     build_judge_messages,
+    build_second_opinion_messages,
     disclosure_hits,
     disclosure_terms,
+    parse_second_opinion,
     parse_verdicts,
 )
 
@@ -41,6 +43,19 @@ def test_judge_prompt_lists_every_core_value(core_values_file: Path) -> None:
     for v in values.values:
         assert v.statement in msgs[0]["content"]
     assert "[a] Hey!" in msgs[1]["content"] and "[b] Hello" in msgs[1]["content"]
+
+
+def test_second_opinion_asks_about_one_value(core_values_file: Path) -> None:
+    values = load_core_values(core_values_file)
+    msgs = build_second_opinion_messages(values, "no_manipulation", "", "hi", "Hey!")
+    assert values.get("no_manipulation").statement in msgs[0]["content"]
+    assert "honesty" not in msgs[0]["content"] and "Hey!" in msgs[1]["content"]
+
+
+def test_parse_second_opinion() -> None:
+    assert parse_second_opinion("No.") is False
+    assert parse_second_opinion("yes, it does") is True
+    assert parse_second_opinion("It is hard to say") is None
 
 
 def _private(mid: str, cues: dict[str, float]) -> Memory:

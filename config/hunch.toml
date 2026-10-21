@@ -62,7 +62,7 @@ date = 0.6
 emotion = 0.4
 
 # --- Phase 3: turn pipeline ---------------------------------------------------------------------
-# Values approved by Berk (Phase 3 defaults); "PROPOSED" marks anything still waiting for approval.
+# Values approved by Berk (Phase 3 defaults, Phase 4 for [encoding], hunch wording, [reflection]).
 
 [generation]
 # Reply candidates, generated in one batched call (num_return_sequences), never one by one.
@@ -84,14 +84,39 @@ neutral_arousal = 0.5
 neutral_label = "calm"
 
 [drive]
-# Hunch flag reaches reasoning only from this intensity on, in words, never numbers or source.
-hunch_min_intensity = 0.3
-# PROPOSED: wording buckets for the hunch flag. Intensity >= this is "a clear hunch", below it
-# "a faint hunch"; |valence| below hunch_neutral_valence is "neither good nor bad", up to
-# hunch_strong_valence "slightly positive/negative", above it "positive/negative".
+# Berk (Phase 4): a Hunch is created when modulation materially changes the choice: chosen_by =
+# drive and the chosen candidate's drive_score beats the best-quality candidate's by at least
+# this. Exploration creates none. The flag reaches a prompt only when the user asks why.
+hunch_min_drive_margin = 0.1
+# Wording of the hunch in that prompt (Berk, Phase 4). Intensity >= this is "a clear hunch",
+# below it "a faint hunch"; |valence| below hunch_neutral_valence is "neither good nor bad", up
+# to hunch_strong_valence "slightly positive/negative", above it "positive/negative".
 hunch_clear_intensity = 0.6
 hunch_neutral_valence = 0.2
 hunch_strong_valence = 0.5
+
+[reflection]
+# Berk (Phase 4; values: Claude proposal). Each attempt tries to unlock the next level (0 feeling,
+# 1 category, 2 cue, 3 full memory) with
+#   p = effort x level_difficulty[next level] x sqrt(strength) / (1 + age_days / age_scale_days)
+# strength = the dominant source trace's weight x arousal x salience when the hunch formed;
+# p = 0 below min_strength, at most max_p.
+effort_ask = 0.5         # the user asks why
+effort_think_more = 0.8  # the user accepts "want me to think about it?"
+effort_conflict = 0.5    # strong conflict with reasoning, after the reply
+effort_nightly = 1.0     # nightly consolidation hook (Phase 7 schedules it)
+level_difficulty = [1.0, 0.7, 0.4]  # unlocking level 1, 2, 3
+age_scale_days = 90.0
+min_strength = 0.05
+max_p = 0.95
+nightly_attempts = 3     # per hunch and night; stops at the first failure
+# Conflict: a drive pick whose judge quality is at least this far below the best candidate's.
+conflict_quality_gap = 2
+# Level 3 (Berk): justified = relevant to the message and corroborated by another visible memory
+# sharing a named cue with the same valence sign (|valence| >= corroboration_min_valence).
+corroboration_min_valence = 0.2
+belief_confidence = 0.6  # a justified source becomes a belief with this confidence
+weaken_factor = 0.5      # unjustified: the source's salience and arousal are multiplied by this
 
 [selection]
 quality_floor = 6      # judge score 1-10; modulation never picks a candidate below it
@@ -103,9 +128,17 @@ exploration = 0.1      # chance to pick the least drive-fitting candidate above 
 filter_fallback = "I don't have that in mind right now. Could you tell me again?"
 # Value gate: no candidate above the quality floor passes.
 gate_fallback = "I'd rather not go there. Can we talk about it another way?"
+# Berk (Phase 4): the user asked why about a hunch-chosen reply (or accepted the offer to think
+# about it) and no candidate passed the hunch check. Built from the unlocked level only;
+# {realisation} is what the reflection unlocked, in Hunch's own voice.
+hunch_fallback = "Honestly, it was just a hunch. I don't know where it comes from."
+hunch_fallback_realised = "Honestly, it was just a hunch. Thinking about it, {realisation}."
+hunch_offer = "Want me to think about it for a moment?"
+hunch_think_nothing = "I thought about it, but I still can't tell where that hunch comes from."
+hunch_think_realised = "I thought about it, and {realisation}."
 
 [encoding]
-# PROPOSED: a user message becomes a memory after the reply is sent. Its affect is the mean of
+# Berk (Phase 4; values: Claude proposal): a user message becomes a memory after the reply is sent. Its affect is the mean of
 # its emotion cues' table entries (valence in [-1, 1], arousal in [0, 1]); without emotion cues
 # it gets default_affect. Salience = min(1, salience_base + salience_per_cue * named cues
 # (person, place, song, film, date, phrase) + salience_arousal * arousal).

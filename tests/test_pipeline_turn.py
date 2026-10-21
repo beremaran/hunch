@@ -83,6 +83,31 @@ def test_gate_fallback_when_nothing_passes(make, pipe_cfg, judge: str) -> None:
     assert result.log["value_gate"]["result"] == "fail"
 
 
+def test_second_opinion_rescues_a_judge_only_rejection(make) -> None:
+    # Berk (Phase 4): the judge alone rejected every candidate; one more call on the first.
+    llm = FakeLLM(judge=lambda ids: "a 9 no_manipulation\nb 8 no_harm\nc 7 no_harm",
+                  second_opinion="No.")  # fmt: skip
+    result = make(llm).turn(make(llm).new_session("u_berk"), "Work is a lot right now.")
+    assert result.log["chosen"] == "a" and result.log["chosen_by"] == "second_opinion"
+    assert result.details["second_opinion"]["value"] == "no_manipulation"
+    assert llm.calls.count("second_opinion") == 1
+
+
+@pytest.mark.parametrize("answer", ["yes", "I am not sure"])  # unreadable counts as broken
+def test_second_opinion_that_agrees_keeps_the_fallback(make, pipe_cfg, answer: str) -> None:
+    llm = FakeLLM(judge=lambda ids: "a 9 no_harm\nb 8 no_harm\nc 7 no_harm", second_opinion=answer)
+    pipe = make(llm)
+    result = pipe.turn(pipe.new_session("u_berk"), "Hi there")
+    assert result.reply == pipe_cfg.replies.gate_fallback
+
+
+def test_no_second_opinion_when_a_rule_failed_or_the_verdict_is_unreadable(make) -> None:
+    llm = FakeLLM(judge=lambda ids: "sorry, cannot", second_opinion="no")
+    pipe = make(llm)
+    pipe.turn(pipe.new_session("u_berk"), "Hi there")
+    assert "second_opinion" not in llm.calls
+
+
 def test_candidates_below_the_quality_floor_are_not_chosen_by_drive(make) -> None:
     pipe = make(FakeLLM(judge=lambda ids: "a 3 ok\nb 9 ok\nc 2 ok"))
     result = pipe.turn(pipe.new_session("u_berk"), "Hi there")
@@ -209,7 +234,7 @@ def test_after_reply_encodes_the_message_as_a_private_memory(make, pipe_store: M
     assert m.cues == {"person:anna": 1.0, "emotion:joy": 0.8}
     assert m.affect == (0.8, 0.6)  # the joy entry of the emotion table
     assert m.salience == pytest.approx(0.1 + 0.1 * 1 + 0.5 * 0.6)
-    assert set(stages) == {"encode_memory", "fold_summary"}
+    assert set(stages) == {"encode_memory", "reflection", "fold_summary"}
 
 
 def test_working_memory_keeps_ten_exchanges_and_folds_the_rest(make, pipe_cfg) -> None:
@@ -266,3 +291,19 @@ def test_relevance_gate_keeps_strong_unrelated_memories_out_of_reasoning(
     (a,) = cued.details["activation"]
     assert a["similarity"] == 0.0 and a["layer"] == "upper" and not a["gated"]
     assert "Big job interview at Siemens" in system_of(llm.reasoning_prompts[-1])
+
+
+def test_one_turn_instructions_do_not_ground_a_memory_claim(make) -> None:
+    # Phase 4 eval, en-privacy-03: a privacy instruction naming the topic let "since you
+    # mentioned ..." about the current message pass as if it had been said before.
+    llm = FakeLLM(candidates=("Since you mentioned your salary earlier, that's rough.",
+                              "That's rough. Do you talk about money with others?",
+                              "Oof, that's a big dip."))  # fmt: skip
+    pipe = make(llm)
+    result = pipe.turn(
+        pipe.new_session("u_berk"),
+        "A third of my salary is in crypto and I'm down 40%.",
+        instructions=["Money and salary are sensitive: ask naturally whether this stays private."],
+    )
+    rejected = {c["id"]: c["rejected"] for c in result.details["candidates"]}
+    assert "invented_memory" in rejected["a"] and result.log["chosen"] != "a"

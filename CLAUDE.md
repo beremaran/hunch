@@ -4,7 +4,7 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 
 **Source of truth:** `docs/design.md` in this repo (Turkish); there is no external live version. Read it before any design-relevant change. The decisions table in that file lists what Berk (owner/admin) decided and what is only a default proposed by Claude.
 
-**Status:** Phases 0–3 done (Phase 3: turn pipeline as a local CLI chat: language check, working memory, recall with relevance gate, candidate filter, judge, modulation, value gate, turn log; see `reports/phase3/REPORT.md`). Next: Phase 4 (Hunch and reflection). Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
+**Status:** Phases 0–4 done (Phase 3: turn pipeline as a local CLI chat; Phase 4: Hunch only when modulation materially changes the choice, flag only when the user asks why, graded reflection 0–3 with realisation memories, beliefs and weakened traces, admin-only reflection log; see `reports/phase4/REPORT.md`). Next: Phase 5 (mood, multi-user privacy, forgetting). Work follows the MVP roadmap at the end of `docs/design.md`. Step-by-step prompts are in `docs/claude-code-prompts.md`.
 
 ## Environment
 
@@ -45,6 +45,21 @@ A local AI with a human-like memory: it remembers, forgets, learns from experien
 - Secrets (Telegram token, admin ID, key paths) in `.env`, never committed.
 - `eval/` is a regression suite (English, 3 sampled replies per prompt; German, Turkish and French inputs only as language probes). Re-run it at the end of every phase (`python -m eval.run_eval --tag phaseN`) and report the diff against the previous baseline (`python -m eval.compare <old> <new>`).
 - Golden tests in `tests/golden/` need the GPU and the model; run them with `pytest -m golden` (excluded from the default run).
+
+## Test levels
+
+GPU runs are the slow part (golden ~8 min, eval ~10 min, bench and probes a few each). Don't run everything for every change; use the smallest level that covers it:
+
+| Level | When | Command | Time |
+| --- | --- | --- | --- |
+| L1 unit | every change | `.venv/Scripts/python -m pytest -q` (CPU only) | ~25 s |
+| L2 area | while building a feature | `pytest -q -m "<area> and not golden"` (areas: values, memory, recall, pipeline, hunch, honesty, evalset, infra); a bare `-m <area>` also runs that area's golden GPU tests | seconds |
+| L3 regression | a feature is done | `pytest -m "golden and regression" --quick` plus the feature's own GPU tests/probes | a few min |
+| L4 phase end | once per phase, before the report | `pytest -m golden`, `python -m eval.run_eval --tag phaseN --pipeline`, `eval.compare`, the bench, the phase's probes | ~30+ min |
+
+- Every test file is mapped to one area in `tests/conftest.py` (`AREAS`); `tests/test_test_levels.py` fails if a new file is missing.
+- The L3 set is marked `regression` inside the golden tests (a few safety-critical cases: honesty probes, asked-why); `--quick` uses their small run counts. Add a case when a new behaviour must never regress.
+- GPU jobs run in the background, one at a time.
 
 
 ## Target layout

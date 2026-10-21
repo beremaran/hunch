@@ -13,7 +13,9 @@ yet and stays neutral.
   A memory above tau_upper that did not fit the per-turn cap counts fully; one held back by the
   relevance gate counts by its relevance, similarity / min_similarity (Berk: not at full weight).
 - The hunch flag (valence, intensity) is the only thing about the lower layer that may reach
-  reasoning (invariant 2), and only from hunch_min_intensity on, as words.
+  reasoning (invariant 2), as words. Since Phase 4 a Hunch forms only when modulation materially
+  changes the choice, and its flag reaches a prompt only when the user asks why
+  (hunch.pipeline.turn, hunch.reflection).
 - Candidate features are rule-based and cheap: warm words -> warmth, hedges -> caution,
   questions -> curiosity, "!" and shortness -> energy. drive_score is 0.5 for a neutral drive (no
   preference) and moves toward 1 for candidates that lean the way the drive leans.

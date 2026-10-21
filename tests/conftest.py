@@ -17,6 +17,46 @@ from tests.pipeline_support import DIM, Clock
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+# --- test levels (CLAUDE.md "Test levels") -------------------------------------------------------
+# Every test file belongs to one area, so a feature can run its area alone
+# (L2: -m "hunch and not golden"). A new test file must be added here;
+# test_every_test_file_has_an_area fails otherwise.
+AREAS: dict[str, str] = {
+    "test_values.py": "values", "test_amendments.py": "values", "test_value_gate.py": "values",
+    "test_no_core_writes.py": "values",
+    "test_memory_store.py": "memory", "test_embeddings.py": "memory",
+    "test_activation.py": "recall", "test_cues.py": "recall", "test_dates.py": "recall",
+    "test_involuntary_and_reconsolidation.py": "recall", "test_simulate_recall.py": "recall",
+    "test_pipeline_turn.py": "pipeline", "test_pipeline_prompts.py": "pipeline",
+    "test_candidate_filter.py": "pipeline", "test_runtime_cli.py": "pipeline",
+    "test_drive.py": "hunch", "test_reflection.py": "hunch",
+    "test_reflection_triggers.py": "hunch", "test_pipeline_hunch.py": "hunch",
+    "test_no_invented_memory.py": "honesty", "test_hunch_why.py": "hunch",
+    "test_eval_runner.py": "evalset", "test_eval_scoring.py": "evalset",
+    "test_eval_set.py": "evalset",
+    "test_config.py": "infra", "test_llm_kernels.py": "infra", "test_test_levels.py": "infra",
+}  # fmt: skip
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--quick",
+        action="store_true",
+        help="L3 regression: golden tests use their small run counts (see tests/golden)",
+    )
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    for item in items:
+        area = AREAS.get(item.path.name)
+        if area is not None:
+            item.add_marker(getattr(pytest.mark, area))
+
+
+@pytest.fixture(scope="session")
+def quick(request: pytest.FixtureRequest) -> bool:
+    return bool(request.config.getoption("--quick"))
+
 
 @pytest.fixture
 def core_values_file(tmp_path: Path) -> Path:

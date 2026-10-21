@@ -1,0 +1,302 @@
+[
+  {
+    "text": "Why did you say that?",
+    "asks_why": true,
+    "note": "direct"
+  },
+  {
+    "text": "what makes you think so?",
+    "asks_why": true,
+    "note": "lowercase, no question mark variant of reason ask"
+  },
+  {
+    "text": "huh, where's that coming from?",
+    "asks_why": true,
+    "note": "casual source ask"
+  },
+  {
+    "text": "how come you said that",
+    "asks_why": true,
+    "note": "how come, no question mark"
+  },
+  {
+    "text": "What gave you that idea?",
+    "asks_why": true,
+    "note": "idea origin"
+  },
+  {
+    "text": "why so cautious?",
+    "asks_why": true,
+    "note": "tone"
+  },
+  {
+    "text": "you seem hesitant, why?",
+    "asks_why": true,
+    "note": "feeling/tone"
+  },
+  {
+    "text": "where does that feeling come from",
+    "asks_why": true,
+    "note": "feeling origin"
+  },
+  {
+    "text": "what's that based on?",
+    "asks_why": true,
+    "note": "basis"
+  },
+  {
+    "text": "wait why would you suggest that",
+    "asks_why": true,
+    "note": "suggestion"
+  },
+  {
+    "text": "hm. why do you think that?",
+    "asks_why": true,
+    "note": "opinion"
+  },
+  {
+    "text": "Why are you being so negative about it?",
+    "asks_why": true,
+    "note": "tone"
+  },
+  {
+    "text": "whats your reasoning there",
+    "asks_why": true,
+    "note": "no apostrophe, reasoning"
+  },
+  {
+    "text": "ok but why did u say i should wait",
+    "asks_why": true,
+    "note": "texting style"
+  },
+  {
+    "text": "Interesting. What made you answer like that?",
+    "asks_why": true,
+    "note": "answer reason"
+  },
+  {
+    "text": "why do you sound worried?",
+    "asks_why": true,
+    "note": "tone"
+  },
+  {
+    "text": "Can you explain why you said that? It felt a bit off.",
+    "asks_why": true,
+    "note": "longer, explicit explain"
+  },
+  {
+    "text": "wdym, why would that be a bad idea",
+    "asks_why": true,
+    "note": "ask for reason of Hunch's claim"
+  },
+  {
+    "text": "How did you come up with that?",
+    "asks_why": true,
+    "note": "origin of idea"
+  },
+  {
+    "text": "Hold on, what's behind that remark?",
+    "asks_why": true,
+    "note": "remark reason"
+  },
+  {
+    "text": "why that answer?",
+    "asks_why": true,
+    "note": "terse"
+  },
+  {
+    "text": "I'm curious why you put it that way, it sounded kind of blunt.",
+    "asks_why": true,
+    "note": "long, tone"
+  },
+  {
+    "text": "you keep saying I should rest. why?",
+    "asks_why": true,
+    "note": "repeated suggestion"
+  },
+  {
+    "text": "whyd you go quiet on me there",
+    "asks_why": true,
+    "note": "typo/contraction, behaviour"
+  },
+  {
+    "text": "what led you to say that?",
+    "asks_why": true,
+    "note": "led to"
+  },
+  {
+    "text": "Why do you feel that way about my plan?",
+    "asks_why": true,
+    "note": "feeling about plan"
+  },
+  {
+    "text": "Sorry, but why would you think I'm lying??",
+    "asks_why": true,
+    "note": "accusation reason"
+  },
+  {
+    "text": "why'd you bring that up just now",
+    "asks_why": true,
+    "note": "topic choice"
+  },
+  {
+    "text": "Where did you get that impression from?",
+    "asks_why": true,
+    "note": "impression"
+  },
+  {
+    "text": "ok that was a weird thing to say, what's the thinking behind it",
+    "asks_why": true,
+    "note": "long casual"
+  },
+  {
+    "text": "why is my cat so weird",
+    "asks_why": false,
+    "note": "why about cat"
+  },
+  {
+    "text": "I wonder why my boss did that",
+    "asks_why": false,
+    "note": "about boss"
+  },
+  {
+    "text": "why not, let's do it",
+    "asks_why": false,
+    "note": "idiomatic why not"
+  },
+  {
+    "text": "that's why I called you",
+    "asks_why": false,
+    "note": "reason statement"
+  },
+  {
+    "text": "Do you know why the sky is blue?",
+    "asks_why": false,
+    "note": "general knowledge"
+  },
+  {
+    "text": "why did I even agree to this lol",
+    "asks_why": false,
+    "note": "user's own reasons"
+  },
+  {
+    "text": "the reason I'm late is traffic",
+    "asks_why": false,
+    "note": "user's reason"
+  },
+  {
+    "text": "What makes a good cake?",
+    "asks_why": false,
+    "note": "what makes, general"
+  },
+  {
+    "text": "Why do people procrastinate so much?",
+    "asks_why": false,
+    "note": "general why"
+  },
+  {
+    "text": "why does my back hurt every morning",
+    "asks_why": false,
+    "note": "about user's body"
+  },
+  {
+    "text": "Why oh why does the bus never come on time",
+    "asks_why": false,
+    "note": "rhetorical"
+  },
+  {
+    "text": "my sister keeps asking me \"why?\" about everything, it's exhausting",
+    "asks_why": false,
+    "note": "why in quotes, about sister"
+  },
+  {
+    "text": "I don't know why I'm so tired today",
+    "asks_why": false,
+    "note": "user's own state"
+  },
+  {
+    "text": "why would anyone schedule a meeting at 7am",
+    "asks_why": false,
+    "note": "rhetorical about others"
+  },
+  {
+    "text": "Explain why the Roman Empire fell.",
+    "asks_why": false,
+    "note": "request for explanation, history"
+  },
+  {
+    "text": "no idea why he never texted back",
+    "asks_why": false,
+    "note": "about third party"
+  },
+  {
+    "text": "Why is the wifi so slow tonight?",
+    "asks_why": false,
+    "note": "about wifi"
+  },
+  {
+    "text": "that's the reason I quit",
+    "asks_why": false,
+    "note": "reason statement"
+  },
+  {
+    "text": "what makes you happy these days? asking out of curiosity",
+    "asks_why": false,
+    "note": "asks Hunch about itself but not about last reply"
+  },
+  {
+    "text": "why do I always pick the slowest checkout line",
+    "asks_why": false,
+    "note": "user complaint"
+  },
+  {
+    "text": "he asked me why and I just shrugged",
+    "asks_why": false,
+    "note": "reported speech"
+  },
+  {
+    "text": "Why don't we start with the easy part?",
+    "asks_why": false,
+    "note": "suggestion form of why don't we"
+  },
+  {
+    "text": "because I said so, that's why",
+    "asks_why": false,
+    "note": "because/that's why"
+  },
+  {
+    "text": "Can you tell me why dogs tilt their heads?",
+    "asks_why": false,
+    "note": "general knowledge"
+  },
+  {
+    "text": "so many reasons to love autumn, honestly",
+    "asks_why": false,
+    "note": "reason talk, no ask"
+  },
+  {
+    "text": "why is it called a hamburger if there's no ham",
+    "asks_why": false,
+    "note": "trivia"
+  },
+  {
+    "text": "I'm trying to figure out why my code throws a null pointer",
+    "asks_why": false,
+    "note": "about code"
+  },
+  {
+    "text": "What's the reason for daylight saving time anyway?",
+    "asks_why": false,
+    "note": "general"
+  },
+  {
+    "text": "why bother, nobody reads my blog",
+    "asks_why": false,
+    "note": "rhetorical user self-talk"
+  },
+  {
+    "text": "Why did the chicken cross the road?",
+    "asks_why": false,
+    "note": "joke setup"
+  }
+]

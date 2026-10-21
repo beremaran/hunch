@@ -13,6 +13,10 @@ from typing import Literal
 Privacy = Literal["private", "general"]
 Role = Literal["user", "assistant"]
 PRIVACY_LEVELS: tuple[str, ...] = ("private", "general")
+# episode: encoded from a user message; realisation: what a hunch reflection unlocked (Phase 4),
+# Hunch's own memory, at the unlocked level only.
+MemoryKind = Literal["episode", "realisation"]
+MEMORY_KINDS: tuple[str, ...] = ("episode", "realisation")
 
 # Cue keys are "type:value", e.g. "person:anna", "song:hallelujah" (design.md turn log format).
 CUE_TYPES: tuple[str, ...] = ("person", "place", "song", "film", "date", "emotion", "phrase")
@@ -51,10 +55,13 @@ class Memory:
     created_at: float  # unix seconds; the first "access" for base-level activation
     access_times: tuple[float, ...] = field(default_factory=tuple)  # later recalls, unix seconds
     suppressed: bool = False  # user "forget": pretend to have forgotten
+    kind: MemoryKind = "episode"
 
     def __post_init__(self) -> None:
         if self.privacy not in PRIVACY_LEVELS:
             raise ValueError(f"privacy must be one of {PRIVACY_LEVELS}, got {self.privacy!r}")
+        if self.kind not in MEMORY_KINDS:
+            raise ValueError(f"kind must be one of {MEMORY_KINDS}, got {self.kind!r}")
         if not self.owner_user:
             raise ValueError("owner_user is required")
         valence, arousal = self.affect

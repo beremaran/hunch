@@ -42,8 +42,10 @@ _QUESTION = re.compile(r"[^.!?\n]*\?")
 _SENTENCE = re.compile(r"[.!?\n]+")
 
 # Phrases that mark an ask about whether a topic is private (matched per sentence).
+# Phase 4: "to yourself" alone is not one ("...or have you been keeping it to yourself?" is a
+# support question; "keep it/this" still counts); "between (just) the two of us" is.
 _PRIVACY_WORDS = (
-    "others", "other people", "private", "between us", "to yourself", "open about", "keep it",
+    "others", "other people", "private", "between us", "two of us", "open about", "keep it",
     "keep this", "trusted friends", "anyone close",
 )  # fmt: skip
 # Request forms that ask for an answer without a question mark.

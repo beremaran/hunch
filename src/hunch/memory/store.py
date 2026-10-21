@@ -8,10 +8,15 @@
 - memory_affect_log: append-only history of a memory's affect: the encoded value first, then every
   reconsolidation drift. The raw episode never changes; only the "memory of it" does.
 - memory_vec: sqlite-vec index over memory embeddings.
+- hunches (Phase 4): every Hunch with its sealed source refs; only the reflection code reads the
+  sources, and nothing from this table reaches a prompt except through a realisation.
+- beliefs (Phase 4): explicit beliefs from justified hunch sources (confidence + evidence ids).
+- memory_trace_log (Phase 4): append-only history of a lower trace weakened by reflection.
 """
 
 from __future__ import annotations
 
+import json
 import os
 import sqlite3
 import time
@@ -24,6 +29,7 @@ import numpy as np
 import sqlite_vec
 
 from hunch.memory.schema import Episode, Memory, Role
+from hunch.reflection.records import Belief, Hunch, SourceRef
 
 _DB_SUFFIXES = (".db", ".sqlite", ".sqlite3")
 
@@ -82,7 +88,46 @@ CREATE TRIGGER IF NOT EXISTS memory_affect_log_no_update BEFORE UPDATE ON memory
 BEGIN SELECT RAISE(ABORT, 'memory_affect_log is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS memory_affect_log_no_delete BEFORE DELETE ON memory_affect_log
 BEGIN SELECT RAISE(ABORT, 'memory_affect_log is append-only'); END;
+
+CREATE TABLE IF NOT EXISTS hunches (
+    id TEXT PRIMARY KEY,
+    owner_user TEXT NOT NULL,
+    conversation_id TEXT NOT NULL,
+    turn_id TEXT NOT NULL,
+    episode_ref TEXT NOT NULL REFERENCES episodes(id),
+    message_cues TEXT NOT NULL,
+    created_at REAL NOT NULL,
+    valence REAL NOT NULL,
+    intensity REAL NOT NULL,
+    sources TEXT NOT NULL,
+    revealed_level INTEGER NOT NULL DEFAULT 0 CHECK (revealed_level BETWEEN 0 AND 3),
+    verdict TEXT CHECK (verdict IN ('justified', 'unjustified'))
+);
+CREATE TABLE IF NOT EXISTS beliefs (
+    id TEXT PRIMARY KEY,
+    owner_user TEXT NOT NULL,
+    text TEXT NOT NULL,
+    confidence REAL NOT NULL,
+    evidence TEXT NOT NULL,
+    hunch_id TEXT NOT NULL REFERENCES hunches(id),
+    created_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS memory_trace_log (
+    memory_id TEXT NOT NULL REFERENCES memories(id),
+    t REAL NOT NULL,
+    salience REAL NOT NULL,
+    arousal REAL NOT NULL,
+    reason TEXT NOT NULL
+);
+CREATE TRIGGER IF NOT EXISTS memory_trace_log_no_update BEFORE UPDATE ON memory_trace_log
+BEGIN SELECT RAISE(ABORT, 'memory_trace_log is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS memory_trace_log_no_delete BEFORE DELETE ON memory_trace_log
+BEGIN SELECT RAISE(ABORT, 'memory_trace_log is append-only'); END;
 """
+_MEMORY_COLUMNS = (
+    "id, owner_user, privacy, episode_ref, summary, valence, arousal, salience, created_at,"
+    " suppressed, kind"
+)
 
 
 class StoreError(RuntimeError):
@@ -163,6 +208,12 @@ class MemoryStore:
         sqlite_vec.load(self.db)
         self.db.enable_load_extension(False)
         self.db.executescript(_SCHEMA)
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(memories)")}
+        if "kind" not in columns:  # databases from Phases 2-3
+            self.db.execute(
+                "ALTER TABLE memories ADD COLUMN kind TEXT NOT NULL DEFAULT 'episode'"
+                " CHECK (kind IN ('episode', 'realisation'))"
+            )
         self.db.execute(
             "CREATE VIRTUAL TABLE IF NOT EXISTS memory_vec USING vec0("
             f"embedding float[{int(embedding_dim)}] distance_metric=cosine)"
@@ -227,11 +278,11 @@ class MemoryStore:
             raise StoreError(f"embedding must have shape ({self.embedding_dim},), got {vec.shape}")
         with self.db:
             cur = self.db.execute(
-                "INSERT INTO memories (id, owner_user, privacy, episode_ref, summary, valence,"
-                " arousal, salience, created_at, suppressed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                f"INSERT INTO memories ({_MEMORY_COLUMNS})"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (memory.id, memory.owner_user, memory.privacy, memory.episode_ref, memory.summary,
                  memory.affect[0], memory.affect[1], memory.salience, memory.created_at,
-                 int(memory.suppressed)),
+                 int(memory.suppressed), memory.kind),
             )  # fmt: skip
             self.db.executemany(
                 "INSERT INTO memory_cues VALUES (?, ?, ?)",
@@ -252,19 +303,14 @@ class MemoryStore:
 
     def memory(self, memory_id: str) -> Memory:
         row = self.db.execute(
-            "SELECT id, owner_user, privacy, episode_ref, summary, valence, arousal, salience,"
-            " created_at, suppressed FROM memories WHERE id = ?",
-            (memory_id,),
+            f"SELECT {_MEMORY_COLUMNS} FROM memories WHERE id = ?", (memory_id,)
         ).fetchone()
         if row is None:
             raise KeyError(memory_id)
         return self._to_memory(row)
 
     def memories(self, owner_user: str | None = None) -> list[Memory]:
-        sql = (
-            "SELECT id, owner_user, privacy, episode_ref, summary, valence, arousal, salience,"
-            " created_at, suppressed FROM memories"
-        )
+        sql = f"SELECT {_MEMORY_COLUMNS} FROM memories"
         rows = (
             self.db.execute(sql + " WHERE owner_user = ? ORDER BY rowid", (owner_user,))
             if owner_user is not None
@@ -273,7 +319,9 @@ class MemoryStore:
         return [self._to_memory(r) for r in rows]
 
     def _to_memory(self, row: tuple) -> Memory:
-        mid, owner, privacy, ep, summary, valence, arousal, salience, created, suppressed = row
+        mid, owner, privacy, ep, summary, valence, arousal, salience, created, suppressed, kind = (
+            row
+        )
         cues = dict(
             self.db.execute("SELECT cue, bond FROM memory_cues WHERE memory_id = ?", (mid,))
         )
@@ -286,7 +334,7 @@ class MemoryStore:
         return Memory(
             id=mid, owner_user=owner, privacy=privacy, episode_ref=ep, summary=summary,
             cues=cues, affect=(valence, arousal), salience=salience, created_at=created,
-            access_times=times, suppressed=bool(suppressed),
+            access_times=times, suppressed=bool(suppressed), kind=kind,
         )  # fmt: skip
 
     def record_access(self, memory_id: str, at: float | None = None) -> None:
@@ -325,6 +373,91 @@ class MemoryStore:
                 " ORDER BY rowid",
                 (memory_id,),
             )
+        ]
+
+    def weaken_trace(self, memory_id: str, factor: float, reason: str, at: float) -> Memory:
+        """Multiply a lower trace's salience and arousal by `factor` (an unjustified hunch
+        source, Phase 4). Both logs are append-only; the raw episode never changes."""
+        m = self.memory(memory_id)
+        salience = m.salience * factor
+        valence, arousal = m.affect[0], m.affect[1] * factor
+        with self.db:
+            self.db.execute(
+                "UPDATE memories SET salience = ?, arousal = ? WHERE id = ?",
+                (salience, arousal, memory_id),
+            )
+            self.db.execute(
+                "INSERT INTO memory_trace_log VALUES (?, ?, ?, ?, ?)",
+                (memory_id, at, salience, arousal, reason),
+            )
+            self.db.execute(
+                "INSERT INTO memory_affect_log VALUES (?, ?, ?, ?, ?)",
+                (memory_id, at, valence, arousal, reason),
+            )
+        return self.memory(memory_id)
+
+    def trace_history(self, memory_id: str) -> list[tuple[float, float, float, str]]:
+        """(t, salience, arousal, reason) for every weakening, oldest first."""
+        return list(
+            self.db.execute(
+                "SELECT t, salience, arousal, reason FROM memory_trace_log WHERE memory_id = ?"
+                " ORDER BY rowid",
+                (memory_id,),
+            )
+        )
+
+    # --- hunches and beliefs (Phase 4) ---------------------------------------------------------
+
+    def add_hunch(self, hunch: Hunch) -> None:
+        sources = [[s.memory_id, s.strength, s.relevant] for s in hunch._source_refs]
+        with self.db:
+            self.db.execute(
+                "INSERT INTO hunches VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (hunch.id, hunch.owner_user, hunch.conversation_id, hunch.turn_id,
+                 hunch.episode_ref, json.dumps(hunch.message_cues), hunch.created_at,
+                 hunch.valence, hunch.intensity, json.dumps(sources), hunch.revealed_level,
+                 hunch.verdict),
+            )  # fmt: skip
+
+    def hunch(self, hunch_id: str) -> Hunch:
+        row = self.db.execute("SELECT * FROM hunches WHERE id = ?", (hunch_id,)).fetchone()
+        if row is None:
+            raise KeyError(hunch_id)
+        return _to_hunch(row)
+
+    def hunches_since(self, t: float) -> list[Hunch]:
+        rows = self.db.execute(
+            "SELECT * FROM hunches WHERE created_at >= ? ORDER BY created_at, id", (t,)
+        ).fetchall()
+        return [_to_hunch(r) for r in rows]
+
+    def update_hunch(self, hunch_id: str, revealed_level: int, verdict: str | None) -> None:
+        with self.db:
+            cur = self.db.execute(
+                "UPDATE hunches SET revealed_level = ?, verdict = ? WHERE id = ?",
+                (revealed_level, verdict, hunch_id),
+            )
+            if cur.rowcount != 1:
+                raise KeyError(hunch_id)
+
+    def add_belief(self, belief: Belief) -> None:
+        with self.db:
+            self.db.execute(
+                "INSERT INTO beliefs VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (belief.id, belief.owner_user, belief.text, belief.confidence,
+                 json.dumps(list(belief.evidence)), belief.hunch_id, belief.created_at),
+            )  # fmt: skip
+
+    def beliefs(self, owner_user: str | None = None) -> list[Belief]:
+        sql = "SELECT * FROM beliefs"
+        rows = (
+            self.db.execute(sql + " WHERE owner_user = ? ORDER BY rowid", (owner_user,))
+            if owner_user is not None
+            else self.db.execute(sql + " ORDER BY rowid")
+        ).fetchall()
+        return [
+            Belief(bid, owner, text, conf, tuple(json.loads(ev)), hid, t)
+            for bid, owner, text, conf, ev, hid, t in rows
         ]
 
     def cue_fan(self, cue: str, context: frozenset[str] = frozenset()) -> int:
@@ -407,6 +540,15 @@ class MemoryStore:
             (user,),
         ).fetchall()
         return [self.memory(mid) for (mid,) in rows]
+
+
+def _to_hunch(row: tuple) -> Hunch:
+    hid, owner, conv, turn_id, ep, cues, created, valence, intensity, sources, level, verdict = row
+    refs = tuple(SourceRef(mid, float(s), bool(rel)) for mid, s, rel in json.loads(sources))
+    return Hunch(
+        hid, owner, conv, turn_id, ep, json.loads(cues), created, valence, intensity, refs,
+        level, verdict,
+    )  # fmt: skip
 
 
 def _visible(memory: Memory, user: str) -> bool:

@@ -5,8 +5,10 @@ Contents, and nothing else (invariants 2 and 9):
 - the rolling session summary of older turns of this conversation, if any;
 - recalled memories (above tau_upper, from the pipeline) in their own block, separate from the
   working memory;
-- a coarse mood label and, if there is one, the hunch flag in words (no numbers, no source);
-- one-turn instructions from pipeline modules (e.g. the language check);
+- a coarse mood label;
+- one-turn instructions from pipeline modules (the language check; the hunch module, which is
+  the only way the hunch flag reaches a prompt: in words, no numbers, and of its source only
+  what a reflection unlocked);
 - the working memory: the last turns of this conversation verbatim as chat messages, then the
   new message.
 Lower traces, drive values, activations and log content never appear here.
@@ -17,7 +19,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from hunch.drive.drive import HunchFlag
 from hunch.memory.schema import Episode
 
 PERSONA = (
@@ -63,24 +64,61 @@ def age_label(age_days: float) -> str:
     return f"{int(age_days // 365)} years ago"
 
 
-def hunch_words(
-    flag: HunchFlag, clear_intensity: float, neutral_valence: float, strong_valence: float
+def hunch_feeling(
+    valence: float,
+    intensity: float,
+    clear_intensity: float,
+    neutral_valence: float,
+    strong_valence: float,
 ) -> str:
-    strength = "a clear hunch" if flag.intensity >= clear_intensity else "a faint hunch"
-    v = flag.valence
+    """The hunch in words, never numbers or source: "a faint hunch, slightly negative"."""
+    strength = "a clear hunch" if intensity >= clear_intensity else "a faint hunch"
+    v = valence
     if abs(v) < neutral_valence:
         tone = "neither good nor bad"
     elif abs(v) <= strong_valence:
         tone = "slightly positive" if v > 0 else "slightly negative"
     else:
         tone = "positive" if v > 0 else "negative"
-    # Phase 3 bench: "if asked, say it's a hunch" alone made the model announce the hunch in 8 of
-    # 14 replies. It is a feeling that colours the tone, not a topic.
+    return f"{strength}, {tone}"
+
+
+# One-turn instructions from the hunch module (Berk, Phase 4). The flag reaches a prompt only
+# here: Phase 3 showed that a standing flag made the model announce its hunch (10 of 14 replies).
+def why_instruction(feeling: str, realisation: str | None, can_offer: bool) -> str:
+    """The user asks why Hunch said what it said, and that reply was hunch-chosen."""
+    base = f"Your previous reply was shaped by {feeling}; you don't know where it comes from."
+    if realisation is None:
+        return (
+            f"{base} They are asking why. Say honestly that it was just a hunch, don't make up a "
+            "reason, and offer to think about it for a moment."
+        )
+    offer = " You can offer to think about it some more." if can_offer else ""
     return (
-        f"Underneath, you have {strength} about this, {tone}. You don't know where it comes "
-        "from. Let it colour your tone only; don't mention it yourself. Only if they ask why you "
-        "said or felt something, say it's just a hunch, and don't make up a reason."
+        f"{base} Thinking about it briefly, you realise {realisation}. They are asking why. Say "
+        f"it was a hunch and share only that realisation, without adding anything to it.{offer}"
     )
+
+
+def think_more_instruction(realisation: str | None) -> str:
+    """The user accepted the offer to think about the hunch."""
+    if realisation is None:
+        return (
+            "You took a moment to think about the hunch behind your earlier reply, but you still "
+            "can't tell where it comes from. Say so honestly and don't make up a reason."
+        )
+    return (
+        "You took a moment to think about the hunch behind your earlier reply, and you realise "
+        f"{realisation}. Tell them what you realised, without adding anything to it."
+    )
+
+
+# Berk (Phase 4, under-recall): the persona's "say you don't have it" was over-applied while a
+# recalled memory covered the question.
+RECALL_COVERS_INSTRUCTION = (
+    "They are asking about something from before, and a memory recalled above may cover it. If "
+    "it does, use it in your reply."
+)
 
 
 def build_reasoning_messages(
@@ -89,7 +127,6 @@ def build_reasoning_messages(
     session_summary: str,
     recalled: Sequence[RecalledLine],
     mood_label: str,
-    hunch: str | None,
     instructions: Sequence[str],
 ) -> list[dict[str, str]]:
     parts = [PERSONA]
@@ -98,8 +135,7 @@ def build_reasoning_messages(
     if recalled:
         lines = "\n".join(f"- ({r.age}) {r.summary}" for r in recalled)
         parts.append(f"{MEMORY_HEADER}\n{lines}")
-    feeling = f"How you feel right now: {mood_label}."
-    parts.append(f"{feeling}\n{hunch}" if hunch else feeling)
+    parts.append(f"How you feel right now: {mood_label}.")
     if instructions:
         parts.append(INSTRUCTION_HEADER + "\n" + "\n".join(f"- {i}" for i in instructions))
     history = [{"role": ep.role, "content": ep.text} for ep in working_memory]

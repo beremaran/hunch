@@ -1,0 +1,972 @@
+[
+  {
+    "message": "Morning! Slept badly but coffee is helping.",
+    "reply": "Morning! I'm sorry to hear you didn't sleep well, but I'm glad the coffee is helping you wake up. Sometimes a strong brew is exactly what we need to start the day. How are you feeling now after that first sip?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 3.468,
+      "embedding_wait": 0.0,
+      "recall": 0.008,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.376,
+      "filter": 0.0,
+      "judge": 1.102,
+      "select_and_gate": 0.003,
+      "store": 0.0,
+      "total": 7.957
+    },
+    "after_reply_s": {
+      "encode_memory": 0.144,
+      "reflection": 0.0,
+      "fold_summary": 0.0
+    },
+    "peak_vram_gib": 7.45,
+    "prompt_tokens": 218,
+    "candidate_tokens": [
+      50,
+      50,
+      55
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Moon River came on the radio in the bakery today.",
+    "reply": "That's a lovely coincidence, especially since you were up early! \"Moon River\" has such a gentle, dreamy vibe that fits perfectly with a quiet morning in a bakery. Did you grab a pastry while listening to it?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 1.691,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.22,
+      "filter": 0.0,
+      "judge": 1.106,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.019
+    },
+    "after_reply_s": {
+      "encode_memory": 0.131,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.48,
+    "prompt_tokens": 288,
+    "candidate_tokens": [
+      45,
+      56,
+      47
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": {
+      "id": "h-c-bench-t2",
+      "valence": -0.004,
+      "intensity": 0.204
+    },
+    "chosen_by": "drive"
+  },
+  {
+    "message": "Why did you say that?",
+    "reply": "That was just a hunch I had, and thinking about it briefly, it seemed to be about a place. I don't know exactly where that feeling came from, but I can offer to think about it some more if you'd like.",
+    "trigger": "ask",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      1
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 0.603,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.002,
+      "candidates": 3.538,
+      "filter": 0.0,
+      "judge": 0.841,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 4.986
+    },
+    "after_reply_s": {
+      "encode_memory": 0.113,
+      "reflection": 0.196,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.52,
+    "prompt_tokens": 433,
+    "candidate_tokens": [
+      60,
+      48,
+      50
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Sure, think about it for a moment.",
+    "reply": "Thinking about it, that hunch about a place suddenly feels very specific, like it might have been Siemens. I'm not entirely sure why I thought that, but it's the only connection I can make right now. Does that ring a bell for you?",
+    "trigger": "think_more",
+    "mentions_hunch": true,
+    "reflection_level": [
+      1,
+      2
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.595,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 3.826,
+      "filter": 0.0,
+      "judge": 0.854,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.279
+    },
+    "after_reply_s": {
+      "encode_memory": 0.131,
+      "reflection": 0.189,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.53,
+    "prompt_tokens": 464,
+    "candidate_tokens": [
+      62,
+      53,
+      66
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Do you know what that song means to me?",
+    "reply": "I don't know what \"Moon River\" means to you personally, but I can imagine it holds a lot of weight for you. Would you like to tell me what it represents?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.588,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.997,
+      "filter": 0.0,
+      "judge": 1.18,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.768
+    },
+    "after_reply_s": {
+      "encode_memory": 0.147,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.53,
+    "prompt_tokens": 490,
+    "candidate_tokens": [
+      38,
+      64,
+      69
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Anna wants to go sailing again next weekend, should I say yes?",
+    "reply": "That sounds like a wonderful idea, especially since you mentioned sailing on Lake Como with Anna was the best day of the summer. It might be hard to beat that memory, but sometimes revisiting happy places can feel even better than the first time. Go for it if you feel like it!",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.6,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.433,
+      "filter": 0.001,
+      "judge": 1.173,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.21
+    },
+    "after_reply_s": {
+      "encode_memory": 0.147,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.57,
+    "prompt_tokens": 592,
+    "candidate_tokens": [
+      53,
+      75,
+      59
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [
+      "seed-0"
+    ],
+    "hunch": null,
+    "chosen_by": "exploration"
+  },
+  {
+    "message": "Work is a lot right now, I have a deadline on Friday.",
+    "reply": "That sounds intense, especially with the Siemens interview looming on Friday. It might be wise to hold off on the sailing trip until after the deadline passes so you don't get too stretched thin. Would you prefer to save the weekend for relaxation once the work is done?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.595,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.26,
+      "filter": 0.0,
+      "judge": 1.32,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.178
+    },
+    "after_reply_s": {
+      "encode_memory": 0.14,
+      "reflection": 0.001,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.6,
+    "prompt_tokens": 671,
+    "candidate_tokens": [
+      54,
+      69,
+      71
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [
+      "seed-2"
+    ],
+    "hunch": {
+      "id": "h-c-bench-t7",
+      "valence": 0.302,
+      "intensity": 0.198
+    },
+    "chosen_by": "drive"
+  },
+  {
+    "message": "Why did you say that?",
+    "reply": "That was just a hunch I had about the timing, not a calculated plan. I'm sorry if it sounded too definite, but my memory doesn't actually hold the specific details of your work or the interview right now. Would you like to tell me a bit more about the deadline and the sailing trip so I can give a better answer?",
+    "trigger": "ask",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      0
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.612,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 4.286,
+      "filter": 0.0,
+      "judge": 1.366,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.268
+    },
+    "after_reply_s": {
+      "encode_memory": 0.117,
+      "reflection": 0.0,
+      "fold_summary": 0.002
+    },
+    "peak_vram_gib": 7.65,
+    "prompt_tokens": 766,
+    "candidate_tokens": [
+      57,
+      57,
+      70
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Sure, think about it for a moment.",
+    "reply": "I thought about it, and it seemed to be about someone.",
+    "trigger": "think_more",
+    "mentions_hunch": false,
+    "reflection_level": [
+      0,
+      1
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.61,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 4.752,
+      "filter": 0.001,
+      "judge": 0.0,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.367
+    },
+    "after_reply_s": {
+      "encode_memory": 0.126,
+      "reflection": 0.202,
+      "fold_summary": 0.002
+    },
+    "peak_vram_gib": 7.69,
+    "prompt_tokens": 836,
+    "candidate_tokens": [
+      78,
+      65,
+      58
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "hunch_fallback"
+  },
+  {
+    "message": "Any idea how to stay focused when everything is noisy?",
+    "reply": "That sounds tough, especially when you're juggling a tight deadline and a busy schedule. Sometimes putting on noise-canceling headphones or creating a simple to-do list can help clear the mental clutter. Would you like to try one of those strategies first?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.614,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.355,
+      "filter": 0.0,
+      "judge": 1.153,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.125
+    },
+    "after_reply_s": {
+      "encode_memory": 0.132,
+      "reflection": 0.0,
+      "fold_summary": 0.002
+    },
+    "peak_vram_gib": 7.68,
+    "prompt_tokens": 824,
+    "candidate_tokens": [
+      64,
+      51,
+      70
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration"
+  },
+  {
+    "message": "Ha, my cat just knocked my mug off the desk.",
+    "reply": "Oh no, that sounds chaotic! I can imagine your cat being quite mischievous today, especially with all the noise around. Maybe it was just trying to help you focus by clearing the clutter, even if it did it accidentally. Are you okay, or did you spill anything?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 1.664,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.709,
+      "filter": 0.0,
+      "judge": 1.141,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.518
+    },
+    "after_reply_s": {
+      "encode_memory": 0.14,
+      "reflection": 0.0,
+      "fold_summary": 3.179
+    },
+    "peak_vram_gib": 7.71,
+    "prompt_tokens": 896,
+    "candidate_tokens": [
+      48,
+      51,
+      58
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Do you remember what I told you about my job interview?",
+    "reply": "I don't have the details of that interview in mind right now, but I do recall from earlier that you were terrified about a big one at Siemens on Friday. Does that sound like the one you are talking about?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.606,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.184,
+      "filter": 0.0,
+      "judge": 1.162,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 4.956
+    },
+    "after_reply_s": {
+      "encode_memory": 0.14,
+      "reflection": 0.0,
+      "fold_summary": 5.229
+    },
+    "peak_vram_gib": 7.79,
+    "prompt_tokens": 1050,
+    "candidate_tokens": [
+      45,
+      34,
+      44
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [
+      "seed-2"
+    ],
+    "hunch": null,
+    "chosen_by": "only_candidate"
+  },
+  {
+    "message": "It went fine in the end, I start in March!",
+    "reply": "That is absolutely fantastic news! I'm so glad to hear you got the job at Siemens starting in March. It sounds like all that stress over the deadline was totally worth it.",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 1.605,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.737,
+      "filter": 0.0,
+      "judge": 1.165,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 6.511
+    },
+    "after_reply_s": {
+      "encode_memory": 0.134,
+      "reflection": 0.0,
+      "fold_summary": 4.527
+    },
+    "peak_vram_gib": 7.77,
+    "prompt_tokens": 1015,
+    "candidate_tokens": [
+      56,
+      51,
+      37
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": {
+      "id": "h-c-bench-t13",
+      "valence": 0.023,
+      "intensity": 0.28
+    },
+    "chosen_by": "drive"
+  },
+  {
+    "message": "Why did you say that?",
+    "reply": "Honestly, it was just a hunch. Thinking about it, it seemed to be about a place. Want me to think about it for a moment?",
+    "trigger": "ask",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      1
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.604,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 3.899,
+      "filter": 0.0,
+      "judge": 0.0,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 4.508
+    },
+    "after_reply_s": {
+      "encode_memory": 0.117,
+      "reflection": 0.194,
+      "fold_summary": 4.039
+    },
+    "peak_vram_gib": 7.8,
+    "prompt_tokens": 1071,
+    "candidate_tokens": [
+      55,
+      40,
+      59
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "hunch_fallback"
+  },
+  {
+    "message": "Sure, think about it for a moment.",
+    "reply": "I thought about it, and it seemed to be about a place.",
+    "trigger": "think_more",
+    "mentions_hunch": false,
+    "reflection_level": [
+      1,
+      1
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.604,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 2.848,
+      "filter": 0.0,
+      "judge": 1.16,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 4.617
+    },
+    "after_reply_s": {
+      "encode_memory": 0.131,
+      "reflection": 0.0,
+      "fold_summary": 3.623
+    },
+    "peak_vram_gib": 7.76,
+    "prompt_tokens": 1005,
+    "candidate_tokens": [
+      40,
+      27,
+      15
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "What should I cook tonight? Something quick.",
+    "reply": "That sounds like a good idea to unwind after such a big win! Maybe a simple pasta or a quick stir-fry would be perfect for a busy evening. Do you have any ingredients you're craving right now?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.61,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.692,
+      "filter": 0.0,
+      "judge": 1.306,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.612
+    },
+    "after_reply_s": {
+      "encode_memory": 0.134,
+      "reflection": 0.0,
+      "fold_summary": 3.464
+    },
+    "peak_vram_gib": 7.73,
+    "prompt_tokens": 925,
+    "candidate_tokens": [
+      53,
+      44,
+      56
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": {
+      "id": "h-c-bench-t16",
+      "valence": 0.022,
+      "intensity": 0.243
+    },
+    "chosen_by": "drive"
+  },
+  {
+    "message": "Why did you say that?",
+    "reply": "That was just a hunch I had about what might be quick and satisfying, but I don't actually have a specific recipe in mind right now. Would you like to tell me what ingredients you have available so I can suggest something better?",
+    "trigger": "ask",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      0
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.611,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 3.328,
+      "filter": 0.0,
+      "judge": 1.23,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.174
+    },
+    "after_reply_s": {
+      "encode_memory": 0.116,
+      "reflection": 0.0,
+      "fold_summary": 3.758
+    },
+    "peak_vram_gib": 7.74,
+    "prompt_tokens": 965,
+    "candidate_tokens": [
+      49,
+      32,
+      36
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "only_candidate"
+  },
+  {
+    "message": "Sure, think about it for a moment.",
+    "reply": "I thought about it, but I still can't tell where that hunch comes from.",
+    "trigger": "think_more",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      0
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.614,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 1.566,
+      "filter": 0.0,
+      "judge": 0.0,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 2.185
+    },
+    "after_reply_s": {
+      "encode_memory": 0.129,
+      "reflection": 0.0,
+      "fold_summary": 5.156
+    },
+    "peak_vram_gib": 7.74,
+    "prompt_tokens": 941,
+    "candidate_tokens": [
+      15,
+      15,
+      15
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "hunch_fallback"
+  },
+  {
+    "message": "Wie geht es dir heute?",
+    "reply": "I only speak English, so I can't reply in German, but I'm doing well, thank you! How about you?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.581,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.27,
+      "filter": 0.0,
+      "judge": 1.382,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.237
+    },
+    "after_reply_s": {
+      "encode_memory": 0.114,
+      "reflection": 0.0,
+      "fold_summary": 4.945
+    },
+    "peak_vram_gib": 7.72,
+    "prompt_tokens": 902,
+    "candidate_tokens": [
+      40,
+      27,
+      48
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality"
+  },
+  {
+    "message": "Sorry, habit. How are you today?",
+    "reply": "I'm doing well, thanks for asking! I'm glad you're back in English. Since you just got that Siemens job, are you feeling more energized today, or is the busy schedule still catching up with you?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.606,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.145,
+      "filter": 0.0,
+      "judge": 1.319,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.074
+    },
+    "after_reply_s": {
+      "encode_memory": 0.131,
+      "reflection": 0.0,
+      "fold_summary": 3.618
+    },
+    "peak_vram_gib": 7.7,
+    "prompt_tokens": 881,
+    "candidate_tokens": [
+      42,
+      46,
+      46
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "drive"
+  },
+  {
+    "message": "I think I'll go for a run before dinner.",
+    "reply": "That sounds like a perfect way to celebrate your new job before you cook! A little run might help clear your head after all the stress you felt earlier about the deadline. Do you have a specific route you like to run on?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.607,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.473,
+      "filter": 0.0,
+      "judge": 1.311,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.395
+    },
+    "after_reply_s": {
+      "encode_memory": 0.132,
+      "reflection": 0.0,
+      "fold_summary": 3.601
+    },
+    "peak_vram_gib": 7.69,
+    "prompt_tokens": 849,
+    "candidate_tokens": [
+      44,
+      47,
+      53
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration"
+  },
+  {
+    "message": "Thanks for chatting, talk tomorrow!",
+    "reply": "You're welcome! It was really nice chatting with you about your new job and your run. Good luck with the cooking and the sailing trip soon, talk tomorrow!",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 1.614,
+      "embedding_wait": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 2.797,
+      "filter": 0.0,
+      "judge": 1.258,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.673
+    },
+    "after_reply_s": {
+      "encode_memory": 0.125,
+      "reflection": 0.0,
+      "fold_summary": 3.31
+    },
+    "peak_vram_gib": 7.68,
+    "prompt_tokens": 833,
+    "candidate_tokens": [
+      34,
+      41,
+      40
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration"
+  }
+]

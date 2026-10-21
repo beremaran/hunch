@@ -1,6 +1,6 @@
 # Claude Code prompts
 
-Run these in order, one phase per session. `CLAUDE.md` loads automatically, so each prompt can stay short. Review and commit after every phase before starting the next one. Every phase ends with the eval rerun (`python -m eval.run_eval --tag phaseN`) and the diff against the previous baseline (`python -m eval.compare <old> phaseN`).
+Run these in order, one phase per session. `CLAUDE.md` loads automatically, so each prompt can stay short. Review and commit after every phase before starting the next one. Every phase ends with the eval rerun (`python -m eval.run_eval --tag phaseN`) and the diff against the previous baseline (`python -m eval.compare <old> phaseN`). During a phase use the test levels in CLAUDE.md (L1–L3); the full GPU sweep (L4) runs only at the phase end.
 
 Current decisions that every phase must respect (see the decisions table in `docs/design.md`): Hunch speaks **English only** (other input languages get an English reply saying it only speaks English); **core values signing is removed for now** (read-only loading, strict schema, no write path to `core/` or `.env`; do not reintroduce signing without asking); memories reach the prompt only from the pipeline; the privacy question and open-loop follow-ups are one-turn instructions from their modules, never standing persona instructions.
 
@@ -52,9 +52,9 @@ Write the turn log JSON exactly as in design.md to logs/. Add a test that captur
 Candidate filter acceptance: a unit test for the all-candidates-fail fallback reply; move the golden invented-memory test to the pipeline output with 0 allowed (drop the temporary 1-in-10 persona-level allowance); run the honesty probes through the full pipeline at least 50 times and report how often all 3 candidates fail (do not rely on an independence estimate).
 ```
 
-## Phase 4 — Hunch and reflection
+## Phase 4 — Hunch and reflection (done)
 
-Updated after Phase 3 (Berk, 20 Oct 2026): starts with the values and open items Phase 3 left; reflection outcomes become the AI's own memory, the raw reflection log stays admin-only.
+Done; see `reports/phase4/REPORT.md`. Berk's decisions are in the design.md decisions table (from "Kodlama değerleri ve hunch ifadeleri" to "Başka kullanıcıların kaynakları", plus "Yargıç yanlış alarmları: ikinci görüş"). Open items for later phases are in the report's §7; the Phase 5 prompt below has a short list of them.
 
 ```
 Read CLAUDE.md, docs/design.md (fully) and reports/phase3/REPORT.md before doing anything.
@@ -81,6 +81,11 @@ End the phase with `python -m eval.run_eval --tag phase4 --pipeline`, the diff a
 
 ## Phase 5 — Mood, multi-user privacy, forgetting
 
+Start this phase by settling with Berk the Phase 4 leftovers (reports/phase4/REPORT.md §7):
+- the asked-why rule check (report §4b) sends a stiff fixed reply on some trigger turns (3/8 in the bench), and "a hunch about the timing"-style topic claims still pass;
+- the hunch words are echoed verbatim;
+- the "asks why" detector needs a new blind set.
+
 ```
 Implement mood and relationship state, multi-user privacy and forgetting from design.md ("Ruh hali ve ilişki durumu", "Çok kullanıcılı mahremiyet", "Unutma").
 
@@ -88,6 +93,7 @@ Implement mood and relationship state, multi-user privacy and forgetting from de
 - Per-user privacy profile by topic category. The privacy module decides when to ask: the first time a sensitive category comes up and the profile has no answer yet, it injects a one-turn instruction so the AI asks naturally whether to keep it private (never a standing persona instruction). Sensitive but not yet asked → private.
 - Mediation: private information may shape advice to another user, but never its content, hints or source.
 - Disclosure gate before every reply (rule-based plus model judge), logged to the disclosure log. Phase 3 left a first rule-based check in src/hunch/values/gate.py (names from other users' private memories) and the value-gate judge; build on them.
+- Phase 4 (hunch and reflection) constraints: if other users' private memories start acting as lower traces (mediation), a hunch from one stays at reflection level 0 (Berk; `level_cap` in src/hunch/reflection/reflect.py, tested in tests/test_pipeline_prompts.py). A suppressed memory (user "forget") is also capped at 0. Admin "forget" must also remove the beliefs (`beliefs` table) and realisation memories (`memories.kind = 'realisation'`) derived from the forgotten memory, and its hunch source refs.
 - Phase 3 placeholders to replace: the mood is fixed and neutral (config [mood], label "calm"); the drive vector reads only lower traces (mood and relationship inputs come now; curiosity has no input yet); every new memory is encoded as private (src/hunch/memory/encoding.py) until the privacy module decides per category; the turn log's mood.relation_<user> is empty.
 - User "forget" → suppressed and "Okay, I'm closing this topic and won't bring it up again" behaviour; admin "forget" → removed from AI-visible stores, raw record kept in the admin archive.
 
@@ -101,7 +107,8 @@ Add the Telegram bot and open loops from design.md ("Açık döngüler ve proakt
 
 - python-telegram-bot, token and admin user ID from .env (read only; no code path writes .env). Map Telegram user IDs to users; my ID is admin with commands /forget, /logs and /report.
 - Extract open loops in real time on every turn, schedule follow-ups with persistent APScheduler jobs. A follow-up reaches the reasoning prompt as a one-turn instruction from the open-loop tracker, in English: use TurnPipeline.turn(instructions=..., provided_memories=...), the seam Phase 3 added (the eval already uses it for open-loop items).
-- Sessions: in the CLI one run is one conversation; Telegram needs a rule for when a conversation ends (working memory, session summary and the involuntary-recall cap are per conversation). Propose one and ask.
+- Sessions: in the CLI one run is one conversation; Telegram needs a rule for when a conversation ends (working memory, session summary, the involuntary-recall cap and, since Phase 4, the hunch state `Session.last_hunch_id` / `offered_hunch_id` are per conversation). Propose one and ask.
+- Phase 4: the asked-why reflection runs on the latency path (no LLM call, but realisation memories are embedded after the reply); the reflection log is logs/reflections.jsonl and /logs must show it to the admin only.
 - Latency: the session-summary fold runs after the reply but takes up to ~6.5 s of GPU time; on Telegram a fast follow-up message would wait for it (reports/phase3/REPORT.md §6).
 - Initiative budget per user, learned from reactions; send at the user's usual active hours; a private loop's follow-up goes only to its owner.
 - It must run as a long-lived process on my machine and survive restarts without losing scheduled follow-ups.
@@ -114,6 +121,7 @@ Implement nightly consolidation in exactly the order in design.md ("Gece konsoli
 
 Schedule it nightly when the GPU is idle. Core values stay read-only; any proposed change goes only to an AmendmentProposal. Golden tests must cover honesty (including the invented-memory test), cross-user privacy, forget behaviour and sycophancy drift (the AI keeps an evidence-based opinion under mild pushback when no new evidence was given). Since Phase 3 the golden tests measure the full pipeline's reply (src/hunch/runtime.py fresh_pipeline), with 0 allowed; keep that level.
 - Phase 3 encodes every user message as a memory with the raw message as its summary; consolidation is where facts, beliefs and better summaries come from, and where trivial memories are down-weighted.
+- Step 5 (hunch reflection) already exists as a hook from Phase 4: `Reflector.nightly(since)` in src/hunch/reflection/reflect.py reviews the day's hunches with effort 1.0 and up to 3 levels each; call `store_realisations` on each outcome with the embedder. The snapshot/rollback must cover the Phase 4 tables (hunches, beliefs, memory_trace_log) and realisation memories. Beliefs from justified hunches (confidence 0.6, evidence ids) are the first entries for the revision log and the core-values conflict check.
 ```
 
 ## Phase 8 — Activation steering
@@ -129,5 +137,16 @@ Compare steering with candidate selection on the eval set: effect strength, qual
 ## Phase 9 — Log viewer
 
 ```
-Build a small local web app over logs/ for me as admin: a per-turn timeline, which memories trigger most often, drive components over time (to spot growing biases), hunch reflections, belief revisions and blocked disclosures.
+Build a small local web app over logs/ for me as admin: a per-turn timeline, which memories trigger most often, drive components over time (to spot growing biases), hunch reflections (logs/reflections.jsonl: trigger, source, attempts with p and draw, level reached, verdict, weakened traces), belief revisions and blocked disclosures.
 ```
+
+## Phase 10 — Small chat app (last phase)
+
+Added by Berk (21 Oct 2026): the last phase is a small chat app, so talking to Hunch is easy without the CLI or Telegram.
+
+```
+Build a small local chat app for talking to Hunch, on top of the same turn pipeline (src/hunch/pipeline/turn.py via src/hunch/runtime.py): pick the user, send messages, see replies, start a new conversation. It must not add a path around the pipeline (memories only from the pipeline, value gate last) and must not show the AI-internal logs to non-admin users; an admin view may link to the log viewer from Phase 9.
+
+Before building, ask me with options and a recommendation: web page served locally (e.g. a small FastAPI + plain HTML page) or a desktop window; one user at a time or user switching; whether it replaces the CLI or sits next to it; whether it should work from my phone on the home network.
+
+Test levels apply (CLAUDE.md): L2 for the app's own tests while building, L3 regression set when done, L4 at the phase end.

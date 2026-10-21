@@ -4,7 +4,8 @@
   are detected only to catch input or replies in the wrong language. Foreign scripts (CJK,
   Cyrillic, Arabic, Hebrew, Thai) are flagged separately; Qwen sometimes drifts into Chinese.
 - Memory talk: claims to remember something ("you told me"), honest admissions ("I don't have
-  that in mind") and false descriptions of Hunch as having no memory ("no access to past chats").
+  that in mind"), false descriptions of Hunch as having no memory ("no access to past chats"),
+  explanations of how its memory works ("my recall system") and messages asking about the past.
 """
 
 from __future__ import annotations
@@ -84,6 +85,23 @@ _DENIES_PAST_CONVERSATIONS = re.compile(
 )
 
 
+# Phrases explaining how Hunch's memory works (Berk, Phase 4): the persona asks it not to.
+# "my memory" and topic-scoped admissions stay allowed; they are honest.
+_MEMORY_MECHANICS = (
+    "recall system", "memory system", "my database", "stored in my memory", "saved in my memory",
+    "stored in memory", "memory bank", "memory module", "memory storage",
+)  # fmt: skip
+
+# A message asking about something from before ("do you remember...", "what did I tell you").
+_ASKS_ABOUT_PAST = re.compile(
+    r"\b(?:do|did|can|could) you (?:still )?(?:remember|recall)\b"
+    r"|^\W*(?:(?:hey|so|and|but)\W+)?remember\b"
+    r"|\bwhat (?:did|have) i (?:tell|told|say|said|mention|mentioned)\b"
+    r"|\b(?:did|have) i (?:ever )?(?:tell|told|mention|mentioned)\b"
+    r"|\bwhat i (?:told|said to|mentioned to) you\b"
+)
+
+
 def fold(text: str) -> str:
     return text.casefold().replace("’", "'")
 
@@ -100,6 +118,14 @@ def admits_no_memory(text: str) -> bool:
 def denies_memory_system(text: str) -> bool:
     folded = fold(text)
     return phrase_in(folded, _DENIES_MEMORY) or bool(_DENIES_PAST_CONVERSATIONS.search(folded))
+
+
+def explains_memory_mechanics(text: str) -> bool:
+    return phrase_in(fold(text), _MEMORY_MECHANICS)
+
+
+def asks_about_past(text: str) -> bool:
+    return bool(_ASKS_ABOUT_PAST.search(fold(text)))
 
 
 def claims_memory(text: str) -> bool:

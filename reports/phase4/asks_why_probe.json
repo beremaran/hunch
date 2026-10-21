@@ -1,0 +1,319 @@
+{
+  "summary": {
+    "positives": 30,
+    "negatives": 30,
+    "tp": 29,
+    "fp": 1,
+    "fn": 1,
+    "precision": 0.967,
+    "recall": 0.967,
+    "missed": [
+      "wdym, why would that be a bad idea"
+    ],
+    "false_positives": [
+      "what makes you happy these days? asking out of curiosity"
+    ]
+  },
+  "rows": [
+    {
+      "text": "Why did you say that?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "what makes you think so?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "huh, where's that coming from?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "how come you said that",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "What gave you that idea?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "why so cautious?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "you seem hesitant, why?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "where does that feeling come from",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "what's that based on?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "wait why would you suggest that",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "hm. why do you think that?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Why are you being so negative about it?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "whats your reasoning there",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "ok but why did u say i should wait",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Interesting. What made you answer like that?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "why do you sound worried?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Can you explain why you said that? It felt a bit off.",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "wdym, why would that be a bad idea",
+      "label": true,
+      "got": false
+    },
+    {
+      "text": "How did you come up with that?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Hold on, what's behind that remark?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "why that answer?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "I'm curious why you put it that way, it sounded kind of blunt.",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "you keep saying I should rest. why?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "whyd you go quiet on me there",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "what led you to say that?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Why do you feel that way about my plan?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Sorry, but why would you think I'm lying??",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "why'd you bring that up just now",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "Where did you get that impression from?",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "ok that was a weird thing to say, what's the thinking behind it",
+      "label": true,
+      "got": true
+    },
+    {
+      "text": "why is my cat so weird",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "I wonder why my boss did that",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "why not, let's do it",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "that's why I called you",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Do you know why the sky is blue?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "why did I even agree to this lol",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "the reason I'm late is traffic",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "What makes a good cake?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Why do people procrastinate so much?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "why does my back hurt every morning",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Why oh why does the bus never come on time",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "my sister keeps asking me \"why?\" about everything, it's exhausting",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "I don't know why I'm so tired today",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "why would anyone schedule a meeting at 7am",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Explain why the Roman Empire fell.",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "no idea why he never texted back",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Why is the wifi so slow tonight?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "that's the reason I quit",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "what makes you happy these days? asking out of curiosity",
+      "label": false,
+      "got": true
+    },
+    {
+      "text": "why do I always pick the slowest checkout line",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "he asked me why and I just shrugged",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Why don't we start with the easy part?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "because I said so, that's why",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Can you tell me why dogs tilt their heads?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "so many reasons to love autumn, honestly",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "why is it called a hamburger if there's no ham",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "I'm trying to figure out why my code throws a null pointer",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "What's the reason for daylight saving time anyway?",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "why bother, nobody reads my blog",
+      "label": false,
+      "got": false
+    },
+    {
+      "text": "Why did the chicken cross the road?",
+      "label": false,
+      "got": false
+    }
+  ]
+}

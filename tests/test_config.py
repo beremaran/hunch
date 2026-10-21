@@ -20,13 +20,23 @@ def test_repo_config_embedding_runs_on_cpu() -> None:
     assert (emb.model_id, emb.device, emb.dim) == ("Qwen/Qwen3-Embedding-0.6B", "cpu", 1024)
 
 
+def test_repo_config_has_approved_phase4_reflection_values() -> None:
+    r = load_config().reflection
+    efforts = (r.effort_ask, r.effort_think_more, r.effort_conflict, r.effort_nightly)
+    assert efforts == (0.5, 0.8, 0.5, 1.0)
+    assert r.level_difficulty == (1.0, 0.7, 0.4)
+    assert (r.age_scale_days, r.min_strength, r.max_p, r.nightly_attempts) == (90, 0.05, 0.95, 3)
+    assert (r.conflict_quality_gap, r.corroboration_min_valence) == (2, 0.2)
+    assert (r.belief_confidence, r.weaken_factor) == (0.6, 0.5)
+
+
 def test_repo_config_has_approved_phase3_defaults() -> None:
     cfg = load_config()
     gen, sel = cfg.generation, cfg.selection
     assert (gen.candidates, gen.temperature, gen.top_p, gen.max_new_tokens) == (3, 0.7, 0.8, 150)
     assert (sel.quality_floor, sel.drive_weight, sel.exploration) == (6, 0.5, 0.1)
     assert (cfg.recall.similar_k, cfg.recall.min_similarity) == (20, 0.45)
-    assert cfg.drive.hunch_min_intensity == 0.3
+    assert cfg.drive.hunch_min_drive_margin == 0.1
     assert cfg.session.summary_max_words == 120
     assert (cfg.mood.neutral, cfg.mood.neutral_label) == ((0.0, 0.5), "calm")
     assert cfg.replies.filter_fallback == (
@@ -82,7 +92,11 @@ def test_repo_config_round_trips(tmp_path: Path) -> None:
         ("summary_max_words = 120", "summary_max_words = -5"),
         ("neutral_arousal = 0.5", "neutral_arousal = 1.5"),
         ('neutral_label = "calm"', 'neutral_label = ""'),
-        ("hunch_min_intensity = 0.3", "hunch_min_intensity = 0.9"),  # above the clear bucket
+        ("hunch_min_drive_margin = 0.1", "hunch_min_drive_margin = -0.1"),
+        ("effort_ask = 0.5", "effort_ask = 1.5"),
+        ("level_difficulty = [1.0, 0.7, 0.4]", "level_difficulty = [1.0, 0.7]"),
+        ("nightly_attempts = 3", "nightly_attempts = 0"),
+        ("weaken_factor = 0.5", "weaken_factor = 2"),
         ("quality_floor = 6", "quality_floor = 11"),
         ("exploration = 0.1", "exploration = -0.1"),
         ("gate_fallback = ", "unused = "),

@@ -132,19 +132,48 @@ class MoodConfig:
 
 @dataclass(frozen=True, slots=True)
 class DriveConfig:
-    hunch_min_intensity: float
+    hunch_min_drive_margin: float
     hunch_clear_intensity: float
     hunch_neutral_valence: float
     hunch_strong_valence: float
 
     def __post_init__(self) -> None:
-        for name in ("hunch_min_intensity", "hunch_clear_intensity", "hunch_neutral_valence",
+        for name in ("hunch_min_drive_margin", "hunch_clear_intensity", "hunch_neutral_valence",
                      "hunch_strong_valence"):  # fmt: skip
             _number("drive", name, getattr(self, name), 0.0, 1.0)
-        if not self.hunch_min_intensity <= self.hunch_clear_intensity:
-            raise ConfigError("drive.hunch_clear_intensity must be >= hunch_min_intensity")
         if not self.hunch_neutral_valence <= self.hunch_strong_valence:
             raise ConfigError("drive.hunch_strong_valence must be >= hunch_neutral_valence")
+
+
+@dataclass(frozen=True, slots=True)
+class ReflectionConfig:
+    effort_ask: float
+    effort_think_more: float
+    effort_conflict: float
+    effort_nightly: float
+    level_difficulty: tuple[float, float, float]
+    age_scale_days: float
+    min_strength: float
+    max_p: float
+    nightly_attempts: int
+    conflict_quality_gap: float
+    corroboration_min_valence: float
+    belief_confidence: float
+    weaken_factor: float
+
+    def __post_init__(self) -> None:
+        for name in ("effort_ask", "effort_think_more", "effort_conflict", "effort_nightly",
+                     "min_strength", "max_p", "corroboration_min_valence", "belief_confidence",
+                     "weaken_factor"):  # fmt: skip
+            _number("reflection", name, getattr(self, name), 0.0, 1.0)
+        d = self.level_difficulty
+        if not (isinstance(d, tuple) and len(d) == 3):
+            raise ConfigError(f"reflection.level_difficulty must be 3 numbers, got {d!r}")
+        for i, x in enumerate(d, start=1):
+            _number("reflection", f"level_difficulty[{i}]", x, 0.0, 1.0)
+        _number("reflection", "age_scale_days", self.age_scale_days, 0.001, 1e6)
+        _number("reflection", "conflict_quality_gap", self.conflict_quality_gap, 0.0, 10.0)
+        _positive_int("reflection", "nightly_attempts", self.nightly_attempts)
 
 
 @dataclass(frozen=True, slots=True)
@@ -163,10 +192,18 @@ class SelectionConfig:
 class RepliesConfig:
     filter_fallback: str
     gate_fallback: str
+    hunch_fallback: str
+    hunch_fallback_realised: str
+    hunch_offer: str
+    hunch_think_nothing: str
+    hunch_think_realised: str
 
     def __post_init__(self) -> None:
-        _text("replies", "filter_fallback", self.filter_fallback)
-        _text("replies", "gate_fallback", self.gate_fallback)
+        for name in self.__dataclass_fields__:
+            _text("replies", name, getattr(self, name))
+        for name in ("hunch_fallback_realised", "hunch_think_realised"):
+            if "{realisation}" not in getattr(self, name):
+                raise ConfigError(f"replies.{name} must contain {{realisation}}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -189,6 +226,7 @@ class Config:
     session: SessionConfig
     mood: MoodConfig
     drive: DriveConfig
+    reflection: ReflectionConfig
     selection: SelectionConfig
     replies: RepliesConfig
     encoding: EncodingConfig
@@ -246,6 +284,12 @@ def _encoding(data: dict) -> EncodingConfig:
     )
 
 
+def _reflection(data: dict) -> ReflectionConfig:
+    raw = dict(_section(data, "reflection", ReflectionConfig))
+    d = raw.pop("level_difficulty")
+    return ReflectionConfig(level_difficulty=tuple(d) if isinstance(d, list) else d, **raw)
+
+
 def load_config(path: Path = DEFAULT_CONFIG) -> Config:
     with path.open("rb") as f:
         data = tomllib.load(f)
@@ -259,6 +303,7 @@ def load_config(path: Path = DEFAULT_CONFIG) -> Config:
         session=SessionConfig(**_section(data, "session", SessionConfig)),
         mood=MoodConfig(**_section(data, "mood", MoodConfig)),
         drive=DriveConfig(**_section(data, "drive", DriveConfig)),
+        reflection=_reflection(data),
         selection=SelectionConfig(**_section(data, "selection", SelectionConfig)),
         replies=RepliesConfig(**_section(data, "replies", RepliesConfig)),
         encoding=_encoding(data),
