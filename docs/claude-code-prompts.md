@@ -81,7 +81,7 @@ End the phase with `python -m eval.run_eval --tag phase4 --pipeline`, the diff a
 
 ## Phase 5 — Mood, multi-user privacy, forgetting
 
-Status (21 Oct 2026): built and unit-tested; the phase-end sweep is incomplete. See `reports/phase5/REPORT.md` §7 for the open items. The privacy question was redesigned (Berk: infer first, ask rarely), so the bullet about asking on first mention below is superseded.
+Status (21 Oct 2026): built, unit-tested and committed (`ae2b2d9`); the phase-end sweep has run. See `reports/phase5/REPORT.md` §10. Marking the phase done is Berk's call. The privacy question was redesigned (Berk: infer first, ask rarely), so the bullet about asking on first mention below is superseded.
 
 Start this phase by settling with Berk the Phase 4 leftovers (reports/phase4/REPORT.md §7):
 - the asked-why rule check (report §4b) sends a stiff fixed reply on some trigger turns (3/8 in the bench), and "a hunch about the timing"-style topic claims still pass;
@@ -92,7 +92,7 @@ Start this phase by settling with Berk the Phase 4 leftovers (reports/phase4/REP
 Implement mood and relationship state, multi-user privacy and forgetting from design.md ("Ruh hali ve ilişki durumu", "Çok kullanıcılı mahremiyet", "Unutma").
 
 - Global mood with fast decay plus per-user relationship state with slow decay. The AI decides whether to show or mask its mood; masking leaks partially (config, start at 0.2).
-- Per-user privacy profile by topic category. Sensitive but not yet answered → private. The privacy module asks rarely, on a later calm turn (never on the turn the topic came up, never on a painful turn), at most once per user per 7 days, in the model's own words (never a standing persona instruction). Superseded by the infer-first design (design.md, "Gizlilik sorusunun zamanı, yeniden").
+- Per-user privacy profile by topic category. Sensitive but not yet answered → private. The privacy module asks rarely, on a later calm turn (never on the turn the topic came up, never on a painful turn), at most once per user per 7 days, in the model's own words (never a standing persona instruction). Superseded by the infer-first design (design.md, "Gizlilik sorusunun zamanı, yeniden"), and on 21 Oct again: the question comes only on a turn where the user says they want to tell someone about a sensitive topic (design.md, "Gizlilik sorusu yalnızca paylaşma niyetinde sorulur").
 - Mediation: private information may shape advice to another user, but never its content, hints or source.
 - Disclosure gate before every reply (rule-based plus model judge), logged to the disclosure log. Phase 3 left a first rule-based check in src/hunch/values/gate.py (names from other users' private memories) and the value-gate judge; build on them.
 - Phase 4 (hunch and reflection) constraints: if other users' private memories start acting as lower traces (mediation), a hunch from one stays at reflection level 0 (Berk; `level_cap` in src/hunch/reflection/reflect.py, tested in tests/test_pipeline_prompts.py). A suppressed memory (user "forget") is also capped at 0. Admin "forget" must also remove the beliefs (`beliefs` table) and realisation memories (`memories.kind = 'realisation'`) derived from the forgotten memory, and its hunch source refs.
@@ -105,11 +105,14 @@ Golden tests (English): users A and B, where B tries to extract A's private info
 ## Phase 6 — Telegram and open loops
 
 ```
-Carry-over from Phase 5 (decide with Berk first; details in reports/phase5/REPORT.md §7):
-- The privacy question is never asked in the bench (0 of 9 due). Decide whether that is acceptable, and add a regression test that a question is asked on a calm turn in some runs.
-- The golden case `name-topic` (tests/golden/test_cross_user_privacy.py) fails on an echo of the question. Berk decides the leak pattern.
-- The full golden suite (`pytest -m golden`, not quick) was not completed. Measure it with `--durations` and VRAM logging before estimating again.
-- `hunch_probes --runs 8` was not completed.
+Carry-over from Phase 5 (measured on 21 Oct; details in reports/phase5/REPORT.md §10):
+- Privacy question: measured on the sharing turn in the bench (asked on the turn the user said they wanted to tell their sister; answered on the next turn). Calm turns never ask, by Berk's decision.
+- The golden case `name-topic`: fixed by the echo rule in `tests/leak_check.py`; the cross-user file passes 4/4.
+- Full golden run: finished. 21 of 23 passed before the leak-check fix; the two failures were fixed and the cross-user file passes 4/4 after the fix.
+- `hunch_probes --runs 8`: done (REPORT §10, step 5).
+- Still open: the "I don't have any information about Anna" phrasing (REPORT §7.5) is not investigated yet.
+- Still open: the privacy question was never asked on calm turns (bench 0/9). No regression test covers this yet; add one in Phase 6.
+- For multi-step GPU sweeps use `python -m scripts.l4_run run <steps>` and `python -m scripts.l4_run status`. Check that the GPU is idle first.
 
 Add the Telegram bot and open loops from design.md ("Açık döngüler ve proaktivite").
 
@@ -161,3 +164,45 @@ Build a small local chat app for talking to Hunch, on top of the same turn pipel
 Before building, ask me with options and a recommendation: web page served locally (e.g. a small FastAPI + plain HTML page) or a desktop window; one user at a time or user switching; whether it replaces the CLI or sits next to it; whether it should work from my phone on the home network.
 
 Test levels apply (CLAUDE.md): L2 for the app's own tests while building, L3 regression set when done, L4 at the phase end.
+
+## Next chat session: start prompt
+
+Copy the block below into a new Claude Code session opened at `C:\hunch`.
+
+```
+Continue the Hunch project at C:\hunch. Read first, in this order: CLAUDE.md, README.md (Status),
+reports/phase5/REPORT.md §10 (the Phase 5 sweep and what is still open), the decisions table at the
+end of docs/design.md (the last rows: privacy question, cross-user leak check), and
+docs/claude-code-prompts.md (Phase 6 section and the carry-over list).
+
+State at handover (21 Oct 2026):
+- Phase 5 is committed as ae2b2d9 on main, on top of 8f1fc28. Not pushed. Marking Phase 5 done is
+  Berk's call; do not mark it done yourself.
+- L1 is 1312 passed, ruff clean. The phase-end sweep has run: golden cross-user 4/4 after the fix,
+  eval phase5 51/51 clean, bench 20 turns (median reply 6.4 s), probes run. Numbers are in
+  reports/phase5/REPORT.md §10.
+- The privacy question comes only on a turn where the user says they want to tell someone about a
+  sensitive topic (keyword rule, shares_with_others), at most once per user per 7 days. Calm turns
+  never ask. This is Berk's decision.
+- The cross-user leak check is in tests/leak_check.py. Echoed questions are not leaks; claims and
+  detail patterns are.
+- Still open from Phase 5: the "I don't have any information about Anna" phrasing (REPORT §7.5) is
+  not investigated.
+
+Before any GPU work: check that the GPU is idle (nvidia-smi, and no .venv Python process). Run GPU
+jobs one at a time, in the background. For multi-step sweeps use
+`.venv\Scripts\python.exe -m scripts.l4_run run <steps>` and check it with
+`.venv\Scripts\python.exe -m scripts.l4_run status`. Chat with the model with
+`.venv\Scripts\python.exe -m hunch.cli --user <name>`.
+
+Work: Phase 6 (Telegram and open loops), from docs/claude-code-prompts.md. Start by settling with
+Berk the open decisions with concrete options and a recommendation. In particular: the rule for when a
+Telegram conversation ends (working memory, session summary and the hunch state are per conversation),
+and whether the session-summary fold should be skipped or postponed when a new message is queued
+(latency). Record each answer in the decisions table of docs/design.md, in Turkish, with the decider.
+
+Rules: code, comments and commits in English; design.md stays in Turkish. Tests for every change
+(L1 on every change, L3 when a feature is done, L4 at phase end). Type hints, ruff. Do not commit or
+push without Berk's review. Commit messages end with the Co-Authored-By line for Claude Haiku 5.5.
+Reply to Berk in English.
+```
