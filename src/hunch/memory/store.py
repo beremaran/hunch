@@ -249,7 +249,8 @@ class MemoryStore:
                 raise StoreError(f"database file must end in {_DB_SUFFIXES}, got {path.name}")
             path.parent.mkdir(parents=True, exist_ok=True)
             target = str(path)
-        self.db = sqlite3.connect(target)
+        # The bot calls the store from worker threads; HunchChannel locks every call.
+        self.db = sqlite3.connect(target, check_same_thread=False)
         self.db.execute("PRAGMA foreign_keys = ON")
         self.db.enable_load_extension(True)
         sqlite_vec.load(self.db)

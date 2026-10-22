@@ -7,6 +7,7 @@ lock, so one GPU job runs at a time (CLAUDE.md, test levels)."""
 
 from __future__ import annotations
 
+import functools
 import random
 import re
 import threading
@@ -25,12 +26,34 @@ from hunch.pipeline.turn import Session, TurnPipeline
 
 # Berk (Phase 6): a conversation ends after 30 minutes without a message; the next one starts fresh.
 CONVERSATION_IDLE_SECONDS = 30 * 60
-WELCOME = "Hi, I'm Hunch. Tell me your name with /start <name> so I know who I'm talking to."
+
+
+def welcome(chat_id: int) -> str:
+    """Shown to a chat that is not registered yet. The chat id is not a secret; it is how the admin
+    finds their own id for TELEGRAM_ADMIN_USER_ID."""
+    return (
+        f"Hi, I'm Hunch. Your chat id is {chat_id}. Tell me your name with /start <name> "
+        "so I know who I'm talking to."
+    )
+
+
 NAME = re.compile(r"[a-z0-9_]{1,32}")
 LOG_TAIL = 5
 LOG_FILES = ("reflections.jsonl", "disclosures.jsonl")
 
 Sender = Callable[[int, str], None]
+
+
+def _serialised(method):
+    """Runs the method under the channel lock: one model or database job at a time, whichever
+    thread (bot handler or scheduler) asks."""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        with self.lock:
+            return method(self, *args, **kwargs)
+
+    return wrapper
 
 
 class HunchChannel:
@@ -59,12 +82,13 @@ class HunchChannel:
         self.log_dir = log_dir
         self.clock = clock
         self.rng = rng or random.Random()
-        self.lock = lock or threading.Lock()
+        self.lock = lock or threading.RLock()  # reentrant: entry points hold it, helpers may too
         self._sessions: dict[str, tuple[Session, float]] = {}
         self._last_kind: dict[str, Kind] = {}
 
     # --- messages ----------------------------------------------------------------------------
 
+    @_serialised
     def handle_message(self, chat_id: int, text: str, now: float | None = None) -> str:
         """The reply to one message from a chat (commands included)."""
         now = self.clock() if now is None else now
@@ -73,7 +97,7 @@ class HunchChannel:
             return self._command(chat_id, text, now)
         user = self.channels.user_of(chat_id)
         if user is None:
-            return WELCOME
+            return welcome(chat_id)
         self.channels.seen(chat_id, now)
         session = self._session(user, now)
         with self.lock:
@@ -147,6 +171,7 @@ class HunchChannel:
 
     # --- follow-ups and starters (Hunch writes first) -----------------------------------------
 
+    @_serialised
     def deliver_follow_up(self, loop_id: str, now: float | None = None) -> None:
         """A scheduled follow-up is due. It goes to the loop's owner only, within the budget;
         otherwise it waits for the next day's window. A loop that cannot be written is closed."""
@@ -166,6 +191,7 @@ class HunchChannel:
             self._send_outreach(loop.user, chat, out, now)
         self.loops.close(loop.id)  # sent, or nothing good could be written for it
 
+    @_serialised
     def starter_tick(self, now: float | None = None) -> int:
         """The hourly check (Berk, Phase 6): a starter for each quiet user, inside the active
         window, within the budget and the gap between starters. Returns how many were sent."""

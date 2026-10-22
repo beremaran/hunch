@@ -30,11 +30,12 @@ def run() -> None:
     load_env()
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     admin = os.environ.get("TELEGRAM_ADMIN_USER_ID", "")
-    if not token or not admin.lstrip("-").isdigit():
-        raise SystemExit(
-            "Set TELEGRAM_BOT_TOKEN and TELEGRAM_ADMIN_USER_ID in .env (see .env.example)."
-        )
+    if not token:
+        raise SystemExit("Set TELEGRAM_BOT_TOKEN in .env (see .env.example).")
+    if admin and not admin.lstrip("-").isdigit():
+        raise SystemExit("TELEGRAM_ADMIN_USER_ID must be a number, or empty until you know it.")
 
+    print("Loading the model and the embedder...", flush=True)
     rt = build_runtime()
     data_dir = env_dir("HUNCH_DATA_DIR", "data")
     jobs_url = f"sqlite:///{(data_dir / 'jobs.sqlite').as_posix()}"
@@ -54,7 +55,7 @@ def run() -> None:
         ChannelStore(rt.pipeline.store.db),
         rt.cfg.initiative,
         send,
-        admin_chat_id=int(admin),
+        admin_chat_id=int(admin) if admin else None,
         scheduler=scheduler,
         log_dir=env_dir("HUNCH_LOG_DIR", "logs"),
     )
@@ -81,6 +82,7 @@ def run() -> None:
         Application.builder().token(token).post_init(post_init).build()
     )  # fmt: skip
     application.add_handler(MessageHandler(filters.TEXT, on_text))
+    print("Hunch is running. Message your bot on Telegram; Ctrl+C stops it.", flush=True)
     try:
         application.run_polling()
     finally:
