@@ -127,6 +127,7 @@ Temel kararları Berk verdi. "Claude (öneri)" satırları, uygulama için gerek
 | Proaktif bütçe (Faz 6) | Her kullanıcıya günde en fazla 2 mesaj Hunch'tan önce yazar (takip ve başlatıcılar aynı bütçeden); `config/hunch.toml` `[initiative] follow_ups_per_day`, 0 kapatır | Berk |
 | Zamanlı etkinlik (Faz 6) | "Perşembe 14:00'te mülakatım var" → etkinlikten 1 saat önce iyi dilek, 2 saat sonra "nasıl geçti?" takibi; her ikisi aktif pencereye alınır | Berk |
 | Konuşma başlatıcıları (Faz 6) | Takipler hafızaya bağlı olmak zorunda değil: küçük sohbet, eğlenceli ya da merak uyandıran sorular da yazılır. Başlatıcı hiçbir şey hatırlamaz ve kendi deneyimini anlatmaz (kural kontrolü). Saatlik kontrol: 6 saat sessiz kalan kullanıcıya, aktif pencerede, en fazla 12 saatte bir, 0,3 şansla. Tüm değerler `[initiative]` içinde | Berk |
+| Sesli konuşma kanalı (yol haritası) | Telegram dışında, bilgisayarda sesle konuşma: mikrofondan giren konuşma metne çevrilir, Hunch'ın yanıtı sesli okunur. Aynı turn pipeline'ı ve aynı kurallar (İngilizce, hafıza, değer kapısı, ham loglar AI'a gitmez). Yol haritasında Telegram fazından sonra, son sohbet uygulamasından önce. Açık: konuşma tanıma ve ses üretimi modelleri (yerel, 16 GB VRAM içinde), dinleme biçimi (bastır-konuş ya da sürekli), ses kaydının saklanıp saklanmayacağı | Berk (kapsam); teknik seçimler: Claude önerisi, henüz yapılmadı |
 
 ## Mimari genel bakış
 
@@ -494,6 +495,7 @@ Açık sorular:
 - [x] Çok kullanıcı: gizlilik profili, ifşa kapısı, ilişki durumları, ruh hali, kullanıcı/admin "unut" — Faz 5 tamam (22 Eki); açık kalanlar Faz 6'da (`reports/phase5/REPORT.md`, `reports/phase5/PROPOSAL.md`)
 - [ ] Steering: ilk vektörleri çıkar, aday seçimiyle karşılaştır
 - [ ] Log görüntüleyici
+- [ ] Sesli konuşma (bilgisayarda, Telegram dışı): mikrofonla konuşma, sesli yanıt; aynı turn pipeline'ı üstünde, kararlar tablosunda "Sesli konuşma kanalı"
 - [ ] Küçük sohbet uygulaması (son faz): Hunch ile kolayca konuşmak için yerel bir sohbet arayüzü, aynı turn pipeline'ının üstünde
 
 ## Kaynaklar

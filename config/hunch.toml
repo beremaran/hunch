@@ -234,7 +234,7 @@ exploration = 0.1      # chance to pick the least drive-fitting candidate above 
 # Candidate filter: all candidates rejected (CJK, not English, invented memory, memory denial).
 filter_fallback = "I don't have that in mind right now. Could you tell me again?"
 # Value gate: no candidate above the quality floor passes.
-gate_fallback = "I'd rather not go there. Can we talk about it another way?"
+gate_fallback = "Sorry, I lost my thread. Could you say that again?"
 # Berk (Phase 4): the user asked why about a hunch-chosen reply (or accepted the offer to think
 # about it) and no candidate passed the hunch check, even after repair. Built from the unlocked
 # level only; {realisation} is what the reflection unlocked, in Hunch's own voice. Berk (Phase 5):

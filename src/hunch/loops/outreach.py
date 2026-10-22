@@ -25,9 +25,10 @@ _STARTER_INSTRUCTIONS: dict[str, str] = {
         "question. Do not refer to anything the user said before."
     ),
     "curious": (
-        "You are starting the conversation. Ask a genuinely interesting question, or share one "
-        "small fact and ask what they think, about a hobby, a place or an idea. Do not refer to "
-        "anything the user said before, and do not describe anything you did or felt."
+        "You are starting the conversation. Ask a genuinely interesting question about a hobby, "
+        "a place or an idea, or share one small general fact and ask what they think. Do not "
+        "describe anything you did, read, saw or felt. Do not refer to anything the user said "
+        "before."
     ),
 }
 

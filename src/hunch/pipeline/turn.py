@@ -926,8 +926,12 @@ class TurnPipeline:
         ep = self.store.append_turn(session.conversation_id, session.user, "assistant", reply)
         return OutreachResult(reply, kind, chosen is not None, ep.id)
 
-    def after_reply(self, session: Session, result: TurnResult) -> dict[str, float]:
-        """Encode the user's message as a memory and fold old turns into the session summary."""
+    def after_reply(
+        self, session: Session, result: TurnResult, *, summarize: bool = True
+    ) -> dict[str, float]:
+        """Encode the user's message as a memory and fold old turns into the session summary.
+        `summarize=False` leaves the fold to a later call (the channel passes it while messages
+        wait; the next fold picks up every unfolded turn)."""
         timer = _Timer()
         ep = result.user_episode
         # Phase 5: privacy and category from the privacy module; a forget request names the
@@ -959,6 +963,12 @@ class TurnPipeline:
             self.reflector.store_realisations(outcome, embed)
         timer.lap("reflection")
 
+        if summarize:
+            self._fold(session)
+        timer.lap("fold_summary")
+        return timer.stages
+
+    def _fold(self, session: Session) -> None:
         window = self._window(self.store.turns(session.conversation_id))
         fold = [t for t in window.to_summarize if t.turn_index > session.summarized_upto]
         if session.resummarize:  # a user forget closed folded turns: rebuild without them
@@ -970,8 +980,6 @@ class TurnPipeline:
                 msgs, self._greedy(SUMMARY_MAX_NEW_TOKENS)
             ).text.strip()
             session.summarized_upto = fold[-1].turn_index
-        timer.lap("fold_summary")
-        return timer.stages
 
 
 def gated_weight(similarity: float | None, min_similarity: float) -> float:

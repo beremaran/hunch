@@ -13,7 +13,7 @@ from hunch.memory.store import MemoryStore
 from tests.fakes import FakeLLM
 from tests.pipeline_support import seed_memory
 
-WARM = "That sounds lovely, I'm so glad, tell me more?"
+WARM = "I'm sorry, that must be hard, tell me more?"
 HEDGE = "Maybe wait a bit, it might be worth being careful, perhaps."
 PLAIN = "Okay. What happened next?"
 SOURCE_SUMMARY = 'They said: "ZEDSECRET ruined the evening at the harbour, I felt awful."'

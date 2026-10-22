@@ -125,9 +125,7 @@ def hunch_flag(
 # --- candidate features ---------------------------------------------------------------------------
 
 _WARM = (
-    "sorry", "glad", "love", "happy for you", "that sounds", "i'm here", "proud of you", "hug",
-    "wonderful", "lovely", "care", "understand", "must be", "means a lot", "so good", "amazing",
-    "heartbreaking", "rough", "you deserve", "take care", "congrat",
+    "sorry", "i'm here", "care", "understand", "must be", "heartbreaking", "rough", "take care",
 )  # fmt: skip
 _HEDGES = (
     "maybe", "perhaps", "might", "could", "i think", "not sure", "it depends", "possibly",

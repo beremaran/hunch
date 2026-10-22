@@ -3,6 +3,8 @@ conversation starters, owner-only delivery and the admin commands. Fake model, n
 
 from __future__ import annotations
 
+import threading
+import time
 from datetime import datetime
 
 import pytest
@@ -153,3 +155,45 @@ def test_admin_commands_are_for_the_admin_chat_only(channel) -> None:
     assert channel.handle_message(1, "/report", now=MORNING).startswith("Users: 1.")
     assert "No such memory" in channel.handle_message(1, "/forget nope", now=MORNING)
     assert "(empty)" in channel.handle_message(1, "/logs", now=MORNING)
+
+
+def test_summary_fold_waits_while_a_message_is_queued(channel, monkeypatch) -> None:
+    # Faz 6: the fold runs only for the last message in the queue, so a queued reply never waits
+    # for a summary; the turns it skips are folded by that last message.
+    channel.handle_message(10, "/start berk", now=MORNING)
+    folds: list[bool] = []
+    after = channel.pipeline.after_reply
+
+    def record(session, result, *, summarize=True):
+        folds.append(summarize)
+        return after(session, result, summarize=summarize)
+
+    turn = channel.pipeline.turn
+    first_running, release = threading.Event(), threading.Event()
+
+    def held_turn(session, text):
+        if text == "first":
+            first_running.set()
+            release.wait(5)
+        return turn(session, text)
+
+    monkeypatch.setattr(channel.pipeline, "after_reply", record)
+    monkeypatch.setattr(channel.pipeline, "turn", held_turn)
+    threads = [
+        threading.Thread(target=channel.handle_message, args=(10, "first"), kwargs={"now": MORNING})
+    ]
+    threads[0].start()
+    assert first_running.wait(5)
+    threads.append(
+        threading.Thread(
+            target=channel.handle_message, args=(10, "second"), kwargs={"now": MORNING}
+        )
+    )
+    threads[1].start()
+    deadline = time.monotonic() + 5
+    while channel._in_flight < 2 and time.monotonic() < deadline:
+        time.sleep(0.01)
+    release.set()
+    for t in threads:
+        t.join(5)
+    assert folds == [False, True]

@@ -12,7 +12,8 @@ import random
 import re
 import threading
 import time as clock_time
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -85,12 +86,28 @@ class HunchChannel:
         self.lock = lock or threading.RLock()  # reentrant: entry points hold it, helpers may too
         self._sessions: dict[str, tuple[Session, float]] = {}
         self._last_kind: dict[str, Kind] = {}
+        self._count_lock = threading.Lock()
+        self._in_flight = 0  # messages waiting for or holding the lock
 
     # --- messages ----------------------------------------------------------------------------
 
-    @_serialised
     def handle_message(self, chat_id: int, text: str, now: float | None = None) -> str:
-        """The reply to one message from a chat (commands included)."""
+        """The reply to one message from a chat (commands included). Messages queue on the lock;
+        the session summary is folded only by the last one in the queue (design.md, Faz 6)."""
+        with self._queued(), self.lock:
+            return self._handle_message(chat_id, text, now)
+
+    @contextmanager
+    def _queued(self) -> Iterator[None]:
+        with self._count_lock:
+            self._in_flight += 1
+        try:
+            yield
+        finally:
+            with self._count_lock:
+                self._in_flight -= 1
+
+    def _handle_message(self, chat_id: int, text: str, now: float | None) -> str:
         now = self.clock() if now is None else now
         text = text.strip()
         if text.startswith("/"):
@@ -102,7 +119,7 @@ class HunchChannel:
         session = self._session(user, now)
         with self.lock:
             result = self.pipeline.turn(session, text)
-            self.pipeline.after_reply(session, result)
+            self.pipeline.after_reply(session, result, summarize=self._in_flight == 1)
             new_loops = self.pipeline.extract_loops(session, result)
         self._sessions[user] = (session, now)
         for loop in new_loops:

@@ -42,9 +42,7 @@ def test_repo_config_has_approved_phase3_defaults() -> None:
     assert cfg.replies.filter_fallback == (
         "I don't have that in mind right now. Could you tell me again?"
     )
-    assert cfg.replies.gate_fallback == (
-        "I'd rather not go there. Can we talk about it another way?"
-    )
+    assert cfg.replies.gate_fallback == "Sorry, I lost my thread. Could you say that again?"
 
 
 def test_config_is_read_only() -> None:

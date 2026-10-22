@@ -28,7 +28,7 @@ class FakeLLM:
     """Answers each kind of call from a script; every prompt is kept in `prompts`."""
 
     candidates: Sequence[str] | Callable[[list[dict[str, str]]], Sequence[str]] = (
-        "That sounds lovely, tell me more?",
+        "I'm sorry, that must be hard, tell me more?",
         "Nice! What happened next?",
         "Oh, how did it go?",
     )
