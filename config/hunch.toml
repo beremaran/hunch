@@ -186,8 +186,10 @@ starter_idle_hours = 6.0
 starter_gap_hours = 12.0
 starter_chance = 0.3
 # Berk (Phase 6): one loop per matter. A new loop whose topic embedding is at least this similar
-# (cosine) to an open loop of the same user is dropped; a new timed event replaces the old loop.
-same_topic_similarity = 0.75
+# (cosine) to an open loop of the same user, and that the model judge calls the same matter, is
+# dropped; a new timed event replaces the old loop. Topics with different names never match.
+# Measured on three probe sets (reports/phase6/REPORT.md §4): 0 different pairs merged.
+same_topic_similarity = 0.60
 
 [drive]
 # Berk (Phase 4): a Hunch is created when modulation materially changes the choice: chosen_by =

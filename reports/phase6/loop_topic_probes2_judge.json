@@ -1,0 +1,618 @@
+{
+  "configured": 0.8,
+  "same_min": 0.0,
+  "different_max": 0.0,
+  "sweep": [
+    {
+      "threshold": 0.6,
+      "caught": 38,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    },
+    {
+      "threshold": 0.65,
+      "caught": 37,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    },
+    {
+      "threshold": 0.7,
+      "caught": 34,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    },
+    {
+      "threshold": 0.75,
+      "caught": 30,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    },
+    {
+      "threshold": 0.8,
+      "caught": 25,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    },
+    {
+      "threshold": 0.85,
+      "caught": 16,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    },
+    {
+      "threshold": 0.9,
+      "caught": 8,
+      "same": 40,
+      "merged": 0,
+      "different": 40
+    }
+  ],
+  "pairs": [
+    {
+      "a": "wedding anniversary",
+      "b": "broken dishwasher",
+      "same": false,
+      "judge": false,
+      "similarity": 0.461
+    },
+    {
+      "a": "flight to Lisbon",
+      "b": "the flight next week",
+      "same": true,
+      "judge": true,
+      "similarity": 0.712
+    },
+    {
+      "a": "interview at Spotify",
+      "b": "interview at Netflix",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "performance review",
+      "b": "annual review at work",
+      "same": true,
+      "judge": true,
+      "similarity": 0.814
+    },
+    {
+      "a": "passport renewal",
+      "b": "football tournament",
+      "same": false,
+      "judge": false,
+      "similarity": 0.458
+    },
+    {
+      "a": "new couch",
+      "b": "new mattress",
+      "same": false,
+      "judge": false,
+      "similarity": 0.607
+    },
+    {
+      "a": "car inspection",
+      "b": "vehicle inspection",
+      "same": true,
+      "judge": true,
+      "similarity": 0.94
+    },
+    {
+      "a": "soccer tournament",
+      "b": "football tournament",
+      "same": true,
+      "judge": true,
+      "similarity": 0.884
+    },
+    {
+      "a": "dentist appointment",
+      "b": "teeth cleaning visit",
+      "same": true,
+      "judge": true,
+      "similarity": 0.697
+    },
+    {
+      "a": "moving to Hamburg",
+      "b": "moving to Vienna",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "buying running shoes",
+      "b": "new running shoes",
+      "same": true,
+      "judge": true,
+      "similarity": 0.892
+    },
+    {
+      "a": "mom's surgery",
+      "b": "mom's birthday",
+      "same": false,
+      "judge": false,
+      "similarity": 0.771
+    },
+    {
+      "a": "wedding anniversary",
+      "b": "anniversary dinner",
+      "same": true,
+      "judge": true,
+      "similarity": 0.848
+    },
+    {
+      "a": "performance review",
+      "b": "team offsite",
+      "same": false,
+      "judge": false,
+      "similarity": 0.612
+    },
+    {
+      "a": "visa appointment",
+      "b": "new running shoes",
+      "same": false,
+      "judge": false,
+      "similarity": 0.464
+    },
+    {
+      "a": "rent increase",
+      "b": "higher rent notice",
+      "same": true,
+      "judge": true,
+      "similarity": 0.772
+    },
+    {
+      "a": "knee pain",
+      "b": "sore knee",
+      "same": true,
+      "judge": true,
+      "similarity": 0.892
+    },
+    {
+      "a": "landlord deposit",
+      "b": "guitar purchase",
+      "same": false,
+      "judge": false,
+      "similarity": 0.45
+    },
+    {
+      "a": "call with Sarah",
+      "b": "Call Sarah back",
+      "same": true,
+      "judge": true,
+      "similarity": 0.894
+    },
+    {
+      "a": "Lucas's school play",
+      "b": "school play with Lucas",
+      "same": true,
+      "judge": true,
+      "similarity": 0.779
+    },
+    {
+      "a": "new couch",
+      "b": "sofa shopping",
+      "same": true,
+      "judge": true,
+      "similarity": 0.646
+    },
+    {
+      "a": "passport renewal",
+      "b": "renewing passport",
+      "same": true,
+      "judge": true,
+      "similarity": 0.823
+    },
+    {
+      "a": "visa appointment",
+      "b": "getting the visa",
+      "same": true,
+      "judge": true,
+      "similarity": 0.744
+    },
+    {
+      "a": "thesis deadline",
+      "b": "thesis submission",
+      "same": true,
+      "judge": true,
+      "similarity": 0.728
+    },
+    {
+      "a": "iPhone repair",
+      "b": "Samsung repair",
+      "same": false,
+      "judge": false,
+      "similarity": 0.753
+    },
+    {
+      "a": "Maria's party",
+      "b": "party at Maria's",
+      "same": true,
+      "judge": true,
+      "similarity": 0.923
+    },
+    {
+      "a": "flight to Rome",
+      "b": "flight to Madrid",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "dinner with Anna",
+      "b": "dinner with Peter",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "math exam",
+      "b": "maths test",
+      "same": true,
+      "judge": true,
+      "similarity": 0.811
+    },
+    {
+      "a": "job interview",
+      "b": "interview next Tuesday",
+      "same": true,
+      "judge": true,
+      "similarity": 0.673
+    },
+    {
+      "a": "Dr. Meyer appointment",
+      "b": "Dr. Patel appointment",
+      "same": false,
+      "judge": false,
+      "similarity": 0.774
+    },
+    {
+      "a": "piano lessons",
+      "b": "weekly piano class",
+      "same": true,
+      "judge": true,
+      "similarity": 0.836
+    },
+    {
+      "a": "job interview",
+      "b": "mom's surgery",
+      "same": false,
+      "judge": false,
+      "similarity": 0.452
+    },
+    {
+      "a": "math exam",
+      "b": "iPhone repair",
+      "same": false,
+      "judge": false,
+      "similarity": 0.447
+    },
+    {
+      "a": "school play",
+      "b": "car inspection",
+      "same": false,
+      "judge": false,
+      "similarity": 0.49
+    },
+    {
+      "a": "Chelsea match",
+      "b": "Liverpool match",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "dentist visit",
+      "b": "moving boxes",
+      "same": false,
+      "judge": false,
+      "similarity": 0.474
+    },
+    {
+      "a": "Spotify offer",
+      "b": "knee pain",
+      "same": false,
+      "judge": false,
+      "similarity": 0.38
+    },
+    {
+      "a": "car insurance renewal",
+      "b": "car inspection",
+      "same": false,
+      "judge": false,
+      "similarity": 0.707
+    },
+    {
+      "a": "insurance claim",
+      "b": "claim with the insurer",
+      "same": true,
+      "judge": true,
+      "similarity": 0.835
+    },
+    {
+      "a": "performance review",
+      "b": "apartment viewing",
+      "same": false,
+      "judge": false,
+      "similarity": 0.543
+    },
+    {
+      "a": "marathon training",
+      "b": "training for the marathon",
+      "same": true,
+      "judge": true,
+      "similarity": 0.922
+    },
+    {
+      "a": "tax return",
+      "b": "filing taxes",
+      "same": true,
+      "judge": true,
+      "similarity": 0.888
+    },
+    {
+      "a": "parent-teacher meeting",
+      "b": "marathon training",
+      "same": false,
+      "judge": false,
+      "similarity": 0.503
+    },
+    {
+      "a": "5k race",
+      "b": "marathon training",
+      "same": false,
+      "judge": false,
+      "similarity": 0.729
+    },
+    {
+      "a": "Dinner with Tom",
+      "b": "dinner with Tom on Friday",
+      "same": true,
+      "judge": true,
+      "similarity": 0.912
+    },
+    {
+      "a": "Arsenal match",
+      "b": "tax return",
+      "same": false,
+      "judge": false,
+      "similarity": 0.372
+    },
+    {
+      "a": "Maria's wedding",
+      "b": "Julia's wedding",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "landlord deposit",
+      "b": "getting the deposit back",
+      "same": true,
+      "judge": true,
+      "similarity": 0.655
+    },
+    {
+      "a": "renting a flat",
+      "b": "buying a flat",
+      "same": false,
+      "judge": false,
+      "similarity": 0.876
+    },
+    {
+      "a": "knee pain",
+      "b": "back pain",
+      "same": false,
+      "judge": false,
+      "similarity": 0.824
+    },
+    {
+      "a": "piano lessons",
+      "b": "guitar lessons",
+      "same": false,
+      "judge": false,
+      "similarity": 0.806
+    },
+    {
+      "a": "flu symptoms",
+      "b": "being sick with flu",
+      "same": true,
+      "judge": true,
+      "similarity": 0.738
+    },
+    {
+      "a": "buying a bike",
+      "b": "repairing the bike",
+      "same": false,
+      "judge": false,
+      "similarity": 0.778
+    },
+    {
+      "a": "call with Google recruiter",
+      "b": "call with Amazon recruiter",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "Dell laptop return",
+      "b": "returning the Dell laptop",
+      "same": true,
+      "judge": true,
+      "similarity": 0.899
+    },
+    {
+      "a": "insurance claim",
+      "b": "Paris holiday",
+      "same": false,
+      "judge": false,
+      "similarity": 0.444
+    },
+    {
+      "a": "broken dishwasher",
+      "b": "dishwasher repair",
+      "same": true,
+      "judge": true,
+      "similarity": 0.814
+    },
+    {
+      "a": "trip to Prague",
+      "b": "trip to Budapest",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "meeting with Dr. Patel",
+      "b": "Dr. Patel appointment",
+      "same": true,
+      "judge": true,
+      "similarity": 0.898
+    },
+    {
+      "a": "piano exam",
+      "b": "sofa shopping",
+      "same": false,
+      "judge": false,
+      "similarity": 0.503
+    },
+    {
+      "a": "guitar purchase",
+      "b": "buying a guitar",
+      "same": true,
+      "judge": true,
+      "similarity": 0.919
+    },
+    {
+      "a": "trip to Berlin",
+      "b": "Berlin trip planning",
+      "same": true,
+      "judge": true,
+      "similarity": 0.909
+    },
+    {
+      "a": "parent-teacher meeting",
+      "b": "meeting with the teacher",
+      "same": true,
+      "judge": true,
+      "similarity": 0.865
+    },
+    {
+      "a": "Arsenal match",
+      "b": "going to the Arsenal game",
+      "same": true,
+      "judge": true,
+      "similarity": 0.807
+    },
+    {
+      "a": "dentist appointment",
+      "b": "optician appointment",
+      "same": false,
+      "judge": false,
+      "similarity": 0.76
+    },
+    {
+      "a": "math exam",
+      "b": "physics exam",
+      "same": false,
+      "judge": false,
+      "similarity": 0.8
+    },
+    {
+      "a": "Spotify offer",
+      "b": "job offer from Spotify",
+      "same": true,
+      "judge": false,
+      "similarity": 0.815
+    },
+    {
+      "a": "Google interview",
+      "b": "interview at Google",
+      "same": true,
+      "judge": true,
+      "similarity": 0.911
+    },
+    {
+      "a": "mom's surgery",
+      "b": "mother's operation",
+      "same": true,
+      "judge": true,
+      "similarity": 0.91
+    },
+    {
+      "a": "passport renewal",
+      "b": "driver's license renewal",
+      "same": false,
+      "judge": false,
+      "similarity": 0.734
+    },
+    {
+      "a": "iPhone repair",
+      "b": "fixing the iPhone screen",
+      "same": true,
+      "judge": true,
+      "similarity": 0.789
+    },
+    {
+      "a": "visa for Canada",
+      "b": "visa for Japan",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "Paris vacation",
+      "b": "Paris holiday booking",
+      "same": true,
+      "judge": true,
+      "similarity": 0.843
+    },
+    {
+      "a": "Berlin trip",
+      "b": "flu symptoms",
+      "same": false,
+      "judge": false,
+      "similarity": 0.534
+    },
+    {
+      "a": "moving to Munich",
+      "b": "Munich apartment hunt",
+      "same": true,
+      "judge": true,
+      "similarity": 0.764
+    },
+    {
+      "a": "Anna's birthday",
+      "b": "Anna's birthday gift",
+      "same": true,
+      "judge": false,
+      "similarity": 0.935
+    },
+    {
+      "a": "Lakers game",
+      "b": "Celtics game",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    },
+    {
+      "a": "apartment viewing",
+      "b": "looking at flats",
+      "same": true,
+      "judge": true,
+      "similarity": 0.762
+    },
+    {
+      "a": "Tom's birthday",
+      "b": "Lisa's birthday",
+      "same": false,
+      "judge": false,
+      "similarity": 0.0
+    }
+  ]
+}

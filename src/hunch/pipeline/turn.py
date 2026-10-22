@@ -49,7 +49,7 @@ from hunch.drive.drive import (
 )
 from hunch.drive.modulation import Scored, Selection, select
 from hunch.llm.types import ChatLLM, SamplingSettings
-from hunch.loops.dedup import fresh_drafts
+from hunch.loops.dedup import SAME_MATTER_MAX_NEW_TOKENS, fresh_drafts, judged_same
 from hunch.loops.extract import extract_drafts, to_loops
 from hunch.loops.outreach import (
     FALLBACK,
@@ -886,6 +886,9 @@ class TurnPipeline:
             self.loops.open_for(session.user),
             self.embedder.embed_documents if self.embedder is not None else None,
             self.cfg.initiative.same_topic_similarity,
+            judged_same(
+                lambda msgs: self.llm.generate(msgs, self._greedy(SAME_MATTER_MAX_NEW_TOKENS)).text
+            ),
         )
         for loop_id in replaced:
             self.loops.close(loop_id)  # a scheduled job for it finds it closed and sends nothing
