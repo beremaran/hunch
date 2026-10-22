@@ -44,6 +44,7 @@ AREAS: dict[str, str] = {
     "test_forget_golden.py": "forget",
     "test_loops_budget.py": "loops", "test_loops_store.py": "loops",
     "test_loops_scheduler.py": "loops",
+    "test_loops_extract.py": "loops",
 }  # fmt: skip
 
 

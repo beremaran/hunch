@@ -49,6 +49,8 @@ from hunch.drive.drive import (
 )
 from hunch.drive.modulation import Scored, Selection, select
 from hunch.llm.types import ChatLLM, SamplingSettings
+from hunch.loops.extract import extract_drafts, to_loops
+from hunch.loops.store import LoopStore, OpenLoop
 from hunch.memory.embeddings import Embedder
 from hunch.memory.encoding import encode_affect, encode_memory
 from hunch.memory.forget import (
@@ -121,6 +123,7 @@ CANDIDATE_IDS = "abcdefghij"
 JUDGE_CONTEXT_EXCHANGES = 3  # the judge sees the last few exchanges, not the whole window
 CUE_MAX_NEW_TOKENS = 256
 SUMMARY_MAX_NEW_TOKENS = 256
+LOOP_MAX_NEW_TOKENS = 160
 
 
 @dataclass
@@ -210,6 +213,7 @@ class TurnPipeline:
         if disclosure_log is None and turn_log is not None:
             disclosure_log = DisclosureLog(turn_log.dir, core_dir=Path(turn_log.core_dir))
         self.disclosure_log = disclosure_log
+        self.loops = LoopStore(store.db)  # Phase 6: open loops, scheduled by the channel
         self._pool = ThreadPoolExecutor(max_workers=1)
         gen = cfg.generation
         self.candidate_sampling = SamplingSettings(
@@ -849,6 +853,28 @@ class TurnPipeline:
         )  # fmt: skip
 
     # --- after the reply -------------------------------------------------------------------------
+
+    def extract_loops(self, session: Session, result: TurnResult) -> list[OpenLoop]:
+        """Open loops from the user's message (Phase 6). Runs after the reply, so it adds no
+        latency to it; the channel schedules the follow-ups. Off when the budget is 0, and never
+        for a message that asks to forget something."""
+        if self.cfg.initiative.follow_ups_per_day == 0 or result.forget is not None:
+            return []
+        privacy, _ = (
+            self.privacy.memory_privacy(session.user, result.privacy)
+            if result.privacy is not None
+            else ("private", None)
+        )
+        now = result.user_episode.created_at
+        drafts = extract_drafts(
+            result.user_episode.text,
+            lambda msgs: self.llm.generate(msgs, self._greedy(LOOP_MAX_NEW_TOKENS)).text,
+            datetime.fromtimestamp(now).date(),
+        )
+        loops = to_loops(drafts, session.user, privacy, now, self.cfg.initiative, self.new_id)
+        for loop in loops:
+            self.loops.add(loop)
+        return loops
 
     def after_reply(self, session: Session, result: TurnResult) -> dict[str, float]:
         """Encode the user's message as a memory and fold old turns into the session summary."""
