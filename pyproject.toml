@@ -26,6 +26,12 @@ llm = [
     "flash-linear-attention==0.5.2",
     "triton-windows==3.8.0.post29; sys_platform == 'win32'",
 ]
+# Phase 6: scheduled follow-ups (APScheduler with a SQLite job store) and the Telegram channel.
+telegram = [
+    "apscheduler==3.11.3",
+    "sqlalchemy>=2.0",
+    "python-telegram-bot==22.8",
+]
 dev = [
     "matplotlib>=3.9",  # scripts/simulate_recall.py plots
     "pytest>=8.3",
@@ -56,6 +62,7 @@ markers = [
     "mood: global mood, relationship state, hostility/apology signals (area)",
     "privacy: privacy profile, categories, mediation, disclosure gate (area)",
     "forget: user and admin forget (area)",
+    "loops: open loops, initiative budget, follow-up scheduling (area)",
 ]
 
 [tool.ruff]

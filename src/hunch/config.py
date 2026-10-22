@@ -194,6 +194,15 @@ class MoodDriveConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class InitiativeConfig:
+    # Phase 6 (Berk): proactive follow-ups per user per day; 0 turns them off.
+    follow_ups_per_day: int
+    # Usual active hours (local time, 0-23) until the bot learns them from the user's messages.
+    active_start_hour: int
+    active_end_hour: int
+
+
+@dataclass(frozen=True, slots=True)
 class PrivacyConfig:
     categories: tuple[str, ...]
     prototype_min_similarity: float
@@ -342,6 +351,7 @@ class Config:
     relationship: RelationshipConfig
     mood_drive: MoodDriveConfig
     privacy: PrivacyConfig
+    initiative: InitiativeConfig
     drive: DriveConfig
     reflection: ReflectionConfig
     selection: SelectionConfig
@@ -414,6 +424,22 @@ def _privacy(data: dict) -> PrivacyConfig:
     return PrivacyConfig(**raw)
 
 
+def _initiative(data: dict) -> InitiativeConfig:
+    raw = _section(data, "initiative", InitiativeConfig)
+    if not _is_int(raw["follow_ups_per_day"]) or raw["follow_ups_per_day"] < 0:
+        raise ConfigError("initiative.follow_ups_per_day must be an integer >= 0")
+    for name in ("active_start_hour", "active_end_hour"):
+        if not _is_int(raw[name]) or not 0 <= raw[name] <= 23:
+            raise ConfigError(f"initiative.{name} must be an hour 0-23")
+    if raw["active_start_hour"] >= raw["active_end_hour"]:
+        raise ConfigError("initiative.active_start_hour must be before active_end_hour")
+    return InitiativeConfig(**raw)
+
+
+def _is_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
 def _replies(data: dict) -> RepliesConfig:
     raw = dict(_section(data, "replies", RepliesConfig))
     for name in VARIANT_REPLIES:
@@ -437,6 +463,7 @@ def load_config(path: Path = DEFAULT_CONFIG) -> Config:
         relationship=RelationshipConfig(**_section(data, "relationship", RelationshipConfig)),
         mood_drive=MoodDriveConfig(**_section(data, "mood_drive", MoodDriveConfig)),
         privacy=_privacy(data),
+        initiative=_initiative(data),
         drive=DriveConfig(**_section(data, "drive", DriveConfig)),
         reflection=_reflection(data),
         selection=SelectionConfig(**_section(data, "selection", SelectionConfig)),
