@@ -29,6 +29,12 @@ from hunch.pipeline.turn import Session, TurnPipeline
 CONVERSATION_IDLE_SECONDS = 30 * 60
 
 
+def _loop_line(loop: OpenLoop) -> str:
+    """One open loop for the admin report: when, whose, privacy, topic and the planned question."""
+    at = datetime.fromtimestamp(loop.follow_up_at)
+    return f"{at:%a %d.%m %H:%M} {loop.user} ({loop.privacy}) {loop.topic}: {loop.question}"
+
+
 def welcome(chat_id: int) -> str:
     """Shown to a chat that is not registered yet. The chat id is not a secret; it is how the admin
     finds their own id for TELEGRAM_ADMIN_USER_ID."""
@@ -41,6 +47,8 @@ def welcome(chat_id: int) -> str:
 NAME = re.compile(r"[a-z0-9_]{1,32}")
 LOG_TAIL = 5
 LOG_FILES = ("reflections.jsonl", "disclosures.jsonl")
+# /report lists the next open loops, soonest first; 10 keeps it under Telegram's 4,096 characters.
+REPORT_LOOPS = 10
 
 Sender = Callable[[int, str], None]
 
@@ -183,8 +191,12 @@ class HunchChannel:
         users = len(self.channels.chats())
         since = start_of_day(datetime.fromtimestamp(now)).timestamp()
         sent = self.channels.outreach_count_since(since)
-        open_loops = self.loops.count_open()
-        return f"Users: {users}. Hunch wrote first today: {sent}. Open loops: {open_loops}."
+        loops = sorted(self.loops.open_loops(), key=lambda loop: loop.follow_up_at)
+        lines = [f"Users: {users}. Hunch wrote first today: {sent}. Open loops: {len(loops)}."]
+        lines += [_loop_line(loop) for loop in loops[:REPORT_LOOPS]]
+        if len(loops) > REPORT_LOOPS:
+            lines.append(f"... and {len(loops) - REPORT_LOOPS} more.")
+        return "\n".join(lines)
 
     # --- follow-ups and starters (Hunch writes first) -----------------------------------------
 

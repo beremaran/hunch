@@ -9,7 +9,7 @@ from datetime import datetime
 
 import pytest
 
-from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, HunchChannel
+from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, REPORT_LOOPS, HunchChannel
 from hunch.channels.store import ChannelStore
 from hunch.loops.store import OpenLoop
 from tests.fakes import FakeLLM, HashEmbedder
@@ -155,6 +155,26 @@ def test_admin_commands_are_for_the_admin_chat_only(channel) -> None:
     assert channel.handle_message(1, "/report", now=MORNING).startswith("Users: 1.")
     assert "No such memory" in channel.handle_message(1, "/forget nope", now=MORNING)
     assert "(empty)" in channel.handle_message(1, "/logs", now=MORNING)
+
+
+def test_report_lists_open_loops_soonest_first(channel) -> None:
+    channel.handle_message(10, "/start berk", now=MORNING)
+    later = datetime(2026, 10, 29, 16, 0).timestamp()
+    sooner = datetime(2026, 10, 29, 13, 0).timestamp()
+    for loop in (_loop("a", "berk", later), _loop("b", "berk", sooner)):
+        channel.loops.add(loop)
+    lines = channel.handle_message(1, "/report", now=MORNING).splitlines()
+    assert lines[0] == "Users: 1. Hunch wrote first today: 0. Open loops: 2."
+    assert lines[1].startswith("Thu 29.10 13:00 berk (general) job interview: How did")
+    assert lines[2].startswith("Thu 29.10 16:00 berk")
+
+
+def test_report_caps_the_loop_list(channel) -> None:
+    for i in range(REPORT_LOOPS + 3):
+        channel.loops.add(_loop(f"l{i}", "berk", MORNING + 3600 * (i + 1)))
+    lines = channel.handle_message(1, "/report", now=MORNING).splitlines()
+    assert len(lines) == 1 + REPORT_LOOPS + 1
+    assert lines[-1] == "... and 3 more."
 
 
 def test_summary_fold_waits_while_a_message_is_queued(channel, monkeypatch) -> None:
