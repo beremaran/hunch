@@ -91,6 +91,15 @@ class LoopStore:
                 (at, loop_id),
             )
 
+    def open_for(self, user: str) -> list[OpenLoop]:
+        """The user's own open loops, oldest first; never another user's."""
+        return [
+            _loop(r)
+            for r in self.db.execute(
+                _SELECT + " WHERE user = ? AND status = 'open' ORDER BY created_at", (user,)
+            )
+        ]
+
     def open_loops(self) -> list[OpenLoop]:
         """Every open loop, for re-scheduling after a restart."""
         return [_loop(r) for r in self.db.execute(_SELECT + " WHERE status = 'open'")]

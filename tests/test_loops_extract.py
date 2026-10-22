@@ -17,6 +17,7 @@ CFG = InitiativeConfig(
     starter_idle_hours=6.0,
     starter_gap_hours=12.0,
     starter_chance=0.3,
+    same_topic_similarity=0.75,
 )
 
 

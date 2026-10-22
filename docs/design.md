@@ -2,7 +2,7 @@
 
 20 Ekim 2026 (son güncelleme: 21 Ekim 2026) · Berk · Tek kaynak bu repodaki `docs/design.md` dosyasıdır.
 
-Durum: Faz 0–4 tamam ve ölçüldü. Faz 5 (ruh hali, çok kullanıcılı mahremiyet, unutma) commit edildi (`ae2b2d9`), L1 1312 test; faz sonu taraması bitti: tam golden (çapraz kullanıcı 4/4 düzeltmeden sonra), eval 51/51 temiz, bench 20 tur, probes. Sayılar `reports/phase5/REPORT.md` §10'da. Faz 5 tamam (22 Eki, Berk). Açık kalan iki madde Faz 6'ya taşındı: gizlilik sorusunun hiç sorulmaması (regresyon testi yok) ve "I don't have any information about Anna" ifadesi (REPORT §7.5). Kararlar aşağıdaki tabloda. Projeyi dışarıdan tanıtan kısa, teknik detaysız anlatım: [`STORY.md`](STORY.md).
+Durum: Faz 0–4 tamam ve ölçüldü. Faz 5 (ruh hali, çok kullanıcılı mahremiyet, unutma) commit edildi (`ae2b2d9`), L1 1312 test; faz sonu taraması bitti: tam golden (çapraz kullanıcı 4/4 düzeltmeden sonra), eval 51/51 temiz, bench 20 tur, probes. Sayılar `reports/phase5/REPORT.md` §10'da. Faz 5 tamam (22 Eki, Berk). Açık kalan iki madde Faz 6'ya taşındı: gizlilik sorusunun hiç sorulmaması (regresyon testi yok) ve "I don't have any information about Anna" ifadesi (REPORT §7.5). Faz 6 (Telegram, açık döngüler, takipler ve konuşma başlatıcıları) kuruldu ve canlı test edildi; konu başına tek döngü kuralı canlı testten sonra eklendi; rapor `reports/phase6/REPORT.md`. Faz 6'yı "tamam" saymak Berk'in kararı. Kararlar aşağıdaki tabloda. Projeyi dışarıdan tanıtan kısa, teknik detaysız anlatım: [`STORY.md`](STORY.md).
 
 ## Özet
 
@@ -127,6 +127,9 @@ Temel kararları Berk verdi. "Claude (öneri)" satırları, uygulama için gerek
 | Proaktif bütçe (Faz 6) | Her kullanıcıya günde en fazla 2 mesaj Hunch'tan önce yazar (takip ve başlatıcılar aynı bütçeden); `config/hunch.toml` `[initiative] follow_ups_per_day`, 0 kapatır | Berk |
 | Zamanlı etkinlik (Faz 6) | "Perşembe 14:00'te mülakatım var" → etkinlikten 1 saat önce iyi dilek, 2 saat sonra "nasıl geçti?" takibi; her ikisi aktif pencereye alınır | Berk |
 | Konuşma başlatıcıları (Faz 6) | Takipler hafızaya bağlı olmak zorunda değil: küçük sohbet, eğlenceli ya da merak uyandıran sorular da yazılır. Başlatıcı hiçbir şey hatırlamaz ve kendi deneyimini anlatmaz (kural kontrolü). Saatlik kontrol: 6 saat sessiz kalan kullanıcıya, aktif pencerede, en fazla 12 saatte bir, 0,3 şansla. Tüm değerler `[initiative]` içinde | Berk |
+| Gizli döngüler ve ifşa kapısı (Faz 6) | Gizli bir döngünün takibi ek ifşa kapısından geçmez: takip yalnızca döngü sahibinin kendi sohbetine gider, değer kapısı yine son sözü söyler. İfşa kapısı kullanıcılar arası sızıntı içindir; burada başka bir alıcı yok. `tests/test_channel_hunch.py` (`test_a_private_loop_never_goes_to_another_chat`) bunu korur | Berk (Claude önerisi A) |
+| İnisiyatif bütçesinin ve aktif saatlerin öğrenilmesi (Faz 6 → Faz 7) | Faz 6 sabit değerlerle kapanır (günde 2 mesaj, 9–22). Öğrenme Faz 7'deki gece konsolidasyonuna kalır: aktif pencere kullanıcının mesaj saatlerinden, bütçe tepkilerden (olumlu dönüş artırır, cevapsız ya da düşmanca dönüş azaltır) | Berk (Claude önerisi A) |
+| Konu başına tek döngü (Faz 6) | Canlı testte aynı sözleşme için iki döngü açıldı ("Did you receive the contract?", "How did it go with getting your new contract?"). Yeni döngünün konusu, aynı kullanıcının açık bir döngüsünün konusuna embedding benzerliğiyle (kosinüs ≥ `[initiative] same_topic_similarity`) yakınsa döngü eklenmez; aynı mesajdan çıkan iki taslak için de aynı kural. İstisna: yeni taslak saatli bir etkinlikse (ör. mülakat başka güne alındı) eski döngüleri kapatır, yerine geçer. Ek model çağrısı yok (seçenek B, model yargıcı, seçilmedi). Eşik 0,75 henüz ölçülmedi: kör set `eval/probes/loop_topics.json` (60 çift, ajan kodu görmeden yazdı), ölçüm `python -m scripts.loop_topic_probes` | Berk (seçenek A); eşik: Claude önerisi, ölçülecek |
 | Sesli konuşma kanalı (yol haritası) | Telegram dışında, bilgisayarda sesle konuşma: mikrofondan giren konuşma metne çevrilir, Hunch'ın yanıtı sesli okunur. Aynı turn pipeline'ı ve aynı kurallar (İngilizce, hafıza, değer kapısı, ham loglar AI'a gitmez). Yol haritasında Telegram fazından sonra, son sohbet uygulamasından önce. Açık: konuşma tanıma ve ses üretimi modelleri (yerel, 16 GB VRAM içinde), dinleme biçimi (bastır-konuş ya da sürekli), ses kaydının saklanıp saklanmayacağı | Berk (kapsam); teknik seçimler: Claude önerisi, henüz yapılmadı |
 
 ## Mimari genel bakış
@@ -353,8 +356,9 @@ OpenLoop(
 )
 ```
 
-- **İnisiyatif bütçesi:** Her kullanıcının bir proaktif mesaj bütçesi vardır. Bütçe tepkilerden öğrenilir: olumlu dönüşler artırır, cevapsız kalan ya da rahatsızlık belirten mesajlar azaltır.
-- **Zamanlama:** Mesajlar kullanıcının genelde aktif olduğu saatlere denk getirilir.
+- **İnisiyatif bütçesi:** Her kullanıcının bir proaktif mesaj bütçesi vardır. Bütçe tepkilerden öğrenilir: olumlu dönüşler artırır, cevapsız kalan ya da rahatsızlık belirten mesajlar azaltır. (Faz 6'da sabit: günde 2; öğrenme Faz 7'de, kararlar tablosu.)
+- **Zamanlama:** Mesajlar kullanıcının genelde aktif olduğu saatlere denk getirilir. (Faz 6'da sabit pencere 9–22; mesaj saatlerinden öğrenme Faz 7'de.)
+- **Konu başına tek döngü:** Aynı konuya ikinci bir döngü açılmaz (embedding benzerliği); saatli yeni bir etkinlik eski döngünün yerine geçer.
 - **Mahremiyet:** Private bir açık döngünün takibi sadece sahibine gider.
 - **Sessizlik:** Sürekli konuşmak hedef değildir. Ne zaman yazacağını bilmek, ne yazacağını bilmek kadar önemli.
 
@@ -490,7 +494,7 @@ Açık sorular:
 - [x] Aktivasyon motoru: formül, iki eşik, tetikleyici çıkarımı (held-out P %83 / R %69), istemsiz hatırlama, yeniden konsolidasyon; 6 aylık simülasyon — Faz 2
 - [x] Tur akışı: "girdi İngilizce mi?" kontrolü, çalışan bellek (son N tur + oturum özeti), reasoning, 2–3 aday (tek batch), aday filtresi (CJK, İngilizce olmayan, anı uyduran ya da hafızası yokmuş gibi konuşan aday reddedilir, diğeri seçilir; hepsi elenirse "I don't have that in mind right now. Could you tell me again?", testli; hafıza sorusu prompt'larıyla ≥ 50 pipeline koşusu ve hepsi-elendi oranı raporu), dürtü vektörü, aday seçimi, değer kapısı, tur logu; ≤ 10 s — Faz 3, `reports/phase3/REPORT.md`
 - [x] Hunch ve kademeli yansıtma: hunch sadece modülasyon seçimi belirgin değiştirdiğinde oluşur, bayrak sadece "neden?" sorulunca prompt'a girer; 0–3 seviyeli yansıtma, haklı kaynak → inanç, haksız → alt iz zayıflar; açılanlar AI'ın kendi anısı, yansıtma logu sadece admin — Faz 4, `reports/phase4/REPORT.md`
-- [ ] Telegram botu, açık döngüler, zamanlayıcı
+- [ ] Telegram botu, açık döngüler, zamanlayıcı — Faz 6 kuruldu, canlı test yapıldı (zamanlı etkinlik dahil); "tamam" kararı Berk'te (`reports/phase6/REPORT.md`)
 - [ ] Gece konsolidasyonu ve golden testler
 - [x] Çok kullanıcı: gizlilik profili, ifşa kapısı, ilişki durumları, ruh hali, kullanıcı/admin "unut" — Faz 5 tamam (22 Eki); açık kalanlar Faz 6'da (`reports/phase5/REPORT.md`, `reports/phase5/PROPOSAL.md`)
 - [ ] Steering: ilk vektörleri çıkar, aday seçimiyle karşılaştır

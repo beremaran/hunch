@@ -205,6 +205,9 @@ class InitiativeConfig:
     starter_idle_hours: float
     starter_gap_hours: float
     starter_chance: float
+    # A new loop whose topic is at least this similar (cosine) to one of the user's open loops is
+    # the same matter: it is not added (a timed one replaces the old loop instead).
+    same_topic_similarity: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -441,6 +444,7 @@ def _initiative(data: dict) -> InitiativeConfig:
     _number("initiative", "starter_idle_hours", raw["starter_idle_hours"], 0.0, 24 * 30)
     _number("initiative", "starter_gap_hours", raw["starter_gap_hours"], 0.0, 24 * 30)
     _number("initiative", "starter_chance", raw["starter_chance"], 0.0, 1.0)
+    _number("initiative", "same_topic_similarity", raw["same_topic_similarity"], 0.0, 1.0)
     return InitiativeConfig(**raw)
 
 

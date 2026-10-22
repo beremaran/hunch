@@ -3,6 +3,7 @@ conversation starters, owner-only delivery and the admin commands. Fake model, n
 
 from __future__ import annotations
 
+import dataclasses
 import threading
 import time
 from datetime import datetime
@@ -103,11 +104,14 @@ def test_follow_up_is_not_sent_before_its_time(channel) -> None:
 
 
 def test_a_private_loop_never_goes_to_another_chat(channel) -> None:
+    """Berk (Phase 6): a private loop needs no disclosure gate, because its follow-up only ever
+    goes to the owner's own chat; this test guards that instead."""
     channel.handle_message(10, "/start berk", now=MORNING)
     channel.handle_message(11, "/start lea", now=MORNING)
-    channel.loops.add(_loop("l1", "berk", MORNING - 60))
+    channel.recorder.sent.clear()
+    channel.loops.add(dataclasses.replace(_loop("l1", "berk", MORNING - 60), privacy="private"))
     channel.deliver_follow_up("l1", now=MORNING)
-    assert all(chat == 10 for chat, _ in channel.recorder.sent)
+    assert channel.recorder.sent and all(chat == 10 for chat, _ in channel.recorder.sent)
 
 
 def test_budget_postpones_the_third_follow_up_to_tomorrow(channel, pipe_cfg) -> None:

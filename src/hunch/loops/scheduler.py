@@ -2,7 +2,7 @@
 follow-ups survive a restart (Berk: "it must survive restarts without losing scheduled follow-ups").
 
 A job is keyed by its loop id and calls the handler registered at startup with that id. The
-handler checks the budget, the privacy gate and the loop's status before sending anything."""
+handler checks the loop's status and the budget, and sends to the loop's owner only."""
 
 from __future__ import annotations
 

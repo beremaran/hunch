@@ -49,6 +49,7 @@ from hunch.drive.drive import (
 )
 from hunch.drive.modulation import Scored, Selection, select
 from hunch.llm.types import ChatLLM, SamplingSettings
+from hunch.loops.dedup import fresh_drafts
 from hunch.loops.extract import extract_drafts, to_loops
 from hunch.loops.outreach import (
     FALLBACK,
@@ -866,7 +867,7 @@ class TurnPipeline:
     def extract_loops(self, session: Session, result: TurnResult) -> list[OpenLoop]:
         """Open loops from the user's message (Phase 6). Runs after the reply, so it adds no
         latency to it; the channel schedules the follow-ups. Off when the budget is 0, and never
-        for a message that asks to forget something."""
+        for a message that asks to forget something. One loop per matter (loops/dedup.py)."""
         if self.cfg.initiative.follow_ups_per_day == 0 or result.forget is not None:
             return []
         privacy, _ = (
@@ -880,6 +881,14 @@ class TurnPipeline:
             lambda msgs: self.llm.generate(msgs, self._greedy(LOOP_MAX_NEW_TOKENS)).text,
             datetime.fromtimestamp(now).date(),
         )
+        drafts, replaced = fresh_drafts(
+            drafts,
+            self.loops.open_for(session.user),
+            self.embedder.embed_documents if self.embedder is not None else None,
+            self.cfg.initiative.same_topic_similarity,
+        )
+        for loop_id in replaced:
+            self.loops.close(loop_id)  # a scheduled job for it finds it closed and sends nothing
         loops = to_loops(drafts, session.user, privacy, now, self.cfg.initiative, self.new_id)
         for loop in loops:
             self.loops.add(loop)
