@@ -63,6 +63,7 @@ markers = [
     "privacy: privacy profile, categories, mediation, disclosure gate (area)",
     "forget: user and admin forget (area)",
     "loops: open loops, initiative budget, follow-up scheduling (area)",
+    "channels: chat channel, conversations, starters, admin commands (area)",
 ]
 
 [tool.ruff]

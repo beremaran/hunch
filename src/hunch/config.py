@@ -200,6 +200,11 @@ class InitiativeConfig:
     # Usual active hours (local time, 0-23) until the bot learns them from the user's messages.
     active_start_hour: int
     active_end_hour: int
+    # Conversation starters (Phase 6): after this many idle hours, a starter may be sent; at least
+    # starter_gap_hours between Hunch's own messages; chance per hourly check.
+    starter_idle_hours: float
+    starter_gap_hours: float
+    starter_chance: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -433,6 +438,9 @@ def _initiative(data: dict) -> InitiativeConfig:
             raise ConfigError(f"initiative.{name} must be an hour 0-23")
     if raw["active_start_hour"] >= raw["active_end_hour"]:
         raise ConfigError("initiative.active_start_hour must be before active_end_hour")
+    _number("initiative", "starter_idle_hours", raw["starter_idle_hours"], 0.0, 24 * 30)
+    _number("initiative", "starter_gap_hours", raw["starter_gap_hours"], 0.0, 24 * 30)
+    _number("initiative", "starter_chance", raw["starter_chance"], 0.0, 1.0)
     return InitiativeConfig(**raw)
 
 

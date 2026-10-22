@@ -23,3 +23,17 @@ def next_send_time(now: datetime, cfg: InitiativeConfig) -> datetime:
     if now < end:
         return now
     return start + timedelta(days=1)
+
+
+def in_window(now: datetime, cfg: InitiativeConfig) -> bool:
+    """True when `now` (local time) is inside the active window."""
+    day = now.date()
+    return (
+        datetime.combine(day, time(cfg.active_start_hour))
+        <= now
+        < datetime.combine(day, time(cfg.active_end_hour))
+    )
+
+
+def start_of_day(now: datetime) -> datetime:
+    return datetime.combine(now.date(), time(0))

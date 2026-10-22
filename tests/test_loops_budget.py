@@ -10,7 +10,14 @@ import pytest
 from hunch.config import DEFAULT_CONFIG, ConfigError, InitiativeConfig, load_config
 from hunch.loops.budget import has_budget, next_send_time
 
-CFG = InitiativeConfig(follow_ups_per_day=2, active_start_hour=9, active_end_hour=22)
+CFG = InitiativeConfig(
+    follow_ups_per_day=2,
+    active_start_hour=9,
+    active_end_hour=22,
+    starter_idle_hours=6.0,
+    starter_gap_hours=12.0,
+    starter_chance=0.3,
+)
 
 
 @pytest.mark.parametrize(("sent", "allowed"), [(0, True), (1, True), (2, False), (5, False)])
@@ -19,7 +26,7 @@ def test_budget_counts_follow_ups_sent_today(sent: int, allowed: bool) -> None:
 
 
 def test_zero_budget_turns_follow_ups_off() -> None:
-    assert has_budget(0, InitiativeConfig(0, 9, 22)) is False
+    assert has_budget(0, InitiativeConfig(0, 9, 22, 6.0, 12.0, 0.3)) is False
 
 
 @pytest.mark.parametrize(

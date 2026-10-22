@@ -180,6 +180,11 @@ follow_ups_per_day = 2
 # Usual active hours in local time (0-23) until the bot learns them from the user's messages.
 active_start_hour = 9
 active_end_hour = 22
+# Conversation starters: after starter_idle_hours without a message, a starter may be sent (at
+# most one per starter_gap_hours), chance per hourly check. Starters share the same daily budget.
+starter_idle_hours = 6.0
+starter_gap_hours = 12.0
+starter_chance = 0.3
 
 [drive]
 # Berk (Phase 4): a Hunch is created when modulation materially changes the choice: chosen_by =

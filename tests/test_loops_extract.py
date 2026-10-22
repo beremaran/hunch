@@ -10,7 +10,14 @@ import pytest
 from hunch.config import InitiativeConfig
 from hunch.loops.extract import LoopDraft, extract_drafts, parse_drafts, to_loops
 
-CFG = InitiativeConfig(follow_ups_per_day=2, active_start_hour=9, active_end_hour=22)
+CFG = InitiativeConfig(
+    follow_ups_per_day=2,
+    active_start_hour=9,
+    active_end_hour=22,
+    starter_idle_hours=6.0,
+    starter_gap_hours=12.0,
+    starter_chance=0.3,
+)
 
 
 def _reply(*loops: dict) -> str:

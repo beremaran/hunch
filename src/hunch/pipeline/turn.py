@@ -50,6 +50,13 @@ from hunch.drive.drive import (
 from hunch.drive.modulation import Scored, Selection, select
 from hunch.llm.types import ChatLLM, SamplingSettings
 from hunch.loops.extract import extract_drafts, to_loops
+from hunch.loops.outreach import (
+    FALLBACK,
+    Kind,
+    OutreachResult,
+    describes_own_experience,
+    instruction_for,
+)
 from hunch.loops.store import LoopStore, OpenLoop
 from hunch.memory.embeddings import Embedder
 from hunch.memory.encoding import encode_affect, encode_memory
@@ -124,6 +131,8 @@ JUDGE_CONTEXT_EXCHANGES = 3  # the judge sees the last few exchanges, not the wh
 CUE_MAX_NEW_TOKENS = 256
 SUMMARY_MAX_NEW_TOKENS = 256
 LOOP_MAX_NEW_TOKENS = 160
+# The chat template needs a user turn; Hunch writes first, so this one is not stored.
+OUTREACH_TRIGGER = "(Write your message now, following the instructions above.)"
 
 
 @dataclass
@@ -875,6 +884,47 @@ class TurnPipeline:
         for loop in loops:
             self.loops.add(loop)
         return loops
+
+    def outreach(
+        self, session: Session, kind: Kind, loop: OpenLoop | None = None
+    ) -> OutreachResult:
+        """A message Hunch writes first (Phase 6): a loop's follow-up, or a starter. Same filter,
+        judge and value gate as a reply, but no user message. A loop's follow-up sees the user's
+        own words as a memory, so it is the only thing the filter may treat as known."""
+        instruction = instruction_for(kind, loop)
+        recalled = [RecalledLine("earlier", loop.user_said)] if loop is not None else []
+        prior_context = loop.user_said if loop is not None else ""
+        messages = build_reasoning_messages(
+            [], OUTREACH_TRIGGER, session.summary, recalled, self.cfg.mood.neutral_label,
+            [instruction],
+        )  # fmt: skip
+        batch = self.llm.generate_batch(
+            messages, self.cfg.generation.candidates, self.candidate_sampling, seed=self._seed()
+        )
+        texts = {}
+        for i, raw in enumerate(batch.texts):
+            capped = bool(batch.hit_cap and batch.hit_cap[i])
+            texts[CANDIDATE_IDS[i]] = trim_to_last_sentence(raw) if capped else raw.strip()
+        passed, filtered = filter_candidates(texts, prior_context, None, False, False)
+        texts.update({r.id: r.text for r in filtered})
+        chosen: str | None = None
+        if passed:
+            judge_msgs = build_judge_messages(
+                self.values, "", f"(Hunch writes first. {instruction})",
+                {r.id: r.text for r in passed},
+            )  # fmt: skip
+            raw = self.llm.generate(judge_msgs, self._greedy(8 * len(passed) + 16)).text
+            verdicts = parse_verdicts(raw, [r.id for r in passed], self.values.ids)
+            for r in passed:
+                rules = check_candidate(texts[r.id], prior_context, None, False, False)
+                if describes_own_experience(texts[r.id]):
+                    rules = [*rules, "own_experience"]
+                if not rules and verdicts[r.id].value == "ok":
+                    chosen = r.id
+                    break
+        reply = texts[chosen] if chosen is not None else FALLBACK
+        ep = self.store.append_turn(session.conversation_id, session.user, "assistant", reply)
+        return OutreachResult(reply, kind, chosen is not None, ep.id)
 
     def after_reply(self, session: Session, result: TurnResult) -> dict[str, float]:
         """Encode the user's message as a memory and fold old turns into the session summary."""

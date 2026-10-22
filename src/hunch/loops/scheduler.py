@@ -13,13 +13,27 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 
 JOB_PREFIX = "open_loop:"
+STARTER_JOB = "starter_tick"
 _handler: Callable[[str], None] | None = None
+_starter_handler: Callable[[], None] | None = None
 
 
 def set_handler(handler: Callable[[str], None]) -> None:
     """Registers what a due follow-up does. Jobs store a reference, so set this at startup."""
     global _handler
     _handler = handler
+
+
+def set_starter_handler(handler: Callable[[], None]) -> None:
+    """Registers the hourly conversation-starter check (see HunchChannel.starter_tick)."""
+    global _starter_handler
+    _starter_handler = handler
+
+
+def fire_starters() -> None:
+    if _starter_handler is None:
+        raise RuntimeError("no starter handler registered (call set_starter_handler at startup)")
+    _starter_handler()
 
 
 def fire(loop_id: str) -> None:
@@ -49,6 +63,12 @@ class FollowUpScheduler:
             args=[loop_id],
             id=JOB_PREFIX + loop_id,
             replace_existing=True,
+        )
+
+    def every_hour_starters(self) -> None:
+        """Schedules fire_starters hourly; a job with the same id is replaced, not duplicated."""
+        self._scheduler.add_job(
+            fire_starters, trigger="interval", hours=1, id=STARTER_JOB, replace_existing=True
         )
 
     def cancel(self, loop_id: str) -> None:

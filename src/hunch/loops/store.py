@@ -83,6 +83,23 @@ class LoopStore:
                 (at, loop_id),
             )
 
+    def postpone(self, loop_id: str, at: float) -> None:
+        """Moves an open loop's follow-up (the budget was used up, or the window was closed)."""
+        with self.db:
+            self.db.execute(
+                "UPDATE open_loops SET follow_up_at = ? WHERE id = ? AND status = 'open'",
+                (at, loop_id),
+            )
+
+    def open_loops(self) -> list[OpenLoop]:
+        """Every open loop, for re-scheduling after a restart."""
+        return [_loop(r) for r in self.db.execute(_SELECT + " WHERE status = 'open'")]
+
+    def count_open(self) -> int:
+        return int(
+            self.db.execute("SELECT COUNT(*) FROM open_loops WHERE status = 'open'").fetchone()[0]
+        )
+
     def close(self, loop_id: str) -> None:
         """The user answered, forgot the topic, or the loop no longer applies."""
         with self.db:
