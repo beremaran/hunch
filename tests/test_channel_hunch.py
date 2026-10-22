@@ -7,7 +7,7 @@ from datetime import datetime
 
 import pytest
 
-from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, WELCOME, HunchChannel
+from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, HunchChannel
 from hunch.channels.store import ChannelStore
 from hunch.loops.store import OpenLoop
 from tests.fakes import FakeLLM, HashEmbedder
@@ -56,7 +56,7 @@ def _loop(loop_id: str, user: str, at: float) -> OpenLoop:
 
 
 def test_unknown_chat_gets_the_welcome_and_start_registers_a_name(channel) -> None:
-    assert channel.handle_message(10, "hello") == WELCOME
+    assert "chat id is 10" in channel.handle_message(10, "hello")
     assert "Hi berk" in channel.handle_message(10, "/start Berk", now=MORNING)
     assert channel.channels.user_of(10) == "berk"
 
