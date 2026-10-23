@@ -12,6 +12,7 @@ import pytest
 
 from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, REPORT_LOOPS, HunchChannel
 from hunch.channels.store import ChannelStore
+from hunch.loops.learning import LearnedInitiative
 from hunch.loops.store import OpenLoop
 from tests.fakes import FakeLLM, HashEmbedder
 from tests.pipeline_support import DIM
@@ -234,3 +235,27 @@ def test_summary_fold_waits_while_a_message_is_queued(channel, monkeypatch) -> N
     for t in threads:
         t.join(5)
     assert folds == [False, True]
+
+
+# --- learned window and budget (Phase 7) ---------------------------------------------------------
+
+
+def test_a_learned_window_holds_a_due_follow_up_until_it_opens(channel) -> None:
+    channel.handle_message(10, "/start berk", now=MORNING)
+    channel.recorder.sent.clear()
+    channel.channels.save_initiative(LearnedInitiative("berk", 12, 20, 2, None, MORNING))
+    channel.loops.add(_loop("l1", "berk", MORNING - 60))
+    channel.deliver_follow_up("l1", now=MORNING)  # 10:00, the learned window opens at 12
+    loop = channel.loops.get("l1")
+    assert channel.recorder.sent == [] and loop.status == "open"
+    assert datetime.fromtimestamp(loop.follow_up_at) == datetime(2026, 10, 22, 12, 0)
+
+
+def test_a_muted_user_gets_no_follow_up(channel) -> None:
+    channel.handle_message(10, "/start berk", now=MORNING)
+    channel.recorder.sent.clear()
+    muted = LearnedInitiative("berk", 9, 22, 2, MORNING + 86_400, MORNING)
+    channel.channels.save_initiative(muted)
+    channel.loops.add(_loop("l1", "berk", MORNING - 60))
+    channel.deliver_follow_up("l1", now=MORNING)
+    assert channel.recorder.sent == [] and channel.loops.get("l1").status == "open"

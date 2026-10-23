@@ -19,7 +19,7 @@ from pathlib import Path
 
 from hunch.channels.store import ChannelStore
 from hunch.config import InitiativeConfig
-from hunch.loops.budget import has_budget, in_window, next_send_time, start_of_day
+from hunch.loops.budget import Initiative, has_budget, in_window, next_send_time, start_of_day
 from hunch.loops.outreach import Kind, OutreachResult, choose_kind
 from hunch.loops.store import OpenLoop
 from hunch.memory.forget import admin_forget
@@ -211,7 +211,7 @@ class HunchChannel:
         chat = self.channels.chat_of(loop.user)
         if chat is None:
             return  # the owner has not talked to Hunch on a chat yet; the loop waits
-        if not in_window(datetime.fromtimestamp(now), self.cfg):
+        if not in_window(datetime.fromtimestamp(now), self._initiative(loop.user, now)):
             self._postpone(loop, datetime.fromtimestamp(now))  # late after a restart at night
             return
         if not self._has_budget(loop.user, now):
@@ -226,13 +226,13 @@ class HunchChannel:
 
     @_serialised
     def starter_tick(self, now: float | None = None) -> int:
-        """The hourly check (Berk, Phase 6): a starter for each quiet user, inside the active
+        """The hourly check (Berk, Phase 6): a starter for each quiet user, inside their active
         window, within the budget and the gap between starters. Returns how many were sent."""
         now = self.clock() if now is None else now
-        if not in_window(datetime.fromtimestamp(now), self.cfg):
-            return 0
         sent = 0
         for chat, user in self.channels.chats():
+            if not in_window(datetime.fromtimestamp(now), self._initiative(user, now)):
+                continue
             seen = self.channels.last_seen(user)
             last = self.channels.last_outreach(user)
             if seen is None or now - seen < self.cfg.starter_idle_hours * 3600:
@@ -249,12 +249,18 @@ class HunchChannel:
                 sent += 1
         return sent
 
+    def _initiative(self, user: str, now: float) -> Initiative:
+        """The window and budget learned for this user (Phase 7), or the config defaults."""
+        learned = self.channels.initiative(user)
+        return Initiative.default(self.cfg) if learned is None else learned.effective(now)
+
     def _has_budget(self, user: str, now: float) -> bool:
         since = start_of_day(datetime.fromtimestamp(now)).timestamp()
-        return has_budget(self.channels.outreach_since(user, since), self.cfg)
+        return has_budget(self.channels.outreach_since(user, since), self._initiative(user, now))
 
     def _postpone(self, loop: OpenLoop, earliest: datetime) -> None:
-        at = next_send_time(earliest, self.cfg).timestamp()
+        initiative = self._initiative(loop.user, earliest.timestamp())
+        at = next_send_time(earliest, initiative).timestamp()
         self.loops.postpone(loop.id, at)
         if self.scheduler is not None:
             self.scheduler.schedule(loop.id, at)  # type: ignore[attr-defined]

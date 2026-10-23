@@ -1,5 +1,6 @@
 """Telegram channel (Phase 6): long polling with python-telegram-bot, scheduled follow-ups and
 hourly conversation starters through APScheduler. Run with `python -m hunch.channels.telegram`.
+Phase 7: the nightly consolidation runs in this process, on its model, at [nightly] start time.
 
 Secrets come from .env, read only: TELEGRAM_BOT_TOKEN and TELEGRAM_ADMIN_USER_ID (the admin's
 chat id, as documented in .env.example).
@@ -12,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import time
 from concurrent.futures import Future
 
 from telegram import Update
@@ -19,7 +21,15 @@ from telegram.ext import Application, ContextTypes, MessageHandler, filters
 
 from hunch.channels.hunch_channel import HunchChannel
 from hunch.channels.store import ChannelStore
-from hunch.loops.scheduler import FollowUpScheduler, set_handler, set_starter_handler
+from hunch.consolidation.golden import run_golden
+from hunch.consolidation.nightly import Night, gpu_used_by_others_gib, nightly_tick, run_night
+from hunch.loops.learning import DAY
+from hunch.loops.scheduler import (
+    FollowUpScheduler,
+    set_handler,
+    set_nightly_handler,
+    set_starter_handler,
+)
 from hunch.runtime import build_runtime, env_dir, load_env
 
 log = logging.getLogger("hunch.telegram")
@@ -61,8 +71,21 @@ def run() -> None:
     )
     set_handler(lambda loop_id: channel.deliver_follow_up(loop_id))
     set_starter_handler(lambda: channel.starter_tick())
+
+    def night() -> None:
+        """Phase 7: the nightly consolidation, under the channel lock (replies wait for it)."""
+        now = time.time()
+        log_dir = env_dir("HUNCH_LOG_DIR", "logs")
+        tonight = Night(rt.pipeline, channel.channels, rt.cfg, now - DAY, now, data_dir, log_dir,
+                        golden=lambda: run_golden(rt.model, rt.pipeline.embedder))  # fmt: skip
+        with channel.lock:
+            nightly_tick(now, rt.cfg.nightly, gpu_used_by_others_gib(),
+                         lambda: run_night(tonight), scheduler.retry_night, log_dir)  # fmt: skip
+
+    set_nightly_handler(night)
     scheduler.start()
     scheduler.every_hour_starters()
+    scheduler.every_night(rt.cfg.nightly.start_hour, rt.cfg.nightly.start_minute)
     for loop in rt.pipeline.loops.open_loops():  # re-arm follow-ups after a restart
         scheduler.schedule(loop.id, loop.follow_up_at)
 

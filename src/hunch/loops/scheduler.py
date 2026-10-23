@@ -14,8 +14,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 JOB_PREFIX = "open_loop:"
 STARTER_JOB = "starter_tick"
+NIGHTLY_JOB = "nightly"
+NIGHTLY_RETRY_JOB = "nightly_retry"
 _handler: Callable[[str], None] | None = None
 _starter_handler: Callable[[], None] | None = None
+_nightly_handler: Callable[[], None] | None = None
 
 
 def set_handler(handler: Callable[[str], None]) -> None:
@@ -28,6 +31,18 @@ def set_starter_handler(handler: Callable[[], None]) -> None:
     """Registers the hourly conversation-starter check (see HunchChannel.starter_tick)."""
     global _starter_handler
     _starter_handler = handler
+
+
+def set_nightly_handler(handler: Callable[[], None]) -> None:
+    """Registers the nightly consolidation (Phase 7, consolidation/nightly.py)."""
+    global _nightly_handler
+    _nightly_handler = handler
+
+
+def fire_nightly() -> None:
+    if _nightly_handler is None:
+        raise RuntimeError("no nightly handler registered (call set_nightly_handler at startup)")
+    _nightly_handler()
 
 
 def fire_starters() -> None:
@@ -73,6 +88,17 @@ class FollowUpScheduler:
         self._scheduler.add_job(
             fire_starters, trigger="interval", hours=1, id=STARTER_JOB, replace_existing=True
         )
+
+    def every_night(self, hour: int, minute: int) -> None:
+        """Schedules fire_nightly daily at hour:minute local time; replaced, not duplicated."""
+        self._scheduler.add_job(fire_nightly, trigger="cron", hour=hour, minute=minute,
+                                id=NIGHTLY_JOB, replace_existing=True)  # fmt: skip
+
+    def retry_night(self, at: float) -> None:
+        """One more try tonight (the GPU was busy)."""
+        self._scheduler.add_job(fire_nightly, trigger="date",
+                                run_date=datetime.fromtimestamp(at).astimezone(),
+                                id=NIGHTLY_RETRY_JOB, replace_existing=True)  # fmt: skip
 
     def cancel(self, loop_id: str) -> None:
         if self.is_scheduled(loop_id):

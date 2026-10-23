@@ -18,6 +18,9 @@
   admin_archive keeps, append-only, everything an admin forget removed from AI-visible stores.
   A forgotten memory stays as a tombstone row (forgotten = 1, empty summary, no cues, no vector)
   because the append-only access/affect/trace logs reference it; every read here skips it.
+- memory_repeats (Phase 7): memories that say exactly what an older one of the same user says;
+  the nightly job fades them and strengthens the older one (repeated experience consolidates).
+  memory_labels (Phase 7): filler or meaningful, set once per memory by the nightly job.
 """
 
 from __future__ import annotations
@@ -138,6 +141,16 @@ CREATE TABLE IF NOT EXISTS memory_derivations (
     PRIMARY KEY (derived_id, source_id)
 );
 CREATE INDEX IF NOT EXISTS memory_derivations_by_source ON memory_derivations(source_id);
+CREATE TABLE IF NOT EXISTS memory_repeats (
+    repeat_id TEXT PRIMARY KEY,
+    survivor_id TEXT NOT NULL,
+    merged_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS memory_labels (
+    memory_id TEXT PRIMARY KEY,
+    label TEXT NOT NULL CHECK (label IN ('filler', 'meaningful')),
+    labelled_at REAL NOT NULL
+);
 CREATE TABLE IF NOT EXISTS episode_marks (
     episode_id TEXT PRIMARY KEY REFERENCES episodes(id),
     mark TEXT NOT NULL CHECK (mark IN ('closed', 'forgotten')),
@@ -319,6 +332,18 @@ class MemoryStore:
             out.append(replace(ep, text=CLOSED_TURN[ep.role]) if mark == "closed" else ep)
         return out
 
+    def user_messages(self, user: str, since: float) -> list[tuple[float, str]]:
+        """(time, text) of what `user` wrote since `since`, across conversations, oldest first,
+        hidden like `turns` (Phase 7: the nightly job learns active hours and reactions)."""
+        rows = self.db.execute(
+            "SELECT e.created_at, e.text, m.mark FROM episodes e"
+            " LEFT JOIN episode_marks m ON m.episode_id = e.id"
+            " WHERE e.owner_user = ? AND e.role = 'user' AND e.created_at >= ?"
+            " AND COALESCE(m.mark, '') != 'forgotten' ORDER BY e.created_at",
+            (user, since),
+        ).fetchall()
+        return [(at, CLOSED_TURN["user"] if mark == "closed" else text) for at, text, mark in rows]
+
     def raw_turns(self, conversation_id: str) -> list[Episode]:
         """Every raw turn of a conversation, unchanged (admin)."""
         rows = self.db.execute(
@@ -471,6 +496,40 @@ class MemoryStore:
                 (memory_id,),
             )
         ]
+
+    def set_salience(self, memory_id: str, salience: float, reason: str, at: float) -> None:
+        """Nightly fading and strengthening (Phase 7); logged like a weakened trace."""
+        m = self.memory(memory_id)
+        with self.db:
+            self.db.execute("UPDATE memories SET salience = ? WHERE id = ?", (salience, memory_id))
+            self.db.execute(
+                "INSERT INTO memory_trace_log VALUES (?, ?, ?, ?, ?)",
+                (memory_id, at, salience, m.affect[1], reason),
+            )
+
+    def mark_repeat(self, repeat_id: str, survivor_id: str, at: float) -> None:
+        """`repeat_id` says the same as `survivor_id` (Phase 7, nightly step 6)."""
+        with self.db:
+            self.db.execute("INSERT OR IGNORE INTO memory_repeats VALUES (?, ?, ?)",
+                            (repeat_id, survivor_id, at))  # fmt: skip
+
+    def repeat_ids(self) -> set[str]:
+        return {r for (r,) in self.db.execute("SELECT repeat_id FROM memory_repeats")}
+
+    def label_memory(self, memory_id: str, label: str, at: float) -> None:
+        """Filler or meaningful, decided once by the nightly job (Phase 7, step 6b)."""
+        with self.db:
+            self.db.execute("INSERT OR IGNORE INTO memory_labels VALUES (?, ?, ?)",
+                            (memory_id, label, at))  # fmt: skip
+
+    def labelled_ids(self) -> set[str]:
+        return {m for (m,) in self.db.execute("SELECT memory_id FROM memory_labels")}
+
+    def said_before(self, memory: Memory) -> str | None:
+        """What Hunch said right before the turn a memory came from, as the AI may see it."""
+        ep = self.episode(memory.episode_ref)
+        earlier = [t for t in self.turns(ep.conversation_id) if t.turn_index < ep.turn_index]
+        return earlier[-1].text if earlier and earlier[-1].role == "assistant" else None
 
     def weaken_trace(self, memory_id: str, factor: float, reason: str, at: float) -> Memory:
         """Multiply a lower trace's salience and arousal by `factor` (an unjustified hunch

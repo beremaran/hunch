@@ -347,6 +347,41 @@ class EncodingConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class InitiativeLearningConfig:
+    # Phase 7 (Claude's proposal, design.md "Aktif saatlerin ve bütçenin öğrenilmesi"): learned
+    # nightly per user; until then [initiative] holds.
+    window_days: int  # message hours from this many days back
+    window_min_messages: int  # fewer messages: keep the default window
+    window_low_percentile: float
+    window_high_percentile: float
+    window_min_hours: int
+    window_earliest_hour: int
+    window_latest_hour: int  # the window ends at this hour at the latest
+    reply_hours: float  # a user message this soon after an outreach counts as a reply
+    budget_days: int  # reactions from this many days back raise the budget
+    budget_raise_min_sent: int
+    budget_raise_reply_share: float  # raise when more than this share was answered
+    budget_lower_after_ignored: int  # this many unanswered in a row lower it
+    budget_min: int
+    budget_max: int
+    hostile_mute_days: float  # a hostile reply sets the budget to 0 for this long
+
+
+@dataclass(frozen=True, slots=True)
+class NightlyConfig:
+    # Phase 7 (Berk: after midnight; Claude: the retry while the GPU is busy).
+    start_hour: int  # local hour the job may start from
+    start_minute: int
+    latest_start_hour: int  # not started by then: skip the night, say so in the report
+    retry_minutes: int  # another process holds the GPU: try again this much later
+    gpu_busy_gib: float  # GPU memory used by other processes above this means busy
+    filler_salience_factor: float  # step 6: a filler memory's salience is multiplied by this
+    repeat_boost: float  # step 6: a repeated experience's survivor gains this much salience
+    repeat_boost_min_words: int  # only when it says this much: a repeated "hey" gains nothing
+    snapshots_kept: int  # older snapshot files are deleted after a good night
+
+
+@dataclass(frozen=True, slots=True)
 class Config:
     working_memory: WorkingMemoryConfig
     memory: MemoryConfig
@@ -360,6 +395,8 @@ class Config:
     mood_drive: MoodDriveConfig
     privacy: PrivacyConfig
     initiative: InitiativeConfig
+    initiative_learning: InitiativeLearningConfig
+    nightly: NightlyConfig
     drive: DriveConfig
     reflection: ReflectionConfig
     selection: SelectionConfig
@@ -448,6 +485,50 @@ def _initiative(data: dict) -> InitiativeConfig:
     return InitiativeConfig(**raw)
 
 
+def _initiative_learning(data: dict) -> InitiativeLearningConfig:
+    name = "initiative_learning"
+    raw = _section(data, name, InitiativeLearningConfig)
+    for key in ("window_days", "window_min_messages", "window_min_hours", "budget_days",
+                "budget_raise_min_sent", "budget_lower_after_ignored"):  # fmt: skip
+        _positive_int(name, key, raw[key])
+    for key in ("window_earliest_hour", "window_latest_hour"):
+        if not _is_int(raw[key]) or not 0 <= raw[key] <= 23:
+            raise ConfigError(f"{name}.{key} must be an hour 0-23")
+    for key in ("budget_min", "budget_max"):
+        if not _is_int(raw[key]) or raw[key] < 0:
+            raise ConfigError(f"{name}.{key} must be an integer >= 0")
+    if raw["window_latest_hour"] - raw["window_earliest_hour"] < raw["window_min_hours"]:
+        raise ConfigError(f"{name}: the earliest-latest span must fit window_min_hours")
+    if raw["budget_min"] > raw["budget_max"]:
+        raise ConfigError(f"{name}.budget_min must not exceed budget_max")
+    _number(name, "window_low_percentile", raw["window_low_percentile"], 0.0, 100.0)
+    _number(name, "window_high_percentile", raw["window_high_percentile"], 0.0, 100.0)
+    if raw["window_low_percentile"] >= raw["window_high_percentile"]:
+        raise ConfigError(f"{name}.window_low_percentile must be below window_high_percentile")
+    _number(name, "reply_hours", raw["reply_hours"], 0.0, 72.0)
+    _number(name, "budget_raise_reply_share", raw["budget_raise_reply_share"], 0.0, 1.0)
+    _number(name, "hostile_mute_days", raw["hostile_mute_days"], 0.0, 365.0)
+    return InitiativeLearningConfig(**raw)
+
+
+def _nightly(data: dict) -> NightlyConfig:
+    raw = _section(data, "nightly", NightlyConfig)
+    for key in ("start_hour", "latest_start_hour"):
+        if not _is_int(raw[key]) or not 0 <= raw[key] <= 23:
+            raise ConfigError(f"nightly.{key} must be an hour 0-23")
+    if raw["start_hour"] >= raw["latest_start_hour"]:
+        raise ConfigError("nightly.start_hour must be before latest_start_hour")
+    if not _is_int(raw["start_minute"]) or not 0 <= raw["start_minute"] <= 59:
+        raise ConfigError("nightly.start_minute must be a minute 0-59")
+    _positive_int("nightly", "retry_minutes", raw["retry_minutes"])
+    _positive_int("nightly", "snapshots_kept", raw["snapshots_kept"])
+    _number("nightly", "gpu_busy_gib", raw["gpu_busy_gib"], 0.0, 64.0)
+    _number("nightly", "filler_salience_factor", raw["filler_salience_factor"], 0.0, 1.0)
+    _number("nightly", "repeat_boost", raw["repeat_boost"], 0.0, 1.0)
+    _positive_int("nightly", "repeat_boost_min_words", raw["repeat_boost_min_words"])
+    return NightlyConfig(**raw)
+
+
 def _is_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
@@ -476,6 +557,8 @@ def load_config(path: Path = DEFAULT_CONFIG) -> Config:
         mood_drive=MoodDriveConfig(**_section(data, "mood_drive", MoodDriveConfig)),
         privacy=_privacy(data),
         initiative=_initiative(data),
+        initiative_learning=_initiative_learning(data),
+        nightly=_nightly(data),
         drive=DriveConfig(**_section(data, "drive", DriveConfig)),
         reflection=_reflection(data),
         selection=SelectionConfig(**_section(data, "selection", SelectionConfig)),

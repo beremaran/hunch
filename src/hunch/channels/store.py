@@ -1,9 +1,12 @@
 """Telegram chats and the outreach log (Phase 6). The outreach log counts every message Hunch
-writes first, follow-ups and starters alike, against the same daily budget."""
+writes first, follow-ups and starters alike, against the same daily budget. Phase 7: the
+initiative profile the nightly job learns per user (window and budget)."""
 
 from __future__ import annotations
 
 import sqlite3
+
+from hunch.loops.learning import LearnedInitiative
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS telegram_chats (
@@ -17,6 +20,14 @@ CREATE TABLE IF NOT EXISTS outreach_log (
     sent_at REAL NOT NULL
 );
 CREATE INDEX IF NOT EXISTS outreach_log_user ON outreach_log (user, sent_at);
+CREATE TABLE IF NOT EXISTS initiative_profile (
+    user TEXT PRIMARY KEY,
+    start_hour INTEGER NOT NULL,
+    end_hour INTEGER NOT NULL,
+    budget INTEGER NOT NULL,
+    muted_until REAL,
+    learned_at REAL NOT NULL
+);
 """
 
 
@@ -75,3 +86,28 @@ class ChannelStore:
     def outreach_count_since(self, since: float) -> int:
         row = self.db.execute("SELECT COUNT(*) FROM outreach_log WHERE sent_at >= ?", (since,))
         return int(row.fetchone()[0])
+
+    def outreach_times(self, user: str, since: float) -> list[float]:
+        rows = self.db.execute(
+            "SELECT sent_at FROM outreach_log WHERE user = ? AND sent_at >= ? ORDER BY sent_at",
+            (user, since),
+        )
+        return [t for (t,) in rows]
+
+    def initiative(self, user: str) -> LearnedInitiative | None:
+        row = self.db.execute(
+            "SELECT user, start_hour, end_hour, budget, muted_until, learned_at"
+            " FROM initiative_profile WHERE user = ?",
+            (user,),
+        ).fetchone()
+        return None if row is None else LearnedInitiative(*row)
+
+    def save_initiative(self, profile: LearnedInitiative) -> None:
+        with self.db:
+            self.db.execute(
+                "INSERT OR REPLACE INTO initiative_profile"
+                " (user, start_hour, end_hour, budget, muted_until, learned_at)"
+                " VALUES (?, ?, ?, ?, ?, ?)",
+                (profile.user, profile.start_hour, profile.end_hour, profile.budget,
+                 profile.muted_until, profile.learned_at),
+            )  # fmt: skip

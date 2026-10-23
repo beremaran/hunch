@@ -34,6 +34,8 @@ FILE_WRITER_MODULES = {
     "values/amendments.py",  # re-checks every target against core/ at write time
     "memory/store.py",  # refuses a database inside core/ and anything but .db/.sqlite files
     "observability/turn_log.py",  # refuses a log dir inside core/; appends only to *.jsonl
+    "consolidation/snapshot.py",  # refuses a snapshot dir inside core/ (outside_core)
+    "consolidation/nightly.py",  # nightly report and snapshot pruning, through outside_core
 }
 
 _PATH_WRITE_METHODS = {

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from hunch.config import DEFAULT_CONFIG, ConfigError, InitiativeConfig, load_config
-from hunch.loops.budget import has_budget, next_send_time
+from hunch.loops.budget import Initiative, has_budget, next_send_time
 
 CFG = InitiativeConfig(
     follow_ups_per_day=2,
@@ -19,15 +19,18 @@ CFG = InitiativeConfig(
     starter_chance=0.3,
     same_topic_similarity=0.75,
 )
+DEFAULT = Initiative.default(CFG)
 
 
 @pytest.mark.parametrize(("sent", "allowed"), [(0, True), (1, True), (2, False), (5, False)])
 def test_budget_counts_follow_ups_sent_today(sent: int, allowed: bool) -> None:
-    assert has_budget(sent, CFG) is allowed
+    assert has_budget(sent, DEFAULT) is allowed
 
 
 def test_zero_budget_turns_follow_ups_off() -> None:
-    assert has_budget(0, InitiativeConfig(0, 9, 22, 6.0, 12.0, 0.3, 0.75)) is False
+    assert (
+        has_budget(0, Initiative.default(InitiativeConfig(0, 9, 22, 6.0, 12.0, 0.3, 0.75))) is False
+    )
 
 
 @pytest.mark.parametrize(
@@ -40,7 +43,7 @@ def test_zero_budget_turns_follow_ups_off() -> None:
     ],
 )
 def test_next_send_time_stays_inside_the_active_window(now: datetime, expected: datetime) -> None:
-    assert next_send_time(now, CFG) == expected
+    assert next_send_time(now, DEFAULT) == expected
 
 
 def test_initiative_section_is_adjustable_and_validated() -> None:

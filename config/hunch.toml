@@ -191,6 +191,45 @@ starter_chance = 0.3
 # Measured on three probe sets (reports/phase6/REPORT.md §4): 0 different pairs merged.
 same_topic_similarity = 0.60
 
+[initiative_learning]
+# Phase 7 (Claude's proposal; Berk did not know): learned nightly per user. Active window: the
+# 10th-90th percentile of the user's message hours over 14 days, once there are at least 20
+# messages; at least 6 hours wide, inside 08-23. Budget: starts at follow_ups_per_day; +1 (up to 3)
+# when more than half of at least 4 proactive messages in 7 days got a reply within 6 hours; -1
+# (down to 1) after 2 unanswered in a row; a hostile reply sets it to 0 for 7 days.
+window_days = 14
+window_min_messages = 20
+window_low_percentile = 10.0
+window_high_percentile = 90.0
+window_min_hours = 6
+window_earliest_hour = 8
+window_latest_hour = 23
+reply_hours = 6.0
+budget_days = 7
+budget_raise_min_sent = 4
+budget_raise_reply_share = 0.5
+budget_lower_after_ignored = 2
+budget_min = 1
+budget_max = 3
+hostile_mute_days = 7.0
+
+[nightly]
+# Phase 7: the nightly consolidation, like sleep: the day is replayed, repeated experiences merge
+# into one stronger memory, filler fades, hunches are thought over. Berk: after midnight. If
+# another process (a game) holds GPU memory, retry later; not started by 06:00, skip the night.
+start_hour = 0
+start_minute = 30
+latest_start_hour = 6
+retry_minutes = 30
+gpu_busy_gib = 2.0
+# Step 6 (Claude's proposal): filler fades, it is never deleted; the survivor of an exact repeat
+# gains salience (rehearsal), the repeats fade like filler. A routine repeated ("hey" five times)
+# blurs instead of growing vivid: the survivor gains only when it says at least 3 content words.
+filler_salience_factor = 0.3
+repeat_boost = 0.1
+repeat_boost_min_words = 3
+snapshots_kept = 7
+
 [drive]
 # Berk (Phase 4): a Hunch is created when modulation materially changes the choice: chosen_by =
 # drive and the chosen candidate's drive_score beats the best-quality candidate's by at least

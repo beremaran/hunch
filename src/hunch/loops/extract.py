@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 
 from hunch.config import InitiativeConfig
-from hunch.loops.budget import next_send_time
+from hunch.loops.budget import Initiative, next_send_time
 from hunch.loops.store import OpenLoop
 from hunch.recall.dates import find_date_expressions, resolve_date
 
@@ -145,7 +145,7 @@ def to_loops(
             loops.extend(_event_loops(d, user, privacy, now, cfg, new_id, now_dt))
             continue
         due = now_dt + timedelta(days=d.days)
-        at = next_send_time(due, cfg).timestamp()
+        at = next_send_time(due, Initiative.default(cfg)).timestamp()
         loops.append(OpenLoop(new_id(), user, d.topic, d.user_said, d.question,
                               privacy, at, created_at=now))  # fmt: skip
     return loops
@@ -165,11 +165,11 @@ def _event_loops(
     before = d.event_at - BEFORE_EVENT
     if before > now_dt:
         wish = f"Wish the user good luck: {d.topic} is coming up at {d.event_at:%H:%M}."
-        at = next_send_time(before, cfg).timestamp()
+        at = next_send_time(before, Initiative.default(cfg)).timestamp()
         loops.append(OpenLoop(new_id(), user, d.topic, d.user_said, wish, privacy, at,
                               created_at=now))  # fmt: skip
     after = d.event_at + AFTER_EVENT
-    at = next_send_time(after, cfg).timestamp()
+    at = next_send_time(after, Initiative.default(cfg)).timestamp()
     loops.append(OpenLoop(new_id(), user, d.topic, d.user_said, d.question, privacy, at,
                           created_at=now))  # fmt: skip
     return loops

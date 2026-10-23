@@ -8,6 +8,10 @@ import pytest
 
 @pytest.fixture(scope="session")
 def models():
+    from hunch.llm.shared import borrowed
+
+    if (held := borrowed()) is not None:  # the nightly job inside the bot lends its model
+        return held
     torch = pytest.importorskip("torch")
     if not torch.cuda.is_available():
         pytest.skip("needs CUDA")
