@@ -130,6 +130,11 @@ Add the Telegram bot and open loops from design.md ("Açık döngüler ve proakt
 
 ## Phase 7 — Nightly consolidation and golden tests
 
+Status (24 Oct 2026, overnight): in progress. Built: the nightly runner in the bot (00:30, GPU-busy
+retry), snapshot and rollback, step 5 wiring, step 6 (repeats, filler labels), step 7
+(initiative learning), step 8 (L3 golden in-process on the bot's model), step 9 report. Not
+built: steps 2-4 and 5b. See `reports/phase7/REPORT.md`.
+
 ```
 Carry-over from Phase 6 (reports/phase6/REPORT.md §8):
 - Learning the initiative budget and active hours moves here (design.md decisions table,

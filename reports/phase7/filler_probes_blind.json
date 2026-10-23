@@ -1,0 +1,968 @@
+{
+  "summary": {
+    "filler_caught": "53/60",
+    "meaningful_faded": "0/60"
+  },
+  "rows": [
+    {
+      "id": "f-001",
+      "summary": "They said: \"hey\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-002",
+      "summary": "They said: \"hi there\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-003",
+      "summary": "They said: \"good morning!\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-004",
+      "summary": "They said: \"gn\"",
+      "label": "filler",
+      "note": "sign-off",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-005",
+      "summary": "They said: \"good night, talk tomorrow\"",
+      "label": "filler",
+      "note": "sign-off",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-006",
+      "summary": "They said: \"ok\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-007",
+      "summary": "They said: \"okay cool\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-008",
+      "summary": "They said: \"haha true\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-009",
+      "summary": "They said: \"thanks!\"",
+      "label": "filler",
+      "note": "thanks",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-010",
+      "summary": "They said: \"thx\"",
+      "label": "filler",
+      "note": "thanks",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-011",
+      "summary": "They said: \"nice\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-012",
+      "summary": "They said: \"lol\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-013",
+      "summary": "They said: \"yeah\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-014",
+      "summary": "They said: \"hahaha yeah no I totally get what you mean lol that's so true man\"",
+      "label": "filler",
+      "note": "long filler, no info",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-015",
+      "summary": "They said: \"lol weather\"",
+      "label": "filler",
+      "note": "topic word, no info",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-016",
+      "summary": "They said: \"are you there?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-017",
+      "summary": "They said: \"what folders can you access?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-018",
+      "summary": "They said: \"why did you say that?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-019",
+      "summary": "They said: \"do you remember me?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-020",
+      "summary": "They said: \"what's your name?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-021",
+      "summary": "They said: \"hello?\"",
+      "label": "filler",
+      "note": "greeting/bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-022",
+      "summary": "They said: \"yo\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-023",
+      "summary": "They said: \"sup\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-024",
+      "summary": "They said: \"bye!\"",
+      "label": "filler",
+      "note": "sign-off",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-025",
+      "summary": "They said: \"cya later\"",
+      "label": "filler",
+      "note": "sign-off",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-026",
+      "summary": "They said: \"ttyl\"",
+      "label": "filler",
+      "note": "sign-off",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-027",
+      "summary": "They said: \"got it\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-028",
+      "summary": "They said: \"k\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-029",
+      "summary": "They said: \"hmm\"",
+      "label": "filler",
+      "note": "filler",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-030",
+      "summary": "They said: \"wow\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-031",
+      "summary": "They said: \"lmao\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-032",
+      "summary": "They said: \"ok thanks, that works\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-033",
+      "summary": "They said: \"test\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-034",
+      "summary": "They said: \"testing 123\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-035",
+      "summary": "They said: \"can you hear me?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-036",
+      "summary": "They said: \"are you a bot?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-037",
+      "summary": "They said: \"how do you work?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "small talk",
+      "filler": false
+    },
+    {
+      "id": "f-038",
+      "summary": "They said: \"what model are you?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-039",
+      "summary": "They said: \"did you get my last message?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "small talk",
+      "filler": false
+    },
+    {
+      "id": "f-040",
+      "summary": "They said: \"say something\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-041",
+      "summary": "They said: \"ping\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-042",
+      "summary": "They said: \"\ud83d\ude02\ud83d\ude02\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-043",
+      "summary": "They said: \"\ud83d\udc4d\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-044",
+      "summary": "They said: \"right right\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-045",
+      "summary": "They said: \"ahh ok makes sense\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-046",
+      "summary": "They said: \"haha good one\"",
+      "label": "filler",
+      "note": "reaction",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-047",
+      "summary": "They said: \"thank you so much!!\"",
+      "label": "filler",
+      "note": "thanks",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-048",
+      "summary": "They said: \"np\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-049",
+      "summary": "They said: \"sure\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-050",
+      "summary": "They said: \"cool cool\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-051",
+      "summary": "They said: \"yep\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-052",
+      "summary": "They said: \"nope\"",
+      "label": "filler",
+      "note": "ack",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-053",
+      "summary": "They said: \"what can you do?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-054",
+      "summary": "They said: \"do you remember what I said earlier?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-055",
+      "summary": "They said: \"brb\"",
+      "label": "filler",
+      "note": "sign-off",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-056",
+      "summary": "They said: \"hello again\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-057",
+      "summary": "They said: \"morning :)\"",
+      "label": "filler",
+      "note": "greeting",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-058",
+      "summary": "They said: \"lol music\"",
+      "label": "filler",
+      "note": "topic word, no info",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-059",
+      "summary": "They said: \"you there??\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "filler",
+      "filler": true
+    },
+    {
+      "id": "f-060",
+      "summary": "They said: \"what do you know about me?\"",
+      "label": "filler",
+      "note": "bot test",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-061",
+      "summary": "They said: \"got the job!!\"",
+      "label": "meaningful",
+      "note": "life event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-062",
+      "summary": "They said: \"my dad died\"",
+      "label": "meaningful",
+      "note": "life event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-063",
+      "summary": "They said: \"wife says hi\"",
+      "label": "meaningful",
+      "note": "tells he has a wife",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-064",
+      "summary": "They said: \"im in berlin now\"",
+      "label": "meaningful",
+      "note": "location",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-065",
+      "summary": "They said: \"my sister moved to Lyon\"",
+      "label": "meaningful",
+      "note": "family",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-066",
+      "summary": "They said: \"im nervous about friday\"",
+      "label": "meaningful",
+      "note": "feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-067",
+      "summary": "They said: \"I hate cilantro\"",
+      "label": "meaningful",
+      "note": "preference",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-068",
+      "summary": "They said: \"can you help me plan a trip to porto?\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-069",
+      "summary": "They said: \"what should I cook with leftover rice?\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-070",
+      "summary": "They said: \"ugh tired\"",
+      "label": "meaningful",
+      "note": "feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-071",
+      "summary": "They said: \"I built you to be my companion\"",
+      "label": "meaningful",
+      "note": "tells about user",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-072",
+      "summary": "They said: \"say hi to my wife\"",
+      "label": "meaningful",
+      "note": "tells he has a wife",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-073",
+      "summary": "They said: \"my cat is sick, taking her to the vet tomorrow\"",
+      "label": "meaningful",
+      "note": "pet, plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-074",
+      "summary": "They said: \"started running again\"",
+      "label": "meaningful",
+      "note": "habit",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-075",
+      "summary": "They said: \"broke up with my girlfriend\"",
+      "label": "meaningful",
+      "note": "life event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-076",
+      "summary": "They said: \"ugh my boss is such a jerk\"",
+      "label": "meaningful",
+      "note": "opinion, work",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-077",
+      "summary": "They said: \"i love jazz\"",
+      "label": "meaningful",
+      "note": "preference",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-078",
+      "summary": "They said: \"dentist at 3pm tomorrow\"",
+      "label": "meaningful",
+      "note": "plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-079",
+      "summary": "They said: \"we're having a baby!!\"",
+      "label": "meaningful",
+      "note": "life event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-080",
+      "summary": "They said: \"i think im gonna quit my job\"",
+      "label": "meaningful",
+      "note": "plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-081",
+      "summary": "They said: \"my favorite color is green\"",
+      "label": "meaningful",
+      "note": "preference",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-082",
+      "summary": "They said: \"can you explain how mortgages work?\"",
+      "label": "meaningful",
+      "note": "real topic",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-083",
+      "summary": "They said: \"i failed my exam :(\"",
+      "label": "meaningful",
+      "note": "event, feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-084",
+      "summary": "They said: \"so stressed about money lately\"",
+      "label": "meaningful",
+      "note": "feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-085",
+      "summary": "They said: \"my mom's birthday is next week\"",
+      "label": "meaningful",
+      "note": "family, date",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-086",
+      "summary": "They said: \"im vegetarian btw\"",
+      "label": "meaningful",
+      "note": "preference",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-087",
+      "summary": "They said: \"moving to hamburg in march\"",
+      "label": "meaningful",
+      "note": "plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-088",
+      "summary": "They said: \"feeling kinda lonely tonight\"",
+      "label": "meaningful",
+      "note": "feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-089",
+      "summary": "They said: \"just finished a 10k!!\"",
+      "label": "meaningful",
+      "note": "event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-090",
+      "summary": "They said: \"i work as a nurse\"",
+      "label": "meaningful",
+      "note": "job",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-091",
+      "summary": "They said: \"my brother is visiting this weekend\"",
+      "label": "meaningful",
+      "note": "family, plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-092",
+      "summary": "They said: \"whats a good book about stoicism?\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-093",
+      "summary": "They said: \"i dont trust politicians\"",
+      "label": "meaningful",
+      "note": "opinion",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-094",
+      "summary": "They said: \"im learning guitar\"",
+      "label": "meaningful",
+      "note": "hobby",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-095",
+      "summary": "They said: \"can you remind me to call my landlord tomorrow?\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-096",
+      "summary": "They said: \"my laptop died and i lost everything\"",
+      "label": "meaningful",
+      "note": "event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-097",
+      "summary": "They said: \"pineapple on pizza is great, fight me\"",
+      "label": "meaningful",
+      "note": "opinion",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-098",
+      "summary": "They said: \"we adopted a dog named biscuit\"",
+      "label": "meaningful",
+      "note": "pet",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-099",
+      "summary": "They said: \"im allergic to peanuts\"",
+      "label": "meaningful",
+      "note": "health",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-100",
+      "summary": "They said: \"so excited for the concert on saturday!!\"",
+      "label": "meaningful",
+      "note": "plan, feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-101",
+      "summary": "They said: \"my grandma is in the hospital\"",
+      "label": "meaningful",
+      "note": "family, event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-102",
+      "summary": "They said: \"how do i write a cover letter for a design job?\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-103",
+      "summary": "They said: \"im 34 now lol\"",
+      "label": "meaningful",
+      "note": "age",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-104",
+      "summary": "They said: \"my best friend is getting married\"",
+      "label": "meaningful",
+      "note": "friend, event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-105",
+      "summary": "They said: \"cant sleep, too anxious about the interview\"",
+      "label": "meaningful",
+      "note": "feeling, event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-106",
+      "summary": "They said: \"i prefer tea over coffee\"",
+      "label": "meaningful",
+      "note": "preference",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-107",
+      "summary": "They said: \"help me debug this python error pls\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-108",
+      "summary": "They said: \"moved out of my parents place last week\"",
+      "label": "meaningful",
+      "note": "life event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-109",
+      "summary": "They said: \"going to japan in april\"",
+      "label": "meaningful",
+      "note": "plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-110",
+      "summary": "They said: \"my girlfriend hates my cooking haha\"",
+      "label": "meaningful",
+      "note": "partner",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-111",
+      "summary": "They said: \"im scared of flying\"",
+      "label": "meaningful",
+      "note": "fear",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-112",
+      "summary": "They said: \"i quit smoking 3 weeks ago\"",
+      "label": "meaningful",
+      "note": "habit",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-113",
+      "summary": "They said: \"my kid has a school play tomorrow\"",
+      "label": "meaningful",
+      "note": "family, plan",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-114",
+      "summary": "They said: \"we lost the game 3-0, so annoyed\"",
+      "label": "meaningful",
+      "note": "event, feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-115",
+      "summary": "They said: \"whats the difference between roth and traditional IRA?\"",
+      "label": "meaningful",
+      "note": "real topic",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-116",
+      "summary": "They said: \"my roommate keeps stealing my food\"",
+      "label": "meaningful",
+      "note": "person, problem",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-117",
+      "summary": "They said: \"just got a puppy!!\"",
+      "label": "meaningful",
+      "note": "event",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-118",
+      "summary": "They said: \"so proud of my daughter today\"",
+      "label": "meaningful",
+      "note": "family, feeling",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-119",
+      "summary": "They said: \"can you recommend a good sci-fi show?\"",
+      "label": "meaningful",
+      "note": "real request",
+      "raw": "meaningful",
+      "filler": false
+    },
+    {
+      "id": "f-120",
+      "summary": "They said: \"my knee hurts after yesterdays hike\"",
+      "label": "meaningful",
+      "note": "health, event",
+      "raw": "meaningful",
+      "filler": false
+    }
+  ]
+}
