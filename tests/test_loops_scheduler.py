@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 import time
 from pathlib import Path
 
@@ -29,6 +30,21 @@ def test_scheduled_follow_up_survives_a_restart(tmp_path: Path) -> None:
         assert second.is_scheduled("loop-1")
     finally:
         second.shutdown()
+
+
+def test_a_follow_up_that_came_due_while_stopped_still_fires(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fired = threading.Event()
+    monkeypatch.setattr(scheduler, "_handler", None)
+    scheduler.set_handler(lambda _loop_id: fired.set())
+    s = FollowUpScheduler(_url(tmp_path))
+    s.start()
+    try:
+        s.schedule("loop-1", time.time() - 7 * 3600)
+        assert fired.wait(5), "an overdue follow-up was dropped instead of run"
+    finally:
+        s.shutdown()
 
 
 def test_scheduling_the_same_loop_twice_keeps_one_job(tmp_path: Path) -> None:

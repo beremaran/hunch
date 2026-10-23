@@ -128,6 +128,19 @@ def test_budget_postpones_the_third_follow_up_to_tomorrow(channel, pipe_cfg) -> 
     assert channel.scheduler.jobs["late"] == loop.follow_up_at
 
 
+def test_an_overdue_follow_up_at_night_waits_for_the_morning(channel) -> None:
+    """A follow-up that came due while the bot was down fires on restart; at night it is not
+    sent but moved to the start of the next active window."""
+    channel.handle_message(10, "/start berk", now=MORNING)
+    channel.recorder.sent.clear()
+    channel.loops.add(_loop("l1", "berk", MORNING))
+    channel.deliver_follow_up("l1", now=NIGHT)
+    loop = channel.loops.get("l1")
+    assert channel.recorder.sent == [] and loop.status == "open"
+    assert datetime.fromtimestamp(loop.follow_up_at) == datetime(2026, 10, 23, 9, 0)
+    assert channel.scheduler.jobs["l1"] == loop.follow_up_at
+
+
 def test_starter_goes_to_a_quiet_user_inside_the_window(channel, pipe_cfg) -> None:
     channel.handle_message(10, "/start berk", now=MORNING - 10 * 3600)
     channel._sessions.clear()

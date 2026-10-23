@@ -44,8 +44,11 @@ def fire(loop_id: str) -> None:
 
 class FollowUpScheduler:
     def __init__(self, jobs_url: str) -> None:
+        # A follow-up that came due while the bot was down runs on restart, however late;
+        # APScheduler's default grace of 1 s would drop it silently.
         self._scheduler = BackgroundScheduler(
-            jobstores={"default": SQLAlchemyJobStore(url=jobs_url)}
+            jobstores={"default": SQLAlchemyJobStore(url=jobs_url)},
+            job_defaults={"misfire_grace_time": None, "coalesce": True},
         )
 
     def start(self) -> None:

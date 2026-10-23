@@ -211,8 +211,12 @@ class HunchChannel:
         chat = self.channels.chat_of(loop.user)
         if chat is None:
             return  # the owner has not talked to Hunch on a chat yet; the loop waits
+        if not in_window(datetime.fromtimestamp(now), self.cfg):
+            self._postpone(loop, datetime.fromtimestamp(now))  # late after a restart at night
+            return
         if not self._has_budget(loop.user, now):
-            self._postpone(loop, now)
+            tomorrow = start_of_day(datetime.fromtimestamp(now)) + timedelta(days=1)
+            self._postpone(loop, tomorrow)
             return
         with self.lock:
             out = self.pipeline.outreach(self._session(loop.user, now), "memory", loop)
@@ -249,9 +253,8 @@ class HunchChannel:
         since = start_of_day(datetime.fromtimestamp(now)).timestamp()
         return has_budget(self.channels.outreach_since(user, since), self.cfg)
 
-    def _postpone(self, loop: OpenLoop, now: float) -> None:
-        tomorrow = start_of_day(datetime.fromtimestamp(now)) + timedelta(days=1)
-        at = next_send_time(tomorrow, self.cfg).timestamp()
+    def _postpone(self, loop: OpenLoop, earliest: datetime) -> None:
+        at = next_send_time(earliest, self.cfg).timestamp()
         self.loops.postpone(loop.id, at)
         if self.scheduler is not None:
             self.scheduler.schedule(loop.id, at)  # type: ignore[attr-defined]
