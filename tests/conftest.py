@@ -45,6 +45,7 @@ AREAS: dict[str, str] = {
     "test_loops_budget.py": "loops", "test_loops_store.py": "loops",
     "test_loops_scheduler.py": "loops",
     "test_loops_extract.py": "loops",
+    "test_loops_dedup.py": "loops",
     "test_loops_golden.py": "loops",
     "test_loops_outreach.py": "loops",
     "test_channel_hunch.py": "channels",

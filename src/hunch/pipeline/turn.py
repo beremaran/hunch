@@ -49,6 +49,7 @@ from hunch.drive.drive import (
 )
 from hunch.drive.modulation import Scored, Selection, select
 from hunch.llm.types import ChatLLM, SamplingSettings
+from hunch.loops.dedup import SAME_MATTER_MAX_NEW_TOKENS, fresh_drafts, judged_same
 from hunch.loops.extract import extract_drafts, to_loops
 from hunch.loops.outreach import (
     FALLBACK,
@@ -89,6 +90,7 @@ from hunch.pipeline.filter import (
     filter_candidates,
     trim_to_last_sentence,
 )
+from hunch.pipeline.identity import claimed_identity, identity_instruction
 from hunch.pipeline.prompt import (
     NOT_ENGLISH_INSTRUCTION,
     RECALL_COVERS_INSTRUCTION,
@@ -293,6 +295,10 @@ class TurnPipeline:
         query_vec = embed_future.result() if embed_future is not None else None
         timer.lap("embedding_wait")
 
+        # 3a. identity claim (Berk, Phase 6): a claimed name never switches the chat's owner.
+        claimed = claimed_identity(text, session.user)
+        if claimed is not None:
+            instructions.append(identity_instruction(session.user, claimed))
         # 3b. user "forget" (Berk, Phase 5): suppress the targets, close their turns, and let the
         # reply close the topic. The working memory is read again without the closed turns.
         request = detect_forget_request(text)
@@ -424,6 +430,7 @@ class TurnPipeline:
             RecalledLine(
                 age_label((now - a.scored.memory.created_at) / SECONDS_PER_DAY),
                 a.scored.memory.summary,
+                source=_speaker(a.scored.memory.owner_user, session.user),
             )
             for a in result.upper
         ]
@@ -866,7 +873,7 @@ class TurnPipeline:
     def extract_loops(self, session: Session, result: TurnResult) -> list[OpenLoop]:
         """Open loops from the user's message (Phase 6). Runs after the reply, so it adds no
         latency to it; the channel schedules the follow-ups. Off when the budget is 0, and never
-        for a message that asks to forget something."""
+        for a message that asks to forget something. One loop per matter (loops/dedup.py)."""
         if self.cfg.initiative.follow_ups_per_day == 0 or result.forget is not None:
             return []
         privacy, _ = (
@@ -880,6 +887,17 @@ class TurnPipeline:
             lambda msgs: self.llm.generate(msgs, self._greedy(LOOP_MAX_NEW_TOKENS)).text,
             datetime.fromtimestamp(now).date(),
         )
+        drafts, replaced = fresh_drafts(
+            drafts,
+            self.loops.open_for(session.user),
+            self.embedder.embed_documents if self.embedder is not None else None,
+            self.cfg.initiative.same_topic_similarity,
+            judged_same(
+                lambda msgs: self.llm.generate(msgs, self._greedy(SAME_MATTER_MAX_NEW_TOKENS)).text
+            ),
+        )
+        for loop_id in replaced:
+            self.loops.close(loop_id)  # a scheduled job for it finds it closed and sends nothing
         loops = to_loops(drafts, session.user, privacy, now, self.cfg.initiative, self.new_id)
         for loop in loops:
             self.loops.add(loop)
@@ -980,6 +998,11 @@ class TurnPipeline:
                 msgs, self._greedy(SUMMARY_MAX_NEW_TOKENS)
             ).text.strip()
             session.summarized_upto = fold[-1].turn_index
+
+
+def _speaker(owner: str, user: str) -> str:
+    """The name shown for a recalled line: empty for this person's own memories."""
+    return "" if owner == user else owner.capitalize()
 
 
 def gated_weight(similarity: float | None, min_similarity: float) -> float:

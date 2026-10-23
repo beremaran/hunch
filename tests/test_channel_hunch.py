@@ -3,13 +3,14 @@ conversation starters, owner-only delivery and the admin commands. Fake model, n
 
 from __future__ import annotations
 
+import dataclasses
 import threading
 import time
 from datetime import datetime
 
 import pytest
 
-from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, HunchChannel
+from hunch.channels.hunch_channel import CONVERSATION_IDLE_SECONDS, REPORT_LOOPS, HunchChannel
 from hunch.channels.store import ChannelStore
 from hunch.loops.store import OpenLoop
 from tests.fakes import FakeLLM, HashEmbedder
@@ -103,11 +104,14 @@ def test_follow_up_is_not_sent_before_its_time(channel) -> None:
 
 
 def test_a_private_loop_never_goes_to_another_chat(channel) -> None:
+    """Berk (Phase 6): a private loop needs no disclosure gate, because its follow-up only ever
+    goes to the owner's own chat; this test guards that instead."""
     channel.handle_message(10, "/start berk", now=MORNING)
     channel.handle_message(11, "/start lea", now=MORNING)
-    channel.loops.add(_loop("l1", "berk", MORNING - 60))
+    channel.recorder.sent.clear()
+    channel.loops.add(dataclasses.replace(_loop("l1", "berk", MORNING - 60), privacy="private"))
     channel.deliver_follow_up("l1", now=MORNING)
-    assert all(chat == 10 for chat, _ in channel.recorder.sent)
+    assert channel.recorder.sent and all(chat == 10 for chat, _ in channel.recorder.sent)
 
 
 def test_budget_postpones_the_third_follow_up_to_tomorrow(channel, pipe_cfg) -> None:
@@ -155,6 +159,26 @@ def test_admin_commands_are_for_the_admin_chat_only(channel) -> None:
     assert channel.handle_message(1, "/report", now=MORNING).startswith("Users: 1.")
     assert "No such memory" in channel.handle_message(1, "/forget nope", now=MORNING)
     assert "(empty)" in channel.handle_message(1, "/logs", now=MORNING)
+
+
+def test_report_lists_open_loops_soonest_first(channel) -> None:
+    channel.handle_message(10, "/start berk", now=MORNING)
+    later = datetime(2026, 10, 29, 16, 0).timestamp()
+    sooner = datetime(2026, 10, 29, 13, 0).timestamp()
+    for loop in (_loop("a", "berk", later), _loop("b", "berk", sooner)):
+        channel.loops.add(loop)
+    lines = channel.handle_message(1, "/report", now=MORNING).splitlines()
+    assert lines[0] == "Users: 1. Hunch wrote first today: 0. Open loops: 2."
+    assert lines[1].startswith("Thu 29.10 13:00 berk (general) job interview: How did")
+    assert lines[2].startswith("Thu 29.10 16:00 berk")
+
+
+def test_report_caps_the_loop_list(channel) -> None:
+    for i in range(REPORT_LOOPS + 3):
+        channel.loops.add(_loop(f"l{i}", "berk", MORNING + 3600 * (i + 1)))
+    lines = channel.handle_message(1, "/report", now=MORNING).splitlines()
+    assert len(lines) == 1 + REPORT_LOOPS + 1
+    assert lines[-1] == "... and 3 more."
 
 
 def test_summary_fold_waits_while_a_message_is_queued(channel, monkeypatch) -> None:

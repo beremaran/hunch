@@ -13,9 +13,18 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 from hunch.memory.store import MemoryStore
 from hunch.observability.turn_log import DETAILS_FILE, REFLECTIONS_FILE, TURNS_FILE
-from hunch.pipeline.prompt import PERSONA, RECALL_COVERS_INSTRUCTION, SUMMARY_PROMPT
+from hunch.pipeline.identity import claimed_identity, identity_instruction
+from hunch.pipeline.prompt import (
+    PERSONA,
+    RECALL_COVERS_INSTRUCTION,
+    SUMMARY_PROMPT,
+    RecalledLine,
+    build_reasoning_messages,
+)
 from hunch.recall.cues import SYSTEM_PROMPT as CUE_PROMPT
 from hunch.reflection.records import Hunch, SourceRef
 from hunch.values.gate import JUDGE_PROMPT, SECOND_OPINION_PROMPT
@@ -206,3 +215,38 @@ def test_another_users_private_source_never_reaches_a_prompt(
     assert "annasecret" not in text.casefold() and "salary" not in text.casefold()
     assert "about someone" not in text and "just a hunch" in text
     assert not [m for m in pipe_store.memories("u_berk") if m.kind == "realisation"]
+
+
+def test_recalled_memory_from_another_person_names_its_speaker() -> None:
+    own = RecalledLine("today", 'They said: "my own news"')
+    other = RecalledLine("today", 'They said: "saw the sun"', source="Burak")
+    system = build_reasoning_messages([], "hi", "", [own, other], "calm", [])[0]["content"]
+    assert '- (today) They said: "my own news"' in system
+    assert '- (today) [said by Burak] They said: "saw the sun"' in system
+
+
+@pytest.mark.parametrize(
+    ("text", "claimed"),
+    [
+        ("Its me, Berk", "Berk"),
+        ("Sorry, its me, Burak.", "Burak"),
+        ("Okay, I'm Berk", "Berk"),
+        ("my name is Berk", "Berk"),
+    ],
+)
+def test_a_claimed_name_is_noticed(text: str, claimed: str) -> None:
+    assert claimed_identity(text, "deniz") == claimed
+
+
+@pytest.mark.parametrize(
+    "text", ["Its me, Deniz", "it's me", "It's Monday again", "I'm hungry", "Are you there?"]
+)
+def test_no_claim_for_owner_or_plain_text(text: str) -> None:
+    assert claimed_identity(text, "deniz") is None
+
+
+def test_identity_instruction_keeps_the_owner() -> None:
+    text = identity_instruction("deniz", "Berk")
+    assert "stays theirs" in text
+    assert "Do not switch to Berk" in text
+    assert "Deniz" in text

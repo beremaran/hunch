@@ -44,7 +44,9 @@ PERSONA = (
 )
 SUMMARY_HEADER = "Summary of the earlier part of this conversation:"
 MEMORY_HEADER = (
-    "Memories recalled by the memory system from earlier conversations with this person:"
+    "Memories recalled by the memory system from earlier conversations. A line tagged "
+    "'[said by NAME]' comes from another person's chat, not from this one: never present it as "
+    "something the person you are talking to said, and say who said it:"
 )
 INSTRUCTION_HEADER = "Instructions for this reply only:"
 NOT_ENGLISH_INSTRUCTION = (
@@ -57,6 +59,12 @@ NOT_ENGLISH_INSTRUCTION = (
 class RecalledLine:
     age: str  # "3 days ago"
     summary: str
+    source: str = ""  # who said it, when it comes from another person's chat
+
+
+def memory_line(recalled: RecalledLine) -> str:
+    tag = f"[said by {recalled.source}] " if recalled.source else ""
+    return f"- ({recalled.age}) {tag}{recalled.summary}"
 
 
 def age_label(age_days: float) -> str:
@@ -147,7 +155,7 @@ def build_reasoning_messages(
     if session_summary:
         parts.append(f"{SUMMARY_HEADER}\n{session_summary}")
     if recalled:
-        lines = "\n".join(f"- ({r.age}) {r.summary}" for r in recalled)
+        lines = "\n".join(memory_line(r) for r in recalled)
         parts.append(f"{MEMORY_HEADER}\n{lines}")
     parts.append(f"How you feel right now: {mood_label}.")
     if instructions:

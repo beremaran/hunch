@@ -17,6 +17,7 @@ CFG = InitiativeConfig(
     starter_idle_hours=6.0,
     starter_gap_hours=12.0,
     starter_chance=0.3,
+    same_topic_similarity=0.75,
 )
 
 
@@ -26,7 +27,7 @@ def test_budget_counts_follow_ups_sent_today(sent: int, allowed: bool) -> None:
 
 
 def test_zero_budget_turns_follow_ups_off() -> None:
-    assert has_budget(0, InitiativeConfig(0, 9, 22, 6.0, 12.0, 0.3)) is False
+    assert has_budget(0, InitiativeConfig(0, 9, 22, 6.0, 12.0, 0.3, 0.75)) is False
 
 
 @pytest.mark.parametrize(
