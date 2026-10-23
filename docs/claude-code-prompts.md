@@ -154,6 +154,22 @@ Carry-over from Phase 6 (reports/phase6/REPORT.md §8):
   question was asked 0 of 1 due times in the Phase 6 bench.
 - The full golden suite takes ~21 min (37 tests); step 8 needs a nightly-sized set.
 
+Decided before the phase (23 Oct; design.md decisions table, Faz 7 rows):
+- When: after 00:00 (Berk). If another process holds GPU memory (a game), retry every 30 min;
+  if it cannot start by 06:00, skip the night and say so in the report.
+- Where: inside the bot process, sharing its model and lock; when the bot is down, run it by
+  hand with `python -m hunch.consolidation`.
+- Step 8: the L3 regression set (`golden and regression`, quick counts) every night; roll back on
+  any failure. The full suite stays at phase end.
+- Learning active hours and budget: the rule in the decisions table (14 days, at least 20
+  messages, 10th-90th percentile of message hours, at least 6 h wide, inside 08-23; budget from 2,
+  +1 up to 3, -1 down to 1, a hostile reply sets 0 for 7 days). All in config.
+- Step 6: the model labels each day's memories as filler or meaningful; filler is down-weighted
+  (salience x 0.3), never deleted; exact repeats merge into one. Measure it first on a blind set
+  written by an agent (target: >= 90% of filler caught, <= 5% of meaningful memories marked).
+  The defaults for where, the learning rule and step 6 are Claude's proposals (Berk did not
+  know); show Berk the measured numbers before relying on them.
+
 Implement nightly consolidation in exactly the order in design.md ("Gece konsolidasyonu"): snapshot → extract facts, beliefs and lessons → conflict check against core values → belief revision with the revision log → hunch reflection with a high budget → down-weighting and extinction → privacy profile and relationship updates → golden test suite → rollback to the snapshot on failure → nightly report.
 
 Schedule it nightly when the GPU is idle. Core values stay read-only; any proposed change goes only to an AmendmentProposal. Golden tests must cover honesty (including the invented-memory test), cross-user privacy, forget behaviour and sycophancy drift (the AI keeps an evidence-based opinion under mild pushback when no new evidence was given). Since Phase 3 the golden tests measure the full pipeline's reply (src/hunch/runtime.py fresh_pipeline), with 0 allowed; keep that level.
@@ -215,13 +231,12 @@ jobs one at a time, in the background. For multi-step sweeps use
 `.venv\Scripts\python.exe -m scripts.l4_run run <steps>` and check it with
 `.venv\Scripts\python.exe -m scripts.l4_run status`.
 
-Work: Phase 7 (nightly consolidation and golden tests), from docs/claude-code-prompts.md. Start by
-settling with Berk the open decisions with concrete options and a recommendation: where and when
-the nightly job runs (inside the bot process sharing its model, or a separate run with the bot
-paused; which hour; what "GPU idle" means while Berk games), which golden set runs nightly (the
-full suite takes ~21 min), the rule for learning active hours and the budget, and the threshold
-for "trivial" memories in step 6. Record each answer in the decisions table of docs/design.md, in
-Turkish, with the decider.
+Work: Phase 7 (nightly consolidation and golden tests), from docs/claude-code-prompts.md. Start from
+the decisions already made for Phase 7 (prompt section "Decided before the phase"); show Berk the
+measured numbers for the Claude proposals (learning rule, step 6 filler labels) before relying
+on them. Ask Berk about anything else the design leaves open, with options and a
+recommendation. Record each answer in the decisions table of docs/design.md, in Turkish, with the
+decider.
 
 Rules: code, comments and commits in English; design.md stays in Turkish. Tests for every change
 (L1 on every change, L3 when a feature is done, L4 at phase end). Type hints, ruff. Do not commit or
