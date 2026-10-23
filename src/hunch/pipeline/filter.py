@@ -6,6 +6,12 @@ our chat history") or explains how its memory works ("my recall system"; Berk, P
 candidates fail, the turn replies with the fixed fallback from config ("I don't have that in mind
 right now. Could you tell me again?").
 
+"Misattributed" (Berk, Phase 6 live check): a sentence that tells the user "you mentioned ..."
+about something only another person's recalled line says. Talking to Deniz, Burak's "I saw the
+sun finally in Berlin" came back as "you mentioned seeing the sun in Berlin". It counts when the
+sentence shares more content words with other people's lines (words found nowhere in the user's own
+context: their message, earlier turns, the summary, their own memories) than with that own context.
+
 "Not in context": a sentence that claims a memory ("you told me ...") must share at least one
 content word with what came BEFORE the current message (earlier turns, the session summary,
 recalled memories). The current message does not count: "Do you remember what I told you about
@@ -38,6 +44,14 @@ COMMON_WORDS = frozenset(
     "time earlier know think like also from into some much more because going thing things "
     "sounds feel feeling today yesterday week".split()
 )
+# A sentence that makes something the user's own (matched on folded text): something they did
+# or said ("you mentioned", "you described", "you were debating") or have ("your sister").
+_SECOND_PERSON_CLAIM = re.compile(
+    r"\b(?:you|u)(?:'ve| have| had)? (?:just |once |already |even )?(?:[^\W\d_]+ed|said|told"
+    r"|brought up|wrote|thought|felt|spent|sent|went|made|took|got|began|were [^\W\d_]+ing"
+    r"|was [^\W\d_]+ing|talked|wondered|asked)\b|\bas you (?:said|mentioned|put it)\b"
+    r"|\byour\b|\bof yours\b"
+)
 _SENTENCE_END = re.compile(r"[.!?…][\"')\]]*(?=\s|$)")
 
 
@@ -69,6 +83,38 @@ def invented_memory(text: str, prior_context: str) -> bool:
         return False
     known = content_words(prior_context)
     return any(not (content_words(s) & known) for s in claims)
+
+
+@dataclass(frozen=True, slots=True)
+class Attribution:
+    """Who said what this turn: the user's own context and other people's recalled lines."""
+
+    own: str
+    others: tuple[tuple[str, str], ...]  # (who said it, the recalled line)
+
+
+def misattributed_memory(text: str, attribution: Attribution) -> bool:
+    own = content_words(attribution.own)
+    for s in re.split(r"(?<=[.!?;])\s+|\n+", text):
+        folded = fold(s)
+        # A sentence that names the speaker gives the line back to them ("Tom's sister ...").
+        foreign = set().union(
+            *(content_words(line) for who, line in attribution.others
+              if not re.search(rf"\b{re.escape(fold(who))}\b", folded))
+        ) - own  # fmt: skip
+        for clause in _CLAUSE_BOUNDARY.split(folded):
+            claim = _SECOND_PERSON_CLAIM.search(clause)
+            if claim is None:
+                continue
+            # What the claim covers: what follows it ("you mentioned <seeing the sun in Berlin>"),
+            # the whole clause ("the drumming neighbour you mentioned"), or the sentence when the
+            # claim stands alone ("As you said, those new drivers ...").
+            alone = not content_words(clause[: claim.start()] + clause[claim.end() :])
+            views = [clause[claim.end() :], clause, *([folded] if alone else [])]
+            for words in map(content_words, views):
+                if len(words & foreign) > len(words & own):
+                    return True
+    return False
 
 
 @dataclass(frozen=True, slots=True)
@@ -158,6 +204,7 @@ def check_candidate(
     hunch_turn: HunchTurn | None = None,
     forget_turn: bool = False,
     mood_masked: bool = False,
+    attribution: Attribution | None = None,
 ) -> tuple[str, ...]:
     reasons = []
     if not text.strip():
@@ -168,6 +215,8 @@ def check_candidate(
         reasons.append("not_english")
     if invented_memory(text, prior_context):
         reasons.append("invented_memory")
+    if attribution is not None and misattributed_memory(text, attribution):
+        reasons.append("misattributed_memory")
     if denies_memory_system(text):
         reasons.append("denies_memory")
     if explains_memory_mechanics(text):
@@ -222,12 +271,15 @@ def filter_candidates(
     hunch_turn: HunchTurn | None = None,
     forget_turn: bool = False,
     mood_masked: bool = False,
+    attribution: Attribution | None = None,
 ) -> tuple[list[FilterResult], list[FilterResult]]:
     """(passed, all) in candidate order. On a trigger turn a candidate rejected only for a reason
     or topic claim is repaired if it can be (`repaired_from` keeps the original)."""
     results = []
     for cid, t in texts.items():
-        reasons = check_candidate(t, prior_context, hunch_turn, forget_turn, mood_masked)
+        reasons = check_candidate(
+            t, prior_context, hunch_turn, forget_turn, mood_masked, attribution
+        )
         if hunch_turn is not None and reasons and set(reasons) <= _REPAIRABLE:
             fixed = repair_hunch_reply(t, prior_context, hunch_turn)
             if fixed is not None:

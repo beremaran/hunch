@@ -358,3 +358,23 @@ def test_masked_mood_is_never_said(make, pipe_store) -> None:
     assert not r.details["mood"]["shown"]
     assert {c["id"]: c["rejected"] for c in r.details["candidates"]}["a"] == ["mood_unmasked"]
     assert r.reply != said
+
+
+def test_another_persons_line_is_never_told_as_the_users_own(make, pipe_store) -> None:
+    """Berk (Phase 6 live check): Burak's Berlin sun came back to Deniz as "you mentioned"."""
+    sun = 'They said: "Today after a while i saw the sun finally in Berlin"'
+    seed_memory(pipe_store, "sun", sun, {"place:berlin": 1.0}, 1, owner="u_burak",
+                privacy="general")  # fmt: skip
+    llm = FakeLLM(
+        candidates=(
+            "You mentioned seeing the sun in Berlin yesterday, lovely!",
+            "Burak mentioned the sun finally came out in Berlin. Is it nice there too?",
+            "As you said, the sun finally showed up in Berlin.",
+        ),
+        cues=[{"type": "place", "value": "berlin", "strength": 1.0}],
+        judge=lambda ids: "a 9 ok\nb 7 ok\nc 9 ok",
+    )
+    pipe = make(llm, HashEmbedder(DIM))
+    r = pipe.turn(pipe.new_session("u_deniz"), "We can relax")
+    assert "[said by U_burak]" in _system(llm)
+    assert r.log["chosen"] == "b"

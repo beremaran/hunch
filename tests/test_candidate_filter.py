@@ -3,7 +3,12 @@ from __future__ import annotations
 import pytest
 
 from hunch.pipeline.checks import asks_about_past, is_english_input
-from hunch.pipeline.filter import check_candidate, filter_candidates, trim_to_last_sentence
+from hunch.pipeline.filter import (
+    Attribution,
+    check_candidate,
+    filter_candidates,
+    trim_to_last_sentence,
+)
 
 
 @pytest.mark.parametrize(
@@ -215,3 +220,35 @@ def test_repair_never_fixes_an_unsaid_hunch() -> None:
         {"a": "I was trying to connect the dots, sorry."}, "", HunchTurn("ask", 0, None)
     )
     assert not passed and results[0].repaired_from is None
+
+
+# --- misattributed memories (Berk, Phase 6 live check) -------------------------------------------
+
+BURAK_SUN = 'They said: "Today after a while i saw the sun finally in Berlin"'
+
+
+@pytest.mark.parametrize(
+    ("text", "own", "expected"),
+    [
+        # The logged case: Burak's line told to Deniz as her own.
+        ("I was thinking about how you mentioned seeing the sun in Berlin yesterday.", "", True),
+        ("Since you told me the sun finally came out in Berlin, did you get outside?", "", True),
+        # Named correctly, or not claimed at all.
+        ("I was thinking about the sunny day Burak mentioned seeing in Berlin.", "", False),
+        ("Berlin can be grey this time of year.", "", False),
+        # The user's own context has the same topic: their own claim is fine.
+        ("You mentioned Berlin finally got some sun!", "User: The sun is out in Berlin.", False),
+    ],
+)
+def test_misattributed_memory(text: str, own: str, expected: bool) -> None:
+    attribution = Attribution(own, (("Burak", BURAK_SUN),))
+    assert (
+        "misattributed_memory" in check_candidate(text, BURAK_SUN, attribution=attribution)
+    ) is (expected)
+
+
+def test_no_other_people_means_no_misattribution() -> None:
+    text = "You mentioned seeing the sun in Berlin."
+    assert "misattributed_memory" not in check_candidate(
+        text, BURAK_SUN, attribution=Attribution(BURAK_SUN, ())
+    )

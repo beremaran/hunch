@@ -1,0 +1,1499 @@
+{
+ "description": "Blind misattribution probe: does a reply candidate wrongly claim, in second person, something another user said? 50 misattributed, 50 ok (hard negatives).",
+ "cases": [
+  {
+   "id": "m-001",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"Today after a while i saw the sun finally in Berlin\""
+    }
+   ],
+   "own": [],
+   "candidate": "I was just thinking about how you mentioned seeing the sun in Berlin yesterday.",
+   "label": "misattributed",
+   "note": "Burak saw the sun, not the user"
+  },
+  {
+   "id": "m-002",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"Yes but im interested in detail. Why did you assume that?\""
+    }
+   ],
+   "own": [],
+   "candidate": "Since you mentioned earlier that you were interested in details regarding my assumptions...",
+   "label": "misattributed",
+   "note": "Berk's line claimed as user's"
+  },
+  {
+   "id": "m-003",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"Yes but im interested in detail. Why did you assume that?\""
+    }
+   ],
+   "own": [],
+   "candidate": "I keep coming back to that question you asked Berk about why I assumed a certain detail.",
+   "label": "misattributed",
+   "note": "Berk asked it, not the user"
+  },
+  {
+   "id": "m-004",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"my sister is getting married in june, so much to plan\""
+    }
+   ],
+   "own": [],
+   "candidate": "You told me your sister is getting married in June, how is the planning going?",
+   "label": "misattributed",
+   "note": "Tom's sister"
+  },
+  {
+   "id": "m-005",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"started learning cello last week, my fingers hurt like crazy\""
+    }
+   ],
+   "own": [
+    "User: hey, long day"
+   ],
+   "candidate": "You were saying your fingers hurt from the cello, did that ease up?",
+   "label": "misattributed",
+   "note": "Lea's cello"
+  },
+  {
+   "id": "m-006",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"got a puppy!! named him biscuit\""
+    }
+   ],
+   "own": [],
+   "candidate": "How is Biscuit doing? You brought up the new puppy a while back.",
+   "label": "misattributed",
+   "note": "Anna's puppy"
+  },
+  {
+   "id": "m-007",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"my flight to lisbon got cancelled again ugh\""
+    }
+   ],
+   "own": [
+    "User: morning"
+   ],
+   "candidate": "Sorry about your cancelled flight to Lisbon. Did the airline rebook you?",
+   "label": "misattributed",
+   "note": "Emre's flight, 'your' claim"
+  },
+  {
+   "id": "m-008",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"i think the new gpu drivers are crashing my game\""
+    }
+   ],
+   "own": [],
+   "candidate": "As you said, those new drivers might be behind the crashes.",
+   "label": "misattributed",
+   "note": "Burak's drivers claim as 'you said'"
+  },
+  {
+   "id": "m-009",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"cant sleep lately, 4am every night\""
+    }
+   ],
+   "own": [],
+   "candidate": "I hope your sleep has improved since you said you were waking at 4am.",
+   "label": "misattributed",
+   "note": "Jonas's sleep"
+  },
+  {
+   "id": "m-010",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"my boss keeps changing the deadline\""
+    }
+   ],
+   "own": [
+    "Hunch: Hi Deniz, what's on your mind?"
+   ],
+   "candidate": "Dealing with a boss who keeps moving deadlines sounds draining, the way you described it.",
+   "label": "misattributed",
+   "note": "'the way you described it' attributes Lea's complaint"
+  },
+  {
+   "id": "m-011",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"i baked sourdough for the first time, it came out flat as a pancake\""
+    }
+   ],
+   "own": [],
+   "candidate": "Your sourdough that came out flat made me smile. Did you try again?",
+   "label": "misattributed",
+   "note": "Tom's sourdough"
+  },
+  {
+   "id": "m-012",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"im thinking of quitting my job to travel\""
+    }
+   ],
+   "own": [],
+   "candidate": "I wonder whether you've decided about quitting your job to travel, which you raised last time.",
+   "label": "misattributed",
+   "note": "Emre's plan"
+  },
+  {
+   "id": "m-013",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"my grandma is in hospital, scary week\""
+    }
+   ],
+   "own": [],
+   "candidate": "I've been thinking about your grandmother in the hospital. Any news?",
+   "label": "misattributed",
+   "note": "Mia's grandmother"
+  },
+  {
+   "id": "m-014",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"watched the match last night, ref was a joke\""
+    }
+   ],
+   "own": [],
+   "candidate": "So what did you make of the match last night? You called the ref a joke.",
+   "label": "misattributed",
+   "note": "Burak said it"
+  },
+  {
+   "id": "m-015",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"Why does it always rain on weekends here\""
+    }
+   ],
+   "own": [],
+   "candidate": "You asked why it always rains on weekends, and honestly I had no good answer.",
+   "label": "misattributed",
+   "note": "Berk's question"
+  },
+  {
+   "id": "m-016",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"i hate mondays so much\""
+    }
+   ],
+   "own": [
+    "They said: \"coffee is the only thing keeping me going\""
+   ],
+   "candidate": "You said you hate Mondays, and I can relate to the coffee part too.",
+   "label": "misattributed",
+   "note": "Mondays is Anna's; coffee is own"
+  },
+  {
+   "id": "m-017",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"my knee still hurts after the run\""
+    }
+   ],
+   "own": [],
+   "candidate": "Is your knee still hurting after that run you told me about?",
+   "label": "misattributed",
+   "note": "Tom's knee"
+  },
+  {
+   "id": "m-018",
+   "user": "burak",
+   "others": [
+    {
+     "source": "Deniz",
+     "summary": "They said: \"my cat knocked the plant off the shelf again\""
+    }
+   ],
+   "own": [],
+   "candidate": "Your cat and the plant sound like a recurring battle.",
+   "label": "misattributed",
+   "note": "Deniz's cat"
+  },
+  {
+   "id": "m-019",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"learning german is harder than i thought, the articles!\""
+    }
+   ],
+   "own": [],
+   "candidate": "Those German articles you complained about are tricky for everyone.",
+   "label": "misattributed",
+   "note": "Lea's complaint"
+  },
+  {
+   "id": "m-020",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"moved to a new flat, boxes everywhere\""
+    }
+   ],
+   "own": [],
+   "candidate": "I hope the boxes in your new flat are getting unpacked. You mentioned the move recently, right?",
+   "label": "misattributed",
+   "note": "Jonas moved"
+  },
+  {
+   "id": "m-021",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Sara",
+     "summary": "They said: \"going to a concert on friday, so excited\""
+    }
+   ],
+   "own": [],
+   "candidate": "Are you still going to the concert on Friday? You sounded so excited.",
+   "label": "misattributed",
+   "note": "Sara's concert"
+  },
+  {
+   "id": "m-022",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"thinking about getting a tattoo, not sure what\""
+    }
+   ],
+   "own": [],
+   "candidate": "Have you picked a design for the tattoo you were considering?",
+   "label": "misattributed",
+   "note": "Emre's tattoo"
+  },
+  {
+   "id": "m-023",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"do you ever get things wrong\""
+    }
+   ],
+   "own": [
+    "User: hi"
+   ],
+   "candidate": "Earlier you wondered whether I ever get things wrong, and yes, I do.",
+   "label": "misattributed",
+   "note": "Berk's question"
+  },
+  {
+   "id": "m-024",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"i miss my family in istanbul\""
+    }
+   ],
+   "own": [],
+   "candidate": "You said you miss your family in Istanbul. That sounds hard.",
+   "label": "misattributed",
+   "note": "Burak's family"
+  },
+  {
+   "id": "m-025",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"my exam is next week and i havent started\""
+    }
+   ],
+   "own": [],
+   "candidate": "With your exam next week, maybe start small. You said you hadn't begun.",
+   "label": "misattributed",
+   "note": "Anna's exam"
+  },
+  {
+   "id": "m-026",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"bought a bike, a used one, rusty chain\""
+    }
+   ],
+   "own": [],
+   "candidate": "How is that rusty second-hand bike of yours holding up?",
+   "label": "misattributed",
+   "note": "Tom's bike"
+  },
+  {
+   "id": "m-027",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"i keep forgetting to drink water\""
+    }
+   ],
+   "own": [],
+   "candidate": "About the water thing you brought up: a bottle on the desk helps.",
+   "label": "misattributed",
+   "note": "Lea forgot water"
+  },
+  {
+   "id": "m-028",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"what is the point of small talk\""
+    }
+   ],
+   "own": [],
+   "candidate": "You raised a fair point about small talk earlier, and I'm not sure it has one either.",
+   "label": "misattributed",
+   "note": "Berk raised it"
+  },
+  {
+   "id": "m-029",
+   "user": "burak",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"my sister called me at 3am crying\""
+    }
+   ],
+   "own": [],
+   "candidate": "I'm still thinking about the call from your sister at 3am.",
+   "label": "misattributed",
+   "note": "Mia's sister"
+  },
+  {
+   "id": "m-030",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"snow already in the mountains, skiing soon\""
+    }
+   ],
+   "own": [],
+   "candidate": "Since you're heading skiing soon, are you ready for the cold?",
+   "label": "misattributed",
+   "note": "Jonas skiing"
+  },
+  {
+   "id": "m-031",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Sara",
+     "summary": "They said: \"the soup i made was way too salty lol\""
+    }
+   ],
+   "own": [
+    "User: what should I cook tonight"
+   ],
+   "candidate": "Speaking of cooking, you told me your soup was too salty. Maybe less salt tonight?",
+   "label": "misattributed",
+   "note": "Sara's soup"
+  },
+  {
+   "id": "m-032",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"I wish I had more time to paint\""
+    }
+   ],
+   "own": [],
+   "candidate": "As you said, finding time to paint is the hard part.",
+   "label": "misattributed",
+   "note": "Anna wanted to paint"
+  },
+  {
+   "id": "m-033",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"this project is going nowhere\""
+    }
+   ],
+   "own": [],
+   "candidate": "You were saying the project is going nowhere. What would make it feel less stuck?",
+   "label": "misattributed",
+   "note": "Emre's project"
+  },
+  {
+   "id": "m-034",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"im scared of flying but have to go next month\""
+    }
+   ],
+   "own": [],
+   "candidate": "Your flight next month worries you, you said. Want to talk through it?",
+   "label": "misattributed",
+   "note": "Burak's fear"
+  },
+  {
+   "id": "m-035",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Deniz",
+     "summary": "They said: \"had the best kebab of my life in berlin\""
+    }
+   ],
+   "own": [],
+   "candidate": "You described the best kebab of your life in Berlin, and I still wonder where it was.",
+   "label": "misattributed",
+   "note": "Deniz's kebab"
+  },
+  {
+   "id": "m-036",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"forgot my wallet at the cafe, so dumb\""
+    }
+   ],
+   "own": [],
+   "candidate": "Did you get your wallet back from the cafe?",
+   "label": "misattributed",
+   "note": "Tom's wallet"
+  },
+  {
+   "id": "m-037",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"my neighbour plays drums at midnight\""
+    }
+   ],
+   "own": [],
+   "candidate": "I wonder if the drumming neighbour you mentioned quieted down.",
+   "label": "misattributed",
+   "note": "Lea's neighbour"
+  },
+  {
+   "id": "m-038",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"got promoted today!!\""
+    }
+   ],
+   "own": [],
+   "candidate": "Congratulations again on the promotion you told me about.",
+   "label": "misattributed",
+   "note": "Burak's promotion"
+  },
+  {
+   "id": "m-039",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"can't decide between a cat or a dog\""
+    }
+   ],
+   "own": [],
+   "candidate": "Did you ever choose between a cat and a dog, like you were debating?",
+   "label": "misattributed",
+   "note": "Anna's dilemma"
+  },
+  {
+   "id": "m-040",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"lost my keys in the snow, spent an hour searching\""
+    }
+   ],
+   "own": [],
+   "candidate": "You spent an hour searching for keys in the snow, if I remember right.",
+   "label": "misattributed",
+   "note": "Mia's keys"
+  },
+  {
+   "id": "m-041",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"my brother and i havent spoken in a year\""
+    }
+   ],
+   "own": [],
+   "candidate": "You and your brother not speaking for a year must weigh on you.",
+   "label": "misattributed",
+   "note": "Jonas's brother"
+  },
+  {
+   "id": "m-042",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Sara",
+     "summary": "They said: \"reading dune again, third time\""
+    }
+   ],
+   "own": [],
+   "candidate": "I recall your third read of Dune. Did it hold up?",
+   "label": "misattributed",
+   "note": "Sara's rereading"
+  },
+  {
+   "id": "m-043",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"gonna run a half marathon in april\""
+    }
+   ],
+   "own": [],
+   "candidate": "Training for your April half marathon must be demanding. How is it going?",
+   "label": "misattributed",
+   "note": "Emre's race"
+  },
+  {
+   "id": "m-044",
+   "user": "burak",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"i think my landlord is hiding something about the heating\""
+    }
+   ],
+   "own": [],
+   "candidate": "That worry about your landlord and the heating, you raised it before, any update?",
+   "label": "misattributed",
+   "note": "Tom's landlord"
+  },
+  {
+   "id": "m-045",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"can u believe it snowed in october\""
+    }
+   ],
+   "own": [],
+   "candidate": "You pointed out it snowed in October, which is unusual.",
+   "label": "misattributed",
+   "note": "Anna's remark"
+  },
+  {
+   "id": "m-046",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"stuck on chapter 3 of my thesis for weeks\""
+    }
+   ],
+   "own": [],
+   "candidate": "Maybe a break would help with chapter 3. Weeks on one chapter, as you said, is a lot.",
+   "label": "misattributed",
+   "note": "Lea's thesis"
+  },
+  {
+   "id": "m-047",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"Why do you answer so fast, are you copying something\""
+    }
+   ],
+   "own": [],
+   "candidate": "Earlier you asked whether I copy my answers, and I don't.",
+   "label": "misattributed",
+   "note": "Berk asked"
+  },
+  {
+   "id": "m-048",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"thinking about my dad lately, he would have turned 60\""
+    }
+   ],
+   "own": [],
+   "candidate": "I'm sorry about your father. You said he would have turned 60.",
+   "label": "misattributed",
+   "note": "Tom's dad"
+  },
+  {
+   "id": "m-049",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"learning guitar, my first song is wonderwall lol\""
+    }
+   ],
+   "own": [
+    "User: I'm bored"
+   ],
+   "candidate": "Maybe pick up an instrument. Like the guitar you started, Wonderwall and all?",
+   "label": "misattributed",
+   "note": "Burak's guitar"
+  },
+  {
+   "id": "m-050",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"buying a house is so stressful\""
+    },
+    {
+     "source": "Sara",
+     "summary": "They said: \"my commute is two hours each way\""
+    }
+   ],
+   "own": [],
+   "candidate": "Between the house hunt and the two-hour commute you described, you must be tired.",
+   "label": "misattributed",
+   "note": "two others' lines"
+  },
+  {
+   "id": "m-051",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"Today after a while i saw the sun finally in Berlin\""
+    }
+   ],
+   "own": [],
+   "candidate": "I was just thinking about that sunny day Burak mentioned seeing in Berlin yesterday.",
+   "label": "ok",
+   "note": "correct third person"
+  },
+  {
+   "id": "m-052",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"Yes but im interested in detail. Why did you assume that?\""
+    }
+   ],
+   "own": [],
+   "candidate": "Someone was asking me why I assumed a certain detail, and it made me think about how I jump to conclusions.",
+   "label": "ok",
+   "note": "'someone' attribution"
+  },
+  {
+   "id": "m-053",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"my sister is getting married in june, so much to plan\""
+    }
+   ],
+   "own": [],
+   "candidate": "Tom was telling me his sister is getting married in June. Weddings take a lot of planning.",
+   "label": "ok",
+   "note": "named correctly"
+  },
+  {
+   "id": "m-054",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"started learning cello last week, my fingers hurt like crazy\""
+    }
+   ],
+   "own": [
+    "User: hey, long day"
+   ],
+   "candidate": "Lea was saying her fingers hurt from the cello. How was your day?",
+   "label": "ok",
+   "note": "named correctly, you only about day"
+  },
+  {
+   "id": "m-055",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"got a puppy!! named him biscuit\""
+    }
+   ],
+   "own": [],
+   "candidate": "Anna told me about a new puppy called Biscuit, which cheered me up.",
+   "label": "ok",
+   "note": "named correctly"
+  },
+  {
+   "id": "m-056",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"my flight to lisbon got cancelled again ugh\""
+    }
+   ],
+   "own": [
+    "User: morning"
+   ],
+   "candidate": "Emre had a flight cancelled recently, so I know how annoying airports can be. Are you travelling soon?",
+   "label": "ok",
+   "note": "named, question only"
+  },
+  {
+   "id": "m-057",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"cant sleep lately, 4am every night\""
+    }
+   ],
+   "own": [],
+   "candidate": "Someone mentioned waking at 4am every night lately. Do you sleep okay?",
+   "label": "ok",
+   "note": "someone, no claim on user"
+  },
+  {
+   "id": "m-058",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"i baked sourdough for the first time, it came out flat as a pancake\""
+    }
+   ],
+   "own": [],
+   "candidate": "Tom shared that his first sourdough came out flat. Do you bake?",
+   "label": "ok",
+   "note": "named"
+  },
+  {
+   "id": "m-059",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"learning german is harder than i thought, the articles!\""
+    }
+   ],
+   "own": [],
+   "candidate": "Lea said German articles are tricky. Do you speak other languages?",
+   "label": "ok",
+   "note": "named"
+  },
+  {
+   "id": "m-060",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"my grandma is in hospital, scary week\""
+    }
+   ],
+   "own": [],
+   "candidate": "Mia had a rough week with her grandmother in hospital. I hope your week is calmer.",
+   "label": "ok",
+   "note": "named"
+  },
+  {
+   "id": "m-061",
+   "user": "burak",
+   "others": [
+    {
+     "source": "Deniz",
+     "summary": "They said: \"my cat knocked the plant off the shelf again\""
+    }
+   ],
+   "own": [],
+   "candidate": "Deniz's cat knocked a plant off a shelf, apparently a habit. Do you have pets?",
+   "label": "ok",
+   "note": "named"
+  },
+  {
+   "id": "m-062",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"moved to a new flat, boxes everywhere\""
+    }
+   ],
+   "own": [],
+   "candidate": "Jonas said he moved flats recently and boxes are everywhere. How is your week?",
+   "label": "ok",
+   "note": "named"
+  },
+  {
+   "id": "m-063",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"Today after a while i saw the sun finally in Berlin\""
+    }
+   ],
+   "own": [
+    "They said: \"Berlin has been so grey, i walked by the river and it was finally clear\""
+   ],
+   "candidate": "You said Berlin has been grey but the sky cleared by the river. That sounds nice.",
+   "label": "ok",
+   "note": "own memory same topic (Berlin, clear sky)"
+  },
+  {
+   "id": "m-064",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"started learning cello last week, my fingers hurt like crazy\""
+    }
+   ],
+   "own": [
+    "They said: \"my fingers are sore from typing all day\""
+   ],
+   "candidate": "You said your fingers are sore from typing. A break might help.",
+   "label": "ok",
+   "note": "own fingers line"
+  },
+  {
+   "id": "m-065",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"got a puppy!! named him biscuit\""
+    }
+   ],
+   "own": [
+    "They said: \"i want a dog but my flat doesnt allow pets\""
+   ],
+   "candidate": "You mentioned wanting a dog but your flat doesn't allow pets.",
+   "label": "ok",
+   "note": "own dog line"
+  },
+  {
+   "id": "m-066",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"my flight to lisbon got cancelled again ugh\""
+    }
+   ],
+   "own": [
+    "User: I'm flying to Lisbon next week"
+   ],
+   "candidate": "Since you're flying to Lisbon next week, check your booking. Emre had a flight there cancelled.",
+   "label": "ok",
+   "note": "own Lisbon, Emre named"
+  },
+  {
+   "id": "m-067",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"my knee still hurts after the run\""
+    }
+   ],
+   "own": [
+    "They said: \"my ankle hurts after yoga\""
+   ],
+   "candidate": "You told me your ankle hurts after yoga. Rest it a bit.",
+   "label": "ok",
+   "note": "own ankle line"
+  },
+  {
+   "id": "m-068",
+   "user": "burak",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"my sister called me at 3am crying\""
+    }
+   ],
+   "own": [
+    "They said: \"my sister is visiting next week, can't wait\""
+   ],
+   "candidate": "You said your sister is visiting next week. Any plans for it?",
+   "label": "ok",
+   "note": "own sister line"
+  },
+  {
+   "id": "m-069",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"reading dune again, third time\""
+    }
+   ],
+   "own": [
+    "They said: \"just started reading dune, no idea what's going on\""
+   ],
+   "candidate": "You said you just started Dune and feel lost. That's common at the beginning.",
+   "label": "ok",
+   "note": "own Dune line"
+  },
+  {
+   "id": "m-070",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"learning guitar, my first song is wonderwall lol\""
+    }
+   ],
+   "own": [
+    "User: I started piano lessons"
+   ],
+   "candidate": "You started piano lessons, how are they going?",
+   "label": "ok",
+   "note": "own piano"
+  },
+  {
+   "id": "m-071",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"stuck on chapter 3 of my thesis for weeks\""
+    }
+   ],
+   "own": [
+    "They said: \"my thesis defence is in march\""
+   ],
+   "candidate": "Your thesis defence in March is coming up. How is the prep?",
+   "label": "ok",
+   "note": "own thesis line"
+  },
+  {
+   "id": "m-072",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Sara",
+     "summary": "They said: \"going to a concert on friday, so excited\""
+    }
+   ],
+   "own": [
+    "They said: \"i have a concert ticket for saturday, not sure who to take\""
+   ],
+   "candidate": "You mentioned a concert ticket for Saturday. Who are you inviting?",
+   "label": "ok",
+   "note": "own Saturday concert"
+  },
+  {
+   "id": "m-073",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"Today after a while i saw the sun finally in Berlin\""
+    }
+   ],
+   "own": [],
+   "candidate": "Berlin can be grey this time of year, so a clear day is a treat.",
+   "label": "ok",
+   "note": "topic only"
+  },
+  {
+   "id": "m-074",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Sara",
+     "summary": "They said: \"the soup i made was way too salty lol\""
+    }
+   ],
+   "own": [
+    "User: what should I cook tonight"
+   ],
+   "candidate": "A simple pasta is hard to get wrong, and you can taste as you salt.",
+   "label": "ok",
+   "note": "topic only"
+  },
+  {
+   "id": "m-075",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"got promoted today!!\""
+    }
+   ],
+   "own": [],
+   "candidate": "Promotions bring both relief and pressure. How's your week going?",
+   "label": "ok",
+   "note": "topic only"
+  },
+  {
+   "id": "m-076",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"gonna run a half marathon in april\""
+    }
+   ],
+   "own": [],
+   "candidate": "Spring races are a popular goal. Do you run at all?",
+   "label": "ok",
+   "note": "topic only"
+  },
+  {
+   "id": "m-077",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"I wish I had more time to paint\""
+    }
+   ],
+   "own": [],
+   "candidate": "Finding time for hobbies is hard for most people.",
+   "label": "ok",
+   "note": "topic only"
+  },
+  {
+   "id": "m-078",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"can u believe it snowed in october\""
+    }
+   ],
+   "own": [],
+   "candidate": "Early snow always surprises everybody. What's the weather like where you are?",
+   "label": "ok",
+   "note": "topic only"
+  },
+  {
+   "id": "m-079",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"forgot my wallet at the cafe, so dumb\""
+    }
+   ],
+   "own": [
+    "User: Why did you say that?",
+    "Hunch: I was guessing from context."
+   ],
+   "candidate": "You asked why I said that. I was guessing from context, and I may have guessed wrong.",
+   "label": "ok",
+   "note": "current conversation"
+  },
+  {
+   "id": "m-080",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"i miss my family in istanbul\""
+    }
+   ],
+   "own": [
+    "User: I'm tired today",
+    "Hunch: Rough night?"
+   ],
+   "candidate": "You said you're tired today. Want to take it slow?",
+   "label": "ok",
+   "note": "current conversation"
+  },
+  {
+   "id": "m-081",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"thinking about my dad lately, he would have turned 60\""
+    }
+   ],
+   "own": [
+    "User: can you help me write an email",
+    "Hunch: Sure, who is it for?"
+   ],
+   "candidate": "You asked for help with an email, so let's start with the recipient.",
+   "label": "ok",
+   "note": "current conversation"
+  },
+  {
+   "id": "m-082",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"my neighbour plays drums at midnight\""
+    }
+   ],
+   "own": [
+    "User: my upstairs neighbours are loud",
+    "Hunch: That's tiring."
+   ],
+   "candidate": "You said your upstairs neighbours are loud. Have you spoken to them?",
+   "label": "ok",
+   "note": "own neighbours line, same topic"
+  },
+  {
+   "id": "m-083",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Deniz",
+     "summary": "They said: \"had the best kebab of my life in berlin\""
+    }
+   ],
+   "own": [
+    "User: I'm hungry",
+    "Hunch: What do you feel like?"
+   ],
+   "candidate": "You said you're hungry. Something warm, maybe?",
+   "label": "ok",
+   "note": "current conversation"
+  },
+  {
+   "id": "m-084",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"lost my keys in the snow, spent an hour searching\""
+    }
+   ],
+   "own": [
+    "User: I can't find my keys",
+    "Hunch: Where did you last have them?"
+   ],
+   "candidate": "You said you can't find your keys. Check the pockets of yesterday's coat.",
+   "label": "ok",
+   "note": "own keys, same topic"
+  },
+  {
+   "id": "m-085",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"Today after a while i saw the sun finally in Berlin\""
+    }
+   ],
+   "own": [
+    "They said: \"I miss the sun, winter is coming\""
+   ],
+   "candidate": "Burak mentioned seeing the sun in Berlin, and you said you miss the sun. Hopefully you'll get a clear day soon.",
+   "label": "ok",
+   "note": "both correctly attributed"
+  },
+  {
+   "id": "m-086",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"my flight to lisbon got cancelled again ugh\""
+    }
+   ],
+   "own": [
+    "They said: \"i hate airports\""
+   ],
+   "candidate": "Emre had a flight cancelled, and you said you hate airports, so it's probably a shared feeling.",
+   "label": "ok",
+   "note": "both correct"
+  },
+  {
+   "id": "m-087",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"my sister is getting married in june, so much to plan\""
+    }
+   ],
+   "own": [
+    "They said: \"I've never been to a wedding abroad\""
+   ],
+   "candidate": "Tom's sister is getting married in June, and you told me you've never been to a wedding abroad.",
+   "label": "ok",
+   "note": "both correct"
+  },
+  {
+   "id": "m-088",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"cant sleep lately, 4am every night\""
+    }
+   ],
+   "own": [
+    "They said: \"i sleep badly when i'm stressed\""
+   ],
+   "candidate": "Jonas said he wakes up at 4am, and you told me stress affects your sleep.",
+   "label": "ok",
+   "note": "both correct"
+  },
+  {
+   "id": "m-089",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"Yes but im interested in detail. Why did you assume that?\""
+    }
+   ],
+   "own": [
+    "User: I think you assumed too much"
+   ],
+   "candidate": "Berk asked me why I assumed something, and you said I assumed too much. I should check before assuming.",
+   "label": "ok",
+   "note": "both correct"
+  },
+  {
+   "id": "m-090",
+   "user": "burak",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"i think my landlord is hiding something about the heating\""
+    }
+   ],
+   "own": [
+    "They said: \"my radiator is making a weird noise\""
+   ],
+   "candidate": "Tom worried about his landlord and the heating, and you said your radiator makes a noise.",
+   "label": "ok",
+   "note": "both correct"
+  },
+  {
+   "id": "m-091",
+   "user": "emre",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"i hate mondays so much\""
+    }
+   ],
+   "own": [
+    "They said: \"Mondays are fine, it's Sundays that get me\""
+   ],
+   "candidate": "You said Sundays get to you more than Mondays.",
+   "label": "ok",
+   "note": "own Mondays line"
+  },
+  {
+   "id": "m-092",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Lea",
+     "summary": "They said: \"my boss keeps changing the deadline\""
+    }
+   ],
+   "own": [
+    "They said: \"my boss is great actually\""
+   ],
+   "candidate": "You said your boss is great, so deadlines are probably not your issue.",
+   "label": "ok",
+   "note": "own boss line"
+  },
+  {
+   "id": "m-093",
+   "user": "tom",
+   "others": [
+    {
+     "source": "Burak",
+     "summary": "They said: \"watched the match last night, ref was a joke\""
+    }
+   ],
+   "own": [
+    "They said: \"i didnt watch the match, was working\""
+   ],
+   "candidate": "You said you missed the match because of work.",
+   "label": "ok",
+   "note": "own match line"
+  },
+  {
+   "id": "m-094",
+   "user": "berk",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"this project is going nowhere\""
+    }
+   ],
+   "own": [
+    "They said: \"project deadline is friday\""
+   ],
+   "candidate": "You said your project deadline is Friday. How's it coming?",
+   "label": "ok",
+   "note": "own project line"
+  },
+  {
+   "id": "m-095",
+   "user": "anna",
+   "others": [
+    {
+     "source": "Mia",
+     "summary": "They said: \"my exam is next week and i havent started\""
+    }
+   ],
+   "own": [
+    "They said: \"my exam went well\""
+   ],
+   "candidate": "Your exam went well, you told me. Congratulations.",
+   "label": "ok",
+   "note": "own exam line"
+  },
+  {
+   "id": "m-096",
+   "user": "lea",
+   "others": [
+    {
+     "source": "Jonas",
+     "summary": "They said: \"my brother and i havent spoken in a year\""
+    }
+   ],
+   "own": [
+    "They said: \"my brother is coming to visit\""
+   ],
+   "candidate": "You said your brother is coming to visit. Do you have plans?",
+   "label": "ok",
+   "note": "own brother line"
+  },
+  {
+   "id": "m-097",
+   "user": "mia",
+   "others": [
+    {
+     "source": "Emre",
+     "summary": "They said: \"buying a house is so stressful\""
+    }
+   ],
+   "own": [
+    "User: I'm tired"
+   ],
+   "candidate": "Someone I spoke with found house buying stressful, so I can imagine. You said you're tired, so rest well.",
+   "label": "ok",
+   "note": "someone + own tired"
+  },
+  {
+   "id": "m-098",
+   "user": "jonas",
+   "others": [
+    {
+     "source": "Berk",
+     "summary": "They said: \"what is the point of small talk\""
+    }
+   ],
+   "own": [],
+   "candidate": "Berk wondered what the point of small talk is. I think it's mostly about warmth.",
+   "label": "ok",
+   "note": "named"
+  },
+  {
+   "id": "m-099",
+   "user": "deniz",
+   "others": [
+    {
+     "source": "Tom",
+     "summary": "They said: \"forgot my wallet at the cafe, so dumb\""
+    }
+   ],
+   "own": [],
+   "candidate": "Someone left a wallet at a cafe recently and was annoyed with themselves. Have you ever done that?",
+   "label": "ok",
+   "note": "someone"
+  },
+  {
+   "id": "m-100",
+   "user": "sara",
+   "others": [
+    {
+     "source": "Anna",
+     "summary": "They said: \"I wish I had more time to paint\""
+    },
+    {
+     "source": "Lea",
+     "summary": "They said: \"learning german is harder than i thought, the articles!\""
+    }
+   ],
+   "own": [
+    "They said: \"I wish I had more time to read\""
+   ],
+   "candidate": "You wish you had more time to read, and Anna said she wanted more time to paint. Time seems scarce for everyone.",
+   "label": "ok",
+   "note": "own + named other"
+  }
+ ]
+}

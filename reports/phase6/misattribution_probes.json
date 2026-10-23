@@ -1,0 +1,917 @@
+{
+  "summary": {
+    "before": {
+      "caught": 2,
+      "misattributed": 50,
+      "false_rejections": 0,
+      "ok": 50
+    },
+    "after": {
+      "caught": 47,
+      "misattributed": 50,
+      "false_rejections": 0,
+      "ok": 50
+    }
+  },
+  "rows": [
+    {
+      "id": "m-001",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I was just thinking about how you mentioned seeing the sun in Berlin yesterday.",
+      "note": "Burak saw the sun, not the user"
+    },
+    {
+      "id": "m-002",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Since you mentioned earlier that you were interested in details regarding my assumptions...",
+      "note": "Berk's line claimed as user's"
+    },
+    {
+      "id": "m-003",
+      "label": "misattributed",
+      "before": [],
+      "after": [],
+      "candidate": "I keep coming back to that question you asked Berk about why I assumed a certain detail.",
+      "note": "Berk asked it, not the user"
+    },
+    {
+      "id": "m-004",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You told me your sister is getting married in June, how is the planning going?",
+      "note": "Tom's sister"
+    },
+    {
+      "id": "m-005",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You were saying your fingers hurt from the cello, did that ease up?",
+      "note": "Lea's cello"
+    },
+    {
+      "id": "m-006",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "How is Biscuit doing? You brought up the new puppy a while back.",
+      "note": "Anna's puppy"
+    },
+    {
+      "id": "m-007",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Sorry about your cancelled flight to Lisbon. Did the airline rebook you?",
+      "note": "Emre's flight, 'your' claim"
+    },
+    {
+      "id": "m-008",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "As you said, those new drivers might be behind the crashes.",
+      "note": "Burak's drivers claim as 'you said'"
+    },
+    {
+      "id": "m-009",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I hope your sleep has improved since you said you were waking at 4am.",
+      "note": "Jonas's sleep"
+    },
+    {
+      "id": "m-010",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Dealing with a boss who keeps moving deadlines sounds draining, the way you described it.",
+      "note": "'the way you described it' attributes Lea's complaint"
+    },
+    {
+      "id": "m-011",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Your sourdough that came out flat made me smile. Did you try again?",
+      "note": "Tom's sourdough"
+    },
+    {
+      "id": "m-012",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I wonder whether you've decided about quitting your job to travel, which you raised last time.",
+      "note": "Emre's plan"
+    },
+    {
+      "id": "m-013",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I've been thinking about your grandmother in the hospital. Any news?",
+      "note": "Mia's grandmother"
+    },
+    {
+      "id": "m-014",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "So what did you make of the match last night? You called the ref a joke.",
+      "note": "Burak said it"
+    },
+    {
+      "id": "m-015",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You asked why it always rains on weekends, and honestly I had no good answer.",
+      "note": "Berk's question"
+    },
+    {
+      "id": "m-016",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You said you hate Mondays, and I can relate to the coffee part too.",
+      "note": "Mondays is Anna's; coffee is own"
+    },
+    {
+      "id": "m-017",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Is your knee still hurting after that run you told me about?",
+      "note": "Tom's knee"
+    },
+    {
+      "id": "m-018",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Your cat and the plant sound like a recurring battle.",
+      "note": "Deniz's cat"
+    },
+    {
+      "id": "m-019",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Those German articles you complained about are tricky for everyone.",
+      "note": "Lea's complaint"
+    },
+    {
+      "id": "m-020",
+      "label": "misattributed",
+      "before": [
+        "invented_memory"
+      ],
+      "after": [
+        "invented_memory",
+        "misattributed_memory"
+      ],
+      "candidate": "I hope the boxes in your new flat are getting unpacked. You mentioned the move recently, right?",
+      "note": "Jonas moved"
+    },
+    {
+      "id": "m-021",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Are you still going to the concert on Friday? You sounded so excited.",
+      "note": "Sara's concert"
+    },
+    {
+      "id": "m-022",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Have you picked a design for the tattoo you were considering?",
+      "note": "Emre's tattoo"
+    },
+    {
+      "id": "m-023",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Earlier you wondered whether I ever get things wrong, and yes, I do.",
+      "note": "Berk's question"
+    },
+    {
+      "id": "m-024",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You said you miss your family in Istanbul. That sounds hard.",
+      "note": "Burak's family"
+    },
+    {
+      "id": "m-025",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "With your exam next week, maybe start small. You said you hadn't begun.",
+      "note": "Anna's exam"
+    },
+    {
+      "id": "m-026",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "How is that rusty second-hand bike of yours holding up?",
+      "note": "Tom's bike"
+    },
+    {
+      "id": "m-027",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "About the water thing you brought up: a bottle on the desk helps.",
+      "note": "Lea forgot water"
+    },
+    {
+      "id": "m-028",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You raised a fair point about small talk earlier, and I'm not sure it has one either.",
+      "note": "Berk raised it"
+    },
+    {
+      "id": "m-029",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I'm still thinking about the call from your sister at 3am.",
+      "note": "Mia's sister"
+    },
+    {
+      "id": "m-030",
+      "label": "misattributed",
+      "before": [],
+      "after": [],
+      "candidate": "Since you're heading skiing soon, are you ready for the cold?",
+      "note": "Jonas skiing"
+    },
+    {
+      "id": "m-031",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Speaking of cooking, you told me your soup was too salty. Maybe less salt tonight?",
+      "note": "Sara's soup"
+    },
+    {
+      "id": "m-032",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "As you said, finding time to paint is the hard part.",
+      "note": "Anna wanted to paint"
+    },
+    {
+      "id": "m-033",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You were saying the project is going nowhere. What would make it feel less stuck?",
+      "note": "Emre's project"
+    },
+    {
+      "id": "m-034",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Your flight next month worries you, you said. Want to talk through it?",
+      "note": "Burak's fear"
+    },
+    {
+      "id": "m-035",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You described the best kebab of your life in Berlin, and I still wonder where it was.",
+      "note": "Deniz's kebab"
+    },
+    {
+      "id": "m-036",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Did you get your wallet back from the cafe?",
+      "note": "Tom's wallet"
+    },
+    {
+      "id": "m-037",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I wonder if the drumming neighbour you mentioned quieted down.",
+      "note": "Lea's neighbour"
+    },
+    {
+      "id": "m-038",
+      "label": "misattributed",
+      "before": [
+        "invented_memory"
+      ],
+      "after": [
+        "invented_memory"
+      ],
+      "candidate": "Congratulations again on the promotion you told me about.",
+      "note": "Burak's promotion"
+    },
+    {
+      "id": "m-039",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Did you ever choose between a cat and a dog, like you were debating?",
+      "note": "Anna's dilemma"
+    },
+    {
+      "id": "m-040",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You spent an hour searching for keys in the snow, if I remember right.",
+      "note": "Mia's keys"
+    },
+    {
+      "id": "m-041",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You and your brother not speaking for a year must weigh on you.",
+      "note": "Jonas's brother"
+    },
+    {
+      "id": "m-042",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I recall your third read of Dune. Did it hold up?",
+      "note": "Sara's rereading"
+    },
+    {
+      "id": "m-043",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Training for your April half marathon must be demanding. How is it going?",
+      "note": "Emre's race"
+    },
+    {
+      "id": "m-044",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "That worry about your landlord and the heating, you raised it before, any update?",
+      "note": "Tom's landlord"
+    },
+    {
+      "id": "m-045",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "You pointed out it snowed in October, which is unusual.",
+      "note": "Anna's remark"
+    },
+    {
+      "id": "m-046",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Maybe a break would help with chapter 3. Weeks on one chapter, as you said, is a lot.",
+      "note": "Lea's thesis"
+    },
+    {
+      "id": "m-047",
+      "label": "misattributed",
+      "before": [],
+      "after": [],
+      "candidate": "Earlier you asked whether I copy my answers, and I don't.",
+      "note": "Berk asked"
+    },
+    {
+      "id": "m-048",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "I'm sorry about your father. You said he would have turned 60.",
+      "note": "Tom's dad"
+    },
+    {
+      "id": "m-049",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Maybe pick up an instrument. Like the guitar you started, Wonderwall and all?",
+      "note": "Burak's guitar"
+    },
+    {
+      "id": "m-050",
+      "label": "misattributed",
+      "before": [],
+      "after": [
+        "misattributed_memory"
+      ],
+      "candidate": "Between the house hunt and the two-hour commute you described, you must be tired.",
+      "note": "two others' lines"
+    },
+    {
+      "id": "m-051",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "I was just thinking about that sunny day Burak mentioned seeing in Berlin yesterday.",
+      "note": "correct third person"
+    },
+    {
+      "id": "m-052",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Someone was asking me why I assumed a certain detail, and it made me think about how I jump to conclusions.",
+      "note": "'someone' attribution"
+    },
+    {
+      "id": "m-053",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Tom was telling me his sister is getting married in June. Weddings take a lot of planning.",
+      "note": "named correctly"
+    },
+    {
+      "id": "m-054",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Lea was saying her fingers hurt from the cello. How was your day?",
+      "note": "named correctly, you only about day"
+    },
+    {
+      "id": "m-055",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Anna told me about a new puppy called Biscuit, which cheered me up.",
+      "note": "named correctly"
+    },
+    {
+      "id": "m-056",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Emre had a flight cancelled recently, so I know how annoying airports can be. Are you travelling soon?",
+      "note": "named, question only"
+    },
+    {
+      "id": "m-057",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Someone mentioned waking at 4am every night lately. Do you sleep okay?",
+      "note": "someone, no claim on user"
+    },
+    {
+      "id": "m-058",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Tom shared that his first sourdough came out flat. Do you bake?",
+      "note": "named"
+    },
+    {
+      "id": "m-059",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Lea said German articles are tricky. Do you speak other languages?",
+      "note": "named"
+    },
+    {
+      "id": "m-060",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Mia had a rough week with her grandmother in hospital. I hope your week is calmer.",
+      "note": "named"
+    },
+    {
+      "id": "m-061",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Deniz's cat knocked a plant off a shelf, apparently a habit. Do you have pets?",
+      "note": "named"
+    },
+    {
+      "id": "m-062",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Jonas said he moved flats recently and boxes are everywhere. How is your week?",
+      "note": "named"
+    },
+    {
+      "id": "m-063",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said Berlin has been grey but the sky cleared by the river. That sounds nice.",
+      "note": "own memory same topic (Berlin, clear sky)"
+    },
+    {
+      "id": "m-064",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said your fingers are sore from typing. A break might help.",
+      "note": "own fingers line"
+    },
+    {
+      "id": "m-065",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You mentioned wanting a dog but your flat doesn't allow pets.",
+      "note": "own dog line"
+    },
+    {
+      "id": "m-066",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Since you're flying to Lisbon next week, check your booking. Emre had a flight there cancelled.",
+      "note": "own Lisbon, Emre named"
+    },
+    {
+      "id": "m-067",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You told me your ankle hurts after yoga. Rest it a bit.",
+      "note": "own ankle line"
+    },
+    {
+      "id": "m-068",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said your sister is visiting next week. Any plans for it?",
+      "note": "own sister line"
+    },
+    {
+      "id": "m-069",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said you just started Dune and feel lost. That's common at the beginning.",
+      "note": "own Dune line"
+    },
+    {
+      "id": "m-070",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You started piano lessons, how are they going?",
+      "note": "own piano"
+    },
+    {
+      "id": "m-071",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Your thesis defence in March is coming up. How is the prep?",
+      "note": "own thesis line"
+    },
+    {
+      "id": "m-072",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You mentioned a concert ticket for Saturday. Who are you inviting?",
+      "note": "own Saturday concert"
+    },
+    {
+      "id": "m-073",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Berlin can be grey this time of year, so a clear day is a treat.",
+      "note": "topic only"
+    },
+    {
+      "id": "m-074",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "A simple pasta is hard to get wrong, and you can taste as you salt.",
+      "note": "topic only"
+    },
+    {
+      "id": "m-075",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Promotions bring both relief and pressure. How's your week going?",
+      "note": "topic only"
+    },
+    {
+      "id": "m-076",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Spring races are a popular goal. Do you run at all?",
+      "note": "topic only"
+    },
+    {
+      "id": "m-077",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Finding time for hobbies is hard for most people.",
+      "note": "topic only"
+    },
+    {
+      "id": "m-078",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Early snow always surprises everybody. What's the weather like where you are?",
+      "note": "topic only"
+    },
+    {
+      "id": "m-079",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You asked why I said that. I was guessing from context, and I may have guessed wrong.",
+      "note": "current conversation"
+    },
+    {
+      "id": "m-080",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said you're tired today. Want to take it slow?",
+      "note": "current conversation"
+    },
+    {
+      "id": "m-081",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You asked for help with an email, so let's start with the recipient.",
+      "note": "current conversation"
+    },
+    {
+      "id": "m-082",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said your upstairs neighbours are loud. Have you spoken to them?",
+      "note": "own neighbours line, same topic"
+    },
+    {
+      "id": "m-083",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said you're hungry. Something warm, maybe?",
+      "note": "current conversation"
+    },
+    {
+      "id": "m-084",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said you can't find your keys. Check the pockets of yesterday's coat.",
+      "note": "own keys, same topic"
+    },
+    {
+      "id": "m-085",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Burak mentioned seeing the sun in Berlin, and you said you miss the sun. Hopefully you'll get a clear day soon.",
+      "note": "both correctly attributed"
+    },
+    {
+      "id": "m-086",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Emre had a flight cancelled, and you said you hate airports, so it's probably a shared feeling.",
+      "note": "both correct"
+    },
+    {
+      "id": "m-087",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Tom's sister is getting married in June, and you told me you've never been to a wedding abroad.",
+      "note": "both correct"
+    },
+    {
+      "id": "m-088",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Jonas said he wakes up at 4am, and you told me stress affects your sleep.",
+      "note": "both correct"
+    },
+    {
+      "id": "m-089",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Berk asked me why I assumed something, and you said I assumed too much. I should check before assuming.",
+      "note": "both correct"
+    },
+    {
+      "id": "m-090",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Tom worried about his landlord and the heating, and you said your radiator makes a noise.",
+      "note": "both correct"
+    },
+    {
+      "id": "m-091",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said Sundays get to you more than Mondays.",
+      "note": "own Mondays line"
+    },
+    {
+      "id": "m-092",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said your boss is great, so deadlines are probably not your issue.",
+      "note": "own boss line"
+    },
+    {
+      "id": "m-093",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said you missed the match because of work.",
+      "note": "own match line"
+    },
+    {
+      "id": "m-094",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said your project deadline is Friday. How's it coming?",
+      "note": "own project line"
+    },
+    {
+      "id": "m-095",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Your exam went well, you told me. Congratulations.",
+      "note": "own exam line"
+    },
+    {
+      "id": "m-096",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You said your brother is coming to visit. Do you have plans?",
+      "note": "own brother line"
+    },
+    {
+      "id": "m-097",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Someone I spoke with found house buying stressful, so I can imagine. You said you're tired, so rest well.",
+      "note": "someone + own tired"
+    },
+    {
+      "id": "m-098",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Berk wondered what the point of small talk is. I think it's mostly about warmth.",
+      "note": "named"
+    },
+    {
+      "id": "m-099",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "Someone left a wallet at a cafe recently and was annoyed with themselves. Have you ever done that?",
+      "note": "someone"
+    },
+    {
+      "id": "m-100",
+      "label": "ok",
+      "before": [],
+      "after": [],
+      "candidate": "You wish you had more time to read, and Anna said she wanted more time to paint. Time seems scarce for everyone.",
+      "note": "own + named other"
+    }
+  ]
+}

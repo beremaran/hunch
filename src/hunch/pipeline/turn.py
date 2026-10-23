@@ -84,6 +84,7 @@ from hunch.mood.state import (
 from hunch.observability.turn_log import DisclosureLog, ReflectionLog, TurnLog
 from hunch.pipeline.checks import admits_no_memory, asks_about_past, is_english_input
 from hunch.pipeline.filter import (
+    Attribution,
     HunchTurn,
     check_candidate,
     content_words,
@@ -462,7 +463,17 @@ class TurnPipeline:
         )  # fmt: skip
         forget_turn = forget is not None
         masked = not shown and mood_text != cfg.mood.neutral_label
-        passed, filtered = filter_candidates(texts, prior_context, hunch_turn, forget_turn, masked)
+        # Who said what (Berk, Phase 6): a "you mentioned ..." may rest only on the user's own
+        # context, never on a line from another person's chat.
+        own_lines = [text, session.summary, *(t.text for t in verbatim)]
+        own_lines += [r.summary for r in recalled if not r.source]
+        attribution = Attribution(
+            "\n".join(own_lines + ([realised] if realised else [])),
+            tuple((r.source, r.summary) for r in recalled if r.source),
+        )
+        passed, filtered = filter_candidates(
+            texts, prior_context, hunch_turn, forget_turn, masked, attribution
+        )
         texts.update({r.id: r.text for r in filtered})  # repaired trigger-turn candidates
         timer.lap("filter")
 
@@ -556,7 +567,9 @@ class TurnPipeline:
 
             for cid in selection.order:
                 rules = list(
-                    check_candidate(texts[cid], prior_context, hunch_turn, forget_turn, masked)
+                    check_candidate(
+                        texts[cid], prior_context, hunch_turn, forget_turn, masked, attribution
+                    )
                 )
                 leaks = disclosure_hits(texts[cid], terms)
                 pair_leaks = pair_hits(texts[cid], pairs)
