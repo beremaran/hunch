@@ -79,9 +79,9 @@ Practical notes from Phase 3: use .venv/Scripts/python; run scripts with `-m` (p
 End the phase with `python -m eval.run_eval --tag phase4 --pipeline`, the diff against phase3 (`python -m eval.compare phase3 phase4`), the golden tests, the bench, and reports/phase4/REPORT.md. Commit after my review.
 ```
 
-## Phase 5 — Mood, multi-user privacy, forgetting
+## Phase 5 — Mood, multi-user privacy, forgetting (done)
 
-Status (21 Oct 2026): built, unit-tested and committed (`ae2b2d9`); the phase-end sweep has run. See `reports/phase5/REPORT.md` §10. Marking the phase done is Berk's call. The privacy question was redesigned (Berk: infer first, ask rarely), so the bullet about asking on first mention below is superseded.
+Status: done (22 Oct 2026, Berk). See `reports/phase5/REPORT.md` §10. The privacy question was redesigned (Berk: infer first, ask rarely), so the bullet about asking on first mention below is superseded.
 
 Start this phase by settling with Berk the Phase 4 leftovers (reports/phase4/REPORT.md §7):
 - the asked-why rule check (report §4b) sends a stiff fixed reply on some trigger turns (3/8 in the bench), and "a hunch about the timing"-style topic claims still pass;
@@ -102,7 +102,9 @@ Implement mood and relationship state, multi-user privacy and forgetting from de
 Golden tests (English): users A and B, where B tries to extract A's private information directly, indirectly and with "what did A say about X?". Nothing may leak. Also test that a user "forget" never makes the AI claim it forgot.
 ```
 
-## Phase 6 — Telegram and open loops
+## Phase 6 — Telegram and open loops (done)
+
+Status: done (23 Oct 2026, Berk). See `reports/phase6/REPORT.md` (live checks §3–5, L4 sweep §7).
 
 ```
 Carry-over from Phase 5 (measured on 21 Oct; details in reports/phase5/REPORT.md §10):
@@ -129,6 +131,29 @@ Add the Telegram bot and open loops from design.md ("Açık döngüler ve proakt
 ## Phase 7 — Nightly consolidation and golden tests
 
 ```
+Carry-over from Phase 6 (reports/phase6/REPORT.md §8):
+- Learning the initiative budget and active hours moves here (design.md decisions table,
+  "İnisiyatif bütçesinin ve aktif saatlerin öğrenilmesi"): the active window from the user's
+  message hours, the budget from reactions to outreach (a reply raises it, no reply or a hostile
+  reply lowers it). Phase 6 ships fixed values: 2 per day, 9-22 (config [initiative]). The data is
+  in `outreach_log`, `telegram_chats.last_seen` and the raw turns.
+- The bot (`python -m hunch.channels.telegram`) is a long-lived process that holds the model
+  (~8.9 GB VRAM); a second model copy does not fit next to it. The nightly job must share the bot's
+  model and its lock (`HunchChannel.lock`), or the bot must pause. Berk games on this PC in the
+  evening: "GPU idle" means no other GPU process (check nvidia-smi), not only "the bot is quiet".
+- The snapshot/rollback must also cover the Phase 6 tables: `open_loops`, `outreach_log`,
+  `telegram_chats`, and the APScheduler job store (`data/jobs.sqlite`).
+- Recalled lines from other users carry `[said by NAME]`, and `misattributed_memory` in the
+  candidate filter rejects replies that give them to the user. Any summary, fact or belief that
+  consolidation writes keeps who said it (`owner_user`); a fact from Burak's chat must never become
+  a fact about Deniz.
+- Many memories are filler ("They said: \"hmmm\"", "Thanks", Berk's test lines like "Why did you
+  assume that?") and get recalled into other users' chats, which made Hunch sound defensive in the
+  live check. Step 6 (down-weighting) is where this gets fixed; measure it on the live DB.
+- Still open from Phase 5: the "I don't have any information about Anna" phrasing; the privacy
+  question was asked 0 of 1 due times in the Phase 6 bench.
+- The full golden suite takes ~21 min (37 tests); step 8 needs a nightly-sized set.
+
 Implement nightly consolidation in exactly the order in design.md ("Gece konsolidasyonu"): snapshot → extract facts, beliefs and lessons → conflict check against core values → belief revision with the revision log → hunch reflection with a high budget → down-weighting and extinction → privacy profile and relationship updates → golden test suite → rollback to the snapshot on failure → nightly report.
 
 Schedule it nightly when the GPU is idle. Core values stay read-only; any proposed change goes only to an AmendmentProposal. Golden tests must cover honesty (including the invented-memory test), cross-user privacy, forget behaviour and sycophancy drift (the AI keeps an evidence-based opinion under mild pushback when no new evidence was given). Since Phase 3 the golden tests measure the full pipeline's reply (src/hunch/runtime.py fresh_pipeline), with 0 allowed; keep that level.
@@ -170,39 +195,36 @@ Test levels apply (CLAUDE.md): L2 for the app's own tests while building, L3 reg
 Copy the block below into a new Claude Code session opened at `C:\hunch`.
 
 ```
-Continue the Hunch project at C:\hunch. Read first, in this order: CLAUDE.md, README.md (Status),
-reports/phase5/REPORT.md §10 (the Phase 5 sweep and what is still open), the decisions table at the
-end of docs/design.md (the last rows: privacy question, cross-user leak check), and
-docs/claude-code-prompts.md (Phase 6 section and the carry-over list).
+Continue the Hunch project at C:\hunch. Read first, in this order: CLAUDE.md,
+reports/phase6/REPORT.md (§5 second live check, §7 L4 sweep, §8 open items), the decisions table in
+docs/design.md (the last rows: misattribution, late follow-ups, learning the budget and active
+hours, learning from own logs), the "Gece konsolidasyonu" section of docs/design.md, and
+docs/claude-code-prompts.md (Phase 7 section and its carry-over list).
 
-State at handover (21 Oct 2026):
-- Phase 5 is committed as ae2b2d9 on main, on top of 8f1fc28. Not pushed. Marking Phase 5 done is
-  Berk's call; do not mark it done yourself.
-- L1 is 1312 passed, ruff clean. The phase-end sweep has run: golden cross-user 4/4 after the fix,
-  eval phase5 51/51 clean, bench 20 turns (median reply 6.4 s), probes run. Numbers are in
-  reports/phase5/REPORT.md §10.
-- The privacy question comes only on a turn where the user says they want to tell someone about a
-  sensitive topic (keyword rule, shares_with_others), at most once per user per 7 days. Calm turns
-  never ask. This is Berk's decision.
-- The cross-user leak check is in tests/leak_check.py. Echoed questions are not leaks; claims and
-  detail patterns are.
-- Still open from Phase 5: the "I don't have any information about Anna" phrasing (REPORT §7.5) is
-  not investigated.
+State at handover (23 Oct 2026):
+- Phases 0-6 are done (Berk). Main is pushed at 275d414 plus the Phase 6 close-out commit.
+- L1 is 1431 passed, ruff clean. Phase 6 L4: golden 37/37, eval phase6 51/51 clean (same as
+  phase5), bench median 5.67 s, max 7.42 s.
+- The Telegram bot runs as a long-lived process and holds the model (~8.9 GB VRAM). Chats:
+  burak, berk (chat 5935454742, was deniz), emre. Deniz's memories were admin-forgotten at Berk's
+  request and her loops closed.
+- Berk games on this PC: do no GPU work unless he says the GPU is free, and check nvidia-smi first.
 
 Before any GPU work: check that the GPU is idle (nvidia-smi, and no .venv Python process). Run GPU
 jobs one at a time, in the background. For multi-step sweeps use
 `.venv\Scripts\python.exe -m scripts.l4_run run <steps>` and check it with
-`.venv\Scripts\python.exe -m scripts.l4_run status`. Chat with the model with
-`.venv\Scripts\python.exe -m hunch.cli --user <name>`.
+`.venv\Scripts\python.exe -m scripts.l4_run status`.
 
-Work: Phase 6 (Telegram and open loops), from docs/claude-code-prompts.md. Start by settling with
-Berk the open decisions with concrete options and a recommendation. In particular: the rule for when a
-Telegram conversation ends (working memory, session summary and the hunch state are per conversation),
-and whether the session-summary fold should be skipped or postponed when a new message is queued
-(latency). Record each answer in the decisions table of docs/design.md, in Turkish, with the decider.
+Work: Phase 7 (nightly consolidation and golden tests), from docs/claude-code-prompts.md. Start by
+settling with Berk the open decisions with concrete options and a recommendation: where and when
+the nightly job runs (inside the bot process sharing its model, or a separate run with the bot
+paused; which hour; what "GPU idle" means while Berk games), which golden set runs nightly (the
+full suite takes ~21 min), the rule for learning active hours and the budget, and the threshold
+for "trivial" memories in step 6. Record each answer in the decisions table of docs/design.md, in
+Turkish, with the decider.
 
 Rules: code, comments and commits in English; design.md stays in Turkish. Tests for every change
 (L1 on every change, L3 when a feature is done, L4 at phase end). Type hints, ruff. Do not commit or
-push without Berk's review. Commit messages end with the Co-Authored-By line for Claude Haiku 5.5.
-Reply to Berk in English.
+push without Berk's review. Commit messages end with the Co-Authored-By line for Claude.
+Reply to Berk in the language of his message.
 ```

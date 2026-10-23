@@ -1,7 +1,8 @@
 # Phase 6 report: Telegram, open loops, outreach (22 Oct 2026)
 
-Status: built, unit-tested, checked live on Telegram, and the phase-end sweep (L4) has run (§7,
-all green). Marking Phase 6 done is Berk's call.
+Status: **done** (Berk, 23 Oct). Built, unit-tested, checked live on Telegram, and the phase-end
+sweep (L4) is green (§7). At the end Berk had Deniz's memories admin-forgotten (31 memories, kept
+in the admin archive) and her two interview loops closed.
 The design is in `docs/design.md` ("Açık döngüler ve proaktivite"); every decision below is in its
 decisions table.
 

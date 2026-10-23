@@ -2,7 +2,7 @@
 
 20 Ekim 2026 (son güncelleme: 21 Ekim 2026) · Berk · Tek kaynak bu repodaki `docs/design.md` dosyasıdır.
 
-Durum: Faz 0–4 tamam ve ölçüldü. Faz 5 (ruh hali, çok kullanıcılı mahremiyet, unutma) commit edildi (`ae2b2d9`), L1 1312 test; faz sonu taraması bitti: tam golden (çapraz kullanıcı 4/4 düzeltmeden sonra), eval 51/51 temiz, bench 20 tur, probes. Sayılar `reports/phase5/REPORT.md` §10'da. Faz 5 tamam (22 Eki, Berk). Açık kalan iki madde Faz 6'ya taşındı: gizlilik sorusunun hiç sorulmaması (regresyon testi yok) ve "I don't have any information about Anna" ifadesi (REPORT §7.5). Faz 6 (Telegram, açık döngüler, takipler ve konuşma başlatıcıları) kuruldu ve canlı test edildi; konu başına tek döngü kuralı canlı testten sonra eklendi; rapor `reports/phase6/REPORT.md`. Faz 6'yı "tamam" saymak Berk'in kararı. Kararlar aşağıdaki tabloda. Projeyi dışarıdan tanıtan kısa, teknik detaysız anlatım: [`STORY.md`](STORY.md).
+Durum: Faz 0–4 tamam ve ölçüldü. Faz 5 (ruh hali, çok kullanıcılı mahremiyet, unutma) commit edildi (`ae2b2d9`), L1 1312 test; faz sonu taraması bitti: tam golden (çapraz kullanıcı 4/4 düzeltmeden sonra), eval 51/51 temiz, bench 20 tur, probes. Sayılar `reports/phase5/REPORT.md` §10'da. Faz 5 tamam (22 Eki, Berk). Açık kalan iki madde Faz 6'ya taşındı: gizlilik sorusunun hiç sorulmaması (regresyon testi yok) ve "I don't have any information about Anna" ifadesi (REPORT §7.5). Faz 6 (Telegram, açık döngüler, takipler ve konuşma başlatıcıları) tamam (23 Eki, Berk): canlı test edildi; konu başına tek döngü kuralı, bot kapalıyken vadesi gelen takiplerin düzeltmesi ve başkasının sözünün kullanıcıya mal edilmemesi canlı testlerden sonra eklendi; faz sonu taraması yeşil (golden 37/37, eval 51/51, bench medyan 5,67 s); rapor `reports/phase6/REPORT.md`. Sıradaki: Faz 7 (gece konsolidasyonu). Kararlar aşağıdaki tabloda. Projeyi dışarıdan tanıtan kısa, teknik detaysız anlatım: [`STORY.md`](STORY.md).
 
 ## Özet
 
@@ -497,7 +497,7 @@ Açık sorular:
 - [x] Aktivasyon motoru: formül, iki eşik, tetikleyici çıkarımı (held-out P %83 / R %69), istemsiz hatırlama, yeniden konsolidasyon; 6 aylık simülasyon — Faz 2
 - [x] Tur akışı: "girdi İngilizce mi?" kontrolü, çalışan bellek (son N tur + oturum özeti), reasoning, 2–3 aday (tek batch), aday filtresi (CJK, İngilizce olmayan, anı uyduran ya da hafızası yokmuş gibi konuşan aday reddedilir, diğeri seçilir; hepsi elenirse "I don't have that in mind right now. Could you tell me again?", testli; hafıza sorusu prompt'larıyla ≥ 50 pipeline koşusu ve hepsi-elendi oranı raporu), dürtü vektörü, aday seçimi, değer kapısı, tur logu; ≤ 10 s — Faz 3, `reports/phase3/REPORT.md`
 - [x] Hunch ve kademeli yansıtma: hunch sadece modülasyon seçimi belirgin değiştirdiğinde oluşur, bayrak sadece "neden?" sorulunca prompt'a girer; 0–3 seviyeli yansıtma, haklı kaynak → inanç, haksız → alt iz zayıflar; açılanlar AI'ın kendi anısı, yansıtma logu sadece admin — Faz 4, `reports/phase4/REPORT.md`
-- [ ] Telegram botu, açık döngüler, zamanlayıcı — Faz 6 kuruldu, canlı test yapıldı (zamanlı etkinlik dahil); "tamam" kararı Berk'te (`reports/phase6/REPORT.md`)
+- [x] Telegram botu, açık döngüler, zamanlayıcı — Faz 6 tamam (23 Eki), `reports/phase6/REPORT.md`
 - [ ] Gece konsolidasyonu ve golden testler
 - [x] Çok kullanıcı: gizlilik profili, ifşa kapısı, ilişki durumları, ruh hali, kullanıcı/admin "unut" — Faz 5 tamam (22 Eki); açık kalanlar Faz 6'da (`reports/phase5/REPORT.md`, `reports/phase5/PROPOSAL.md`)
 - [ ] Steering: ilk vektörleri çıkar, aday seçimiyle karşılaştır
