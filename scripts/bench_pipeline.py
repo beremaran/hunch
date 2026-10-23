@@ -16,7 +16,7 @@ a sensitive topic with its privacy answer, and a "forget". The report shows the 
 privacy question, blocked disclosures and forget targets per turn.
 
 Usage:
-    python -m scripts.bench_pipeline   # writes reports/phase5/latency.json and latency.md
+    python -m scripts.bench_pipeline   # writes reports/phase6/latency.json and latency.md
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "reports" / "phase5"
+OUT = ROOT / "reports" / "phase6"
 DAY = 86_400.0
 BUDGET_S = 10.0
 # Phase 4: when a hunch chose a reply, the bench asks why and then accepts the offer.
@@ -89,7 +89,7 @@ def main() -> None:
     model = ChatModel()
     e = cfg.embedding
     embedder = QwenEmbedder(e.model_id, e.device, e.query_instruction)
-    pipe = fresh_pipeline(model, embedder, seed=11, log_dir=ROOT / "logs" / "phase5-bench")
+    pipe = fresh_pipeline(model, embedder, seed=11, log_dir=ROOT / "logs" / "phase6-bench")
     now = time.time()
     for i, (summary, cues, age, affect, salience, *owner) in enumerate(SEEDED):
         user = owner[0] if owner else "u_bench"

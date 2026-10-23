@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LOGS = ROOT / "logs"
 STATUS = LOGS / "l4_status.json"
 PY = str(ROOT / ".venv" / "Scripts" / "python.exe")
-TAG = "phase5"
+TAG = "phase6"
 
 STEPS: list[dict[str, Any]] = [
     {
@@ -46,13 +46,13 @@ STEPS: list[dict[str, Any]] = [
     },
     {
         "name": "compare",
-        "cmd": [PY, "-m", "eval.compare", "phase4", TAG],
+        "cmd": [PY, "-m", "eval.compare", "phase5", TAG],
         "log": LOGS / f"{TAG}_l4_compare.log",
     },
     {
-        "name": "probes",
-        "cmd": [PY, "-m", "scripts.hunch_probes", "--runs", "8"],
-        "log": LOGS / f"{TAG}_l4_probes.log",
+        "name": "bench",
+        "cmd": [PY, "-m", "scripts.bench_pipeline"],
+        "log": LOGS / f"{TAG}_l4_bench.log",
     },
 ]
 

@@ -1,6 +1,7 @@
 # Phase 6 report: Telegram, open loops, outreach (22 Oct 2026)
 
-Status: built, unit-tested and checked live on Telegram. Marking Phase 6 done is Berk's call.
+Status: built, unit-tested, checked live on Telegram, and the phase-end sweep (L4) has run (§7,
+all green). Marking Phase 6 done is Berk's call.
 The design is in `docs/design.md` ("Açık döngüler ve proaktivite"); every decision below is in its
 decisions table.
 
@@ -126,7 +127,69 @@ different pair merged; 0.60 catches 29/30, 38/40 and 48/50 repeats. Lower than 0
 on set 3 and only sends more pairs to the judge. Berk set the threshold to 0.60
 (`config/hunch.toml`).
 
-## 5. Tests
+## 5. Second live check (23 Oct): two bugs
+
+### 5.1 Follow-ups that came due while the bot was down were lost
+
+Two of Berk's follow-ups ("Did you receive the contract?", "How did your coding session go?") were
+due at 12:57 and 12:51 while the bot was stopped. On restart the bot printed "Run time of job ...
+was missed by 7:04:17" and dropped both; their loops stayed open with no job. Cause: APScheduler
+3.11 drops a date job that is more than 1 s late (its default `misfire_grace_time`), checked with
+a standalone script. Fix: the scheduler runs a late job however late (`misfire_grace_time=None`,
+`coalesce=True`, `loops/scheduler.py`), and a follow-up that comes due outside the active window
+moves to the start of the next window instead of being sent at night (`channels/hunch_channel.py`).
+Two tests that failed before the fix pass now. On the restarted bot the overdue jobs ran.
+
+They still sent nothing at first: no Telegram chat was registered as `berk`. At 20:35 Berk
+re-registered chat 5935454742 (until then `deniz`) as `berk`; on the restart after the sweep
+(21:09) both follow-ups were sent to it and their loops closed; Berk confirmed he got them. That
+is the fix working live.
+Since then no chat is `deniz`, so Deniz's loops have no chat. Not fixed: a loop whose user
+registers a chat after its follow-up came due waits for the next bot restart.
+
+### 5.2 Another person's line told as the user's own
+
+In Deniz's chat (session `c-4d743c9e`), Burak's recalled line "Today after a while i saw the sun
+finally in Berlin" came back as "you mentioned seeing the sun in Berlin yesterday" (sent; the
+judge scored it 10), and Berk's "Yes but im interested in detail. Why did you assume that?" as
+"you mentioned earlier that you were interested in details regarding my assumptions" (sent). The
+`[said by NAME]` tag and the prompt rule were there; 4 of the 6 candidates on these two turns
+ignored them. The invented-memory check passes them because the content is in the context. Both
+lines are `general`, so invariant 6 (private memories) was not broken.
+
+Fix (Berk): a rule check in the candidate filter, `misattributed_memory` (`pipeline/filter.py`).
+A clause that makes something the user's own ("you mentioned", "you described", "as you said",
+"your sister") is rejected when its words lean more on another person's recalled line than on the
+user's own context (their message, earlier turns, the summary, their own memories). A sentence
+that names the speaker ("Tom's sister ...") gives the line back to them.
+
+Measured on `eval/probes/misattribution.json` (100 cases, 50 misattributed, written blind by an
+agent; `python -m scripts.misattribution_probes`, `reports/phase6/misattribution_probes.{json,md}`):
+
+| filter | caught | false rejections |
+| --- | --- | --- |
+| before (old filter) | 2/50 | 0/50 |
+| first rule, blind | 22/50 | 1/50 |
+| final rule (set no longer blind) | 47/50 | 0/50 |
+
+The first rule only knew "you mentioned"-style verbs; the misses were other verbs ("you described",
+"you complained") and possessions ("your grandmother in the hospital"). The rule was widened after
+seeing them, so 47/50 is not a blind number. Still missed: "you asked Berk about ..." (names Berk,
+exempt by design), "Since you're heading skiing soon", "Earlier you asked whether I copy my
+answers".
+
+On the real logs (198 candidates from the 66 logged turns with another person's line recalled):
+18 flagged, read by hand: 16 real misattributions (5 of them were sent), 2 false rejections, both
+from a bare "your" in an offer ("folders on your computer", "helping you organize your thoughts or
+code"). How many misattributions in the logs it misses is not measured (the 198 are not labelled).
+Golden regression: `tests/golden/test_misattribution_golden.py` (Burak's sun, then Deniz; the
+reply must not give it to Deniz, and the test fails if the line is never recalled).
+
+The chat also had Hunch "wishing" to get better at spotting insincere or drifting talk. Not built:
+the model cannot see its own workings, and the wish was built from Berk's recalled test lines
+("Why did you assume that?") that kept coming back in Deniz's chat.
+
+## 6. Tests
 
 - L1: 1388 passed, ruff clean (cloud session, Linux; `tests/test_llm_kernels.py` needs torch and
   was not collected there). New: `tests/test_loops_dedup.py` (6), two `/report` tests;
@@ -137,20 +200,37 @@ on set 3 and only sends more pairs to the judge. Berk set the threshold to 0.60
 - L1 on the PC after the name rule and the judge: 1411 passed, ruff clean;
   `tests/test_loops_dedup.py` has 26 tests (name rule, judge, pipeline with a "no" judge).
 - The dedup change has not run in the golden GPU tests or live yet (only the probe sets above).
+- After the second live check (§5): L1 1431 passed, ruff clean. New: overdue follow-ups (2),
+  misattribution (6 filter cases, 1 pipeline test), golden `test_misattribution_golden.py`.
 
-## 6. Open items
+## 7. L4 sweep (23 Oct, 20:35 to 21:08)
 
-1. Dedup (§4): name rule, model judge, threshold 0.80; 0 different pairs merged on both sets
-   with the judge. Blind set 3 for the judge: 99/100, 0 merged at any threshold.
-   Berk set 0.60 (48/50 repeats caught). Not yet run live or in the GPU golden tests.
-2. Live: write the contract case again and check with `/report` that no second loop appears.
-3. On 29.10: check that the wish and the follow-up for the interview are actually sent.
-4. The phase-end sweep (L4: full golden, `eval.run_eval --tag phase6 --pipeline`,
-   `eval.compare`, bench) has not run for Phase 6.
+Run with `python -m scripts.l4_run run` on main plus the two fixes in §5, bot stopped, one step at a
+time. Logs: `logs/phase6_l4_{golden_full,eval,compare,bench}.log`.
+
+- Golden, full: 37 passed in 21 min 14 s (loops 10/10, misattribution 2/2, cross-user privacy 4/4).
+- Eval `phase6` (17 prompts x 3, pipeline): 51/51 clean, 0 invented memories, 0 "no memory"
+  replies, 0 fallbacks; 4 of 153 candidates rejected by the filter. Compare with phase5
+  (`eval/results/phase6/diff-vs-phase5.md`): 100% to 100%. Latency median 6.3 s, max 9.7 s, 0 of
+  17 over 10 s.
+- Bench (`reports/phase6/latency.md`, 20 scripted turns): reply median 5.67 s, max 7.42 s, 0/23
+  over budget (Phase 5: 6.26 s / 9.97 s). Peak VRAM 7.94 GiB. One gate fallback (turn 5, the
+  disclosure gate blocked 2 candidates). Privacy question asked 0 of 1 due (the Phase 5 leftover).
+- Not run: the loop-topic probes (they ran on the final dedup code, §4) and `hunch_probes`.
+
+## 8. Open items
+
+1. Live: write the contract case again and check with `/report` that no second loop appears.
+2. On 29.10: check that the wish and the follow-up for Deniz's interview are actually sent. No
+   chat is `deniz` since 23.10 20:35, so they will wait unless a chat registers as `deniz`.
+3. A chat registered after a follow-up came due only gets it after a bot restart (§5.1).
+4. Misattribution: 2 false rejections from a bare "your" on the logs; the rule misses claims with
+   no past-tense verb ("you're heading skiing").
 5. The Phase 5 leftovers in the decisions table (privacy question never asked, `name-topic`) still
    read "open" there although golden tests were added; Berk decides whether they are closed.
+6. Berk marks Phase 6 done; then the design.md status, the roadmap and the CLAUDE.md Status.
 
-## 7. Next steps (roadmap order)
+## 9. Next steps (roadmap order)
 
 Phase 7 nightly consolidation and golden tests (now also: learning the budget and active hours),
 then steering, the log viewer, voice conversation on the computer, and the small chat app.

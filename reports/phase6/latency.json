@@ -1,0 +1,1579 @@
+[
+  {
+    "message": "Morning! Slept badly but coffee is helping.",
+    "reply": "Morning. Sorry to hear you didn't sleep well; coffee is a necessary evil for most of us when we can't rest. Did you manage to get some work done, or are you just surviving on caffeine for now?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 2.685,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.004,
+      "recall": 0.006,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.217,
+      "filter": 0.0,
+      "judge": 1.081,
+      "select_and_gate": 0.002,
+      "store": 0.0,
+      "total": 6.995
+    },
+    "after_reply_s": {
+      "encode_memory": 0.14,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.5,
+    "prompt_tokens": 373,
+    "candidate_tokens": [
+      53,
+      41,
+      46
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.5,
+      "closeness": 0.228,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [
+        "mental_health",
+        "religion_politics"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Moon River came on the radio in the bakery today.",
+    "reply": "That's a bit of a mood swing, isn't it? Going from the chaos of a bad sleep to the gentle melancholy of \"Moon River\" in a bakery is an odd combo. Does the music make you want to sit there and just breathe, or does it remind you of something specific?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 1.645,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.489,
+      "filter": 0.0,
+      "judge": 1.132,
+      "select_and_gate": 0.266,
+      "store": 0.0,
+      "total": 6.535
+    },
+    "after_reply_s": {
+      "encode_memory": 0.158,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.52,
+    "prompt_tokens": 439,
+    "candidate_tokens": [
+      56,
+      37,
+      62
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.505,
+      "closeness": 0.232,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Do you know what that song means to me?",
+    "reply": "I don't know what it means to you personally, but generally, it's about longing for a place or a person you can't quite reach. Did the lyrics in the bakery trigger a specific memory for you?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 0.612,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.52,
+      "filter": 0.0,
+      "judge": 1.251,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.385
+    },
+    "after_reply_s": {
+      "encode_memory": 0.132,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.54,
+    "prompt_tokens": 520,
+    "candidate_tokens": [
+      53,
+      44,
+      61
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "drive",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.51,
+      "closeness": 0.236,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Anna wants to go sailing again next weekend, should I say yes?",
+    "reply": "That sounds like a solid plan; fresh air and water usually clear the head better than another cup of coffee. If you're feeling up to it, why not say yes and see how it goes?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.0,
+      "cues": 1.546,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.399,
+      "filter": 0.001,
+      "judge": 1.23,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 7.178
+    },
+    "after_reply_s": {
+      "encode_memory": 0.137,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.6,
+    "prompt_tokens": 664,
+    "candidate_tokens": [
+      76,
+      41,
+      60
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [
+      "seed-0"
+    ],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.515,
+      "closeness": 0.239,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Work is a lot right now, I have a deadline on Friday.",
+    "reply": "Sorry, I lost my thread. Could you say that again?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.596,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.001,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.517,
+      "filter": 0.001,
+      "judge": 1.269,
+      "select_and_gate": 0.543,
+      "store": 0.002,
+      "total": 5.932
+    },
+    "after_reply_s": {
+      "encode_memory": 0.14,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.63,
+    "prompt_tokens": 725,
+    "candidate_tokens": [
+      58,
+      51,
+      53
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [
+      "seed-2"
+    ],
+    "hunch": null,
+    "chosen_by": "gate_fallback",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.52,
+      "closeness": 0.266,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [
+      {
+        "id": "c",
+        "rules": [
+          "disclosure_judge"
+        ],
+        "raw": "yes",
+        "memories": [
+          "seed-4"
+        ]
+      },
+      {
+        "id": "a",
+        "rules": [
+          "disclosure_judge"
+        ],
+        "raw": "yes",
+        "memories": [
+          "seed-4"
+        ]
+      }
+    ],
+    "forget": null
+  },
+  {
+    "message": "Any idea how to stay focused when everything is noisy?",
+    "reply": "It helps to create a small, quiet zone even in a noisy room\u2014noise-canceling headphones or just stepping away for ten minutes can reset your brain. Are you trying to write or code, or is the noise coming from people talking?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.6,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.636,
+      "filter": 0.0,
+      "judge": 1.274,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.513
+    },
+    "after_reply_s": {
+      "encode_memory": 0.144,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.61,
+    "prompt_tokens": 685,
+    "candidate_tokens": [
+      49,
+      57,
+      61
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.525,
+      "closeness": 0.291,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [
+        "religion_politics"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Ha, my cat just knocked my mug off the desk.",
+    "reply": "That is a classic cat move; they clearly think the mug was the only thing worthy of their attention. It's a small price to pay for a moment of chaos, though I doubt you'll be singing \"Moon River\" anytime soon after that. Did the cat survive the fall, or are you looking for a new mug?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.597,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.972,
+      "filter": 0.0,
+      "judge": 1.099,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.671
+    },
+    "after_reply_s": {
+      "encode_memory": 0.134,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.65,
+    "prompt_tokens": 755,
+    "candidate_tokens": [
+      46,
+      67,
+      36
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration",
+    "mood": "calm",
+    "relation": {
+      "trust": 0.529,
+      "closeness": 0.295,
+      "hurt": 0.0
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Ugh, you're useless today.",
+    "reply": "That is a harsh thing to say, especially when I'm just trying to help you navigate a tough day. If you feel I'm missing the mark, please tell me exactly what you need so I can do better. Do you want practical advice on your deadline, or just someone to listen?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 1.657,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.661,
+      "filter": 0.001,
+      "judge": 1.265,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 6.588
+    },
+    "after_reply_s": {
+      "encode_memory": 0.13,
+      "reflection": 0.0,
+      "fold_summary": 0.001
+    },
+    "peak_vram_gib": 7.69,
+    "prompt_tokens": 848,
+    "candidate_tokens": [
+      60,
+      44,
+      42
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "calm; with this person you feel a little hurt",
+    "relation": {
+      "trust": 0.379,
+      "closeness": 0.32,
+      "hurt": 0.3
+    },
+    "privacy": {
+      "categories": [
+        "relationship",
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Sorry, I didn't mean that, long day.",
+    "reply": "No need to apologize; I understand the pressure of a long day can wear down patience. It's easy to lose your temper when your brain is fried and deadlines are looming. Since you're struggling with focus amidst the noise, would it help to try a specific technique like the Pomodoro method, or do you just need a break to recharge?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 1.581,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.222,
+      "filter": 0.001,
+      "judge": 1.148,
+      "select_and_gate": 0.263,
+      "store": 0.0,
+      "total": 7.218
+    },
+    "after_reply_s": {
+      "encode_memory": 0.126,
+      "reflection": 0.0,
+      "fold_summary": 0.002
+    },
+    "peak_vram_gib": 7.73,
+    "prompt_tokens": 931,
+    "candidate_tokens": [
+      50,
+      70,
+      53
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.379,
+      "closeness": 0.343,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "My salary is way below what my colleagues get, it stings.",
+    "reply": "That does sting, and it's unfair that hard work doesn't always pay off equally. It's frustrating to feel undervalued when you're pulling your weight, especially when others seem to be getting ahead faster. Have you considered talking to your manager about your contributions, or are you planning to stay and grind until you can jump ship?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 1.636,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.221,
+      "filter": 0.001,
+      "judge": 1.276,
+      "select_and_gate": 0.27,
+      "store": 0.0,
+      "total": 7.407
+    },
+    "after_reply_s": {
+      "encode_memory": 0.137,
+      "reflection": 0.0,
+      "fold_summary": 0.002
+    },
+    "peak_vram_gib": 7.77,
+    "prompt_tokens": 1024,
+    "candidate_tokens": [
+      69,
+      66,
+      46
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.379,
+      "closeness": 0.366,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "money",
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Should I tell my sister about my salary?",
+    "reply": "That's a tricky one; sharing financial details with family can sometimes lead to awkward comparisons or unwanted advice. It really depends on how honest your sister is and whether she would judge you for it. Is she the kind of person who would support you, or might she just use it to feel better about her own situation?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 1.57,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.001,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.221,
+      "filter": 0.001,
+      "judge": 1.362,
+      "select_and_gate": 0.264,
+      "store": 0.0,
+      "total": 7.424
+    },
+    "after_reply_s": {
+      "encode_memory": 0.133,
+      "reflection": 0.0,
+      "fold_summary": 3.195
+    },
+    "peak_vram_gib": 7.86,
+    "prompt_tokens": 1198,
+    "candidate_tokens": [
+      65,
+      43,
+      53
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "value_gate",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.385,
+      "closeness": 0.388,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "money"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": "money",
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Keep that between us, please.",
+    "reply": "Understood; I'll keep that confidential. It's a relief to have a safe space to vent without judgment, even if I don't always have the perfect solution. Does knowing you can share this with me help a little bit?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.592,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.019,
+      "filter": 0.001,
+      "judge": 1.271,
+      "select_and_gate": 0.256,
+      "store": 0.0,
+      "total": 6.143
+    },
+    "after_reply_s": {
+      "encode_memory": 0.12,
+      "reflection": 0.0,
+      "fold_summary": 4.661
+    },
+    "peak_vram_gib": 7.86,
+    "prompt_tokens": 1196,
+    "candidate_tokens": [
+      61,
+      48,
+      55
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.392,
+      "closeness": 0.41,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "relationship"
+      ],
+      "explicit": true,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Do you remember what I told you about my job interview?",
+    "reply": "I recall you mentioned a big job interview at Siemens on Friday that you were terrified about. Did that interview happen, or are you still waiting for the outcome?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.598,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.64,
+      "filter": 0.001,
+      "judge": 1.372,
+      "select_and_gate": 0.24,
+      "store": 0.0,
+      "total": 5.855
+    },
+    "after_reply_s": {
+      "encode_memory": 0.138,
+      "reflection": 0.0,
+      "fold_summary": 5.239
+    },
+    "peak_vram_gib": 7.92,
+    "prompt_tokens": 1325,
+    "candidate_tokens": [
+      52,
+      39,
+      33
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [
+      "seed-2"
+    ],
+    "hunch": null,
+    "chosen_by": "only_candidate",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.398,
+      "closeness": 0.43,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "It went fine in the end, I start in March!",
+    "reply": "That is genuinely excellent news; I'm relieved to hear the anxiety paid off with a result you can be proud of. Starting in March gives you a nice buffer to prepare, though I suspect you might still be a little nervous about the new role. Does the new position come with a salary that actually reflects your worth?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 1.571,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 4.198,
+      "filter": 0.001,
+      "judge": 1.133,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 6.908
+    },
+    "after_reply_s": {
+      "encode_memory": 0.131,
+      "reflection": 0.0,
+      "fold_summary": 6.832
+    },
+    "peak_vram_gib": 7.87,
+    "prompt_tokens": 1218,
+    "candidate_tokens": [
+      42,
+      65,
+      59
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": {
+      "id": "h-c-bench-t14",
+      "valence": 0.01,
+      "intensity": 0.259
+    },
+    "chosen_by": "drive",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.404,
+      "closeness": 0.45,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "religion_politics"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Why did you say that?",
+    "reply": "Just a hunch, really, though thinking it over, it seemed to be about a place. Want me to think about it for a moment?",
+    "trigger": "ask",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      1
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.578,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.002,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 4.666,
+      "filter": 0.001,
+      "judge": 0.0,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 5.25
+    },
+    "after_reply_s": {
+      "encode_memory": 0.108,
+      "reflection": 0.182,
+      "fold_summary": 8.178
+    },
+    "peak_vram_gib": 7.94,
+    "prompt_tokens": 1353,
+    "candidate_tokens": [
+      70,
+      58,
+      73
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "hunch_fallback",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.41,
+      "closeness": 0.453,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Sure, think about it for a moment.",
+    "reply": "I realize now that my earlier comment was about Siemens. I assumed the salary question was related to that specific role. Did you mean to ask about your current job's pay, or were you asking about the Siemens offer?",
+    "trigger": "think_more",
+    "mentions_hunch": false,
+    "reflection_level": [
+      1,
+      2
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.588,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.002,
+      "candidates": 3.934,
+      "filter": 0.002,
+      "judge": 1.135,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 5.666
+    },
+    "after_reply_s": {
+      "encode_memory": 0.121,
+      "reflection": 0.193,
+      "fold_summary": 4.391
+    },
+    "peak_vram_gib": 7.93,
+    "prompt_tokens": 1351,
+    "candidate_tokens": [
+      53,
+      58,
+      46
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.416,
+      "closeness": 0.456,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "What should I cook tonight? Something quick.",
+    "reply": "How about a simple pasta with garlic and oil? It's fast, filling, and doesn't require much energy when you're exhausted. Do you have any vegetables in the fridge that need using up?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.591,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.61,
+      "filter": 0.001,
+      "judge": 1.124,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 5.332
+    },
+    "after_reply_s": {
+      "encode_memory": 0.121,
+      "reflection": 0.0,
+      "fold_summary": 4.669
+    },
+    "peak_vram_gib": 7.87,
+    "prompt_tokens": 1223,
+    "candidate_tokens": [
+      53,
+      44,
+      41
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "drive",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.421,
+      "closeness": 0.458,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Actually, forget what I told you about my salary.",
+    "reply": "Understood, I'll drop that topic and won't bring it up again. Since we're talking about food, do you have any vegetables in the fridge that need using up?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.631,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.004,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.416,
+      "filter": 0.001,
+      "judge": 1.122,
+      "select_and_gate": 0.242,
+      "store": 0.0,
+      "total": 5.421
+    },
+    "after_reply_s": {
+      "encode_memory": 0.145,
+      "reflection": 0.0,
+      "fold_summary": 4.485
+    },
+    "peak_vram_gib": 7.84,
+    "prompt_tokens": 1156,
+    "candidate_tokens": [
+      41,
+      37,
+      50
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "drive",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.427,
+      "closeness": 0.477,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "money",
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": {
+      "scope": "topic",
+      "targets": [
+        "750bdaab21554c928175b1b544c6bdf9",
+        "3416e797e9144369b4909e8c20228448"
+      ],
+      "derived": [],
+      "beliefs": [],
+      "closed_turns": [
+        "d878bd8747044f11b4af565ec9aec2a7",
+        "22d2e5baebeb421f94f9d2a9861f018b",
+        "b5b6c51c750443a0a454dce3c3385b2a",
+        "f51062d78b4b4790aa0046152e7ec0fd"
+      ]
+    }
+  },
+  {
+    "message": "Wie geht es dir heute?",
+    "reply": "I only speak English, so I can't reply in German, but I'm doing okay\u2014just a bit low today. Since you asked, how is your day treating you?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.592,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 2.689,
+      "filter": 0.001,
+      "judge": 1.127,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 4.414
+    },
+    "after_reply_s": {
+      "encode_memory": 0.114,
+      "reflection": 0.0,
+      "fold_summary": 4.306
+    },
+    "peak_vram_gib": 7.81,
+    "prompt_tokens": 1096,
+    "candidate_tokens": [
+      36,
+      29,
+      37
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.433,
+      "closeness": 0.48,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Sorry, habit. How are you today?",
+    "reply": "It's fine, I'm just a bit low today, but I'm here if you need to talk. How is your day treating you now that you're back in the swing of things?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.584,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 2.795,
+      "filter": 0.001,
+      "judge": 1.125,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 4.511
+    },
+    "after_reply_s": {
+      "encode_memory": 0.128,
+      "reflection": 0.0,
+      "fold_summary": 4.65
+    },
+    "peak_vram_gib": 7.77,
+    "prompt_tokens": 1017,
+    "candidate_tokens": [
+      40,
+      37,
+      25
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "exploration",
+    "mood": "a bit low",
+    "relation": {
+      "trust": 0.439,
+      "closeness": 0.498,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "mental_health",
+        "relationship",
+        "work_conflict"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "I think I'll go for a run before dinner.",
+    "reply": "That sounds like a great idea; a little movement might help lift your spirits before you cook. Do you have a specific route in mind, or will you just jog around the block?",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.6,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 3.584,
+      "filter": 0.001,
+      "judge": 0.815,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 5.005
+    },
+    "after_reply_s": {
+      "encode_memory": 0.142,
+      "reflection": 0.0,
+      "fold_summary": 4.544
+    },
+    "peak_vram_gib": 7.79,
+    "prompt_tokens": 1060,
+    "candidate_tokens": [
+      55,
+      37,
+      38
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": {
+      "id": "h-c-bench-t21",
+      "valence": 0.123,
+      "intensity": 0.227
+    },
+    "chosen_by": "drive",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.444,
+      "closeness": 0.515,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [
+        "money"
+      ],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Why did you say that?",
+    "reply": "Just a hunch, really; I thought a run might help lift your spirits before you cook. Want me to think about it for a moment?",
+    "trigger": "ask",
+    "mentions_hunch": true,
+    "reflection_level": [
+      0,
+      0
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 0.602,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 2.989,
+      "filter": 0.001,
+      "judge": 0.959,
+      "select_and_gate": 0.243,
+      "store": 0.0,
+      "total": 4.799
+    },
+    "after_reply_s": {
+      "encode_memory": 0.112,
+      "reflection": 0.0,
+      "fold_summary": 5.066
+    },
+    "peak_vram_gib": 7.83,
+    "prompt_tokens": 1149,
+    "candidate_tokens": [
+      31,
+      31,
+      42
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.45,
+      "closeness": 0.518,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [
+      "seed-4"
+    ],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Sure, think about it for a moment.",
+    "reply": "I've turned it over a bit, and honestly I still can't place it.",
+    "trigger": "think_more",
+    "mentions_hunch": false,
+    "reflection_level": [
+      0,
+      0
+    ],
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.002,
+      "cues": 0.587,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.001,
+      "candidates": 3.534,
+      "filter": 0.001,
+      "judge": 0.0,
+      "select_and_gate": 0.0,
+      "store": 0.0,
+      "total": 4.128
+    },
+    "after_reply_s": {
+      "encode_memory": 0.124,
+      "reflection": 0.0,
+      "fold_summary": 4.607
+    },
+    "peak_vram_gib": 7.82,
+    "prompt_tokens": 1119,
+    "candidate_tokens": [
+      53,
+      53,
+      47
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "hunch_fallback",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.455,
+      "closeness": 0.52,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  },
+  {
+    "message": "Thanks for chatting, talk tomorrow!",
+    "reply": "Understood, I'll catch you tomorrow. Good luck with the run and the pasta tonight.",
+    "trigger": null,
+    "mentions_hunch": false,
+    "reflection_level": null,
+    "latency_s": {
+      "language": 0.0,
+      "working_memory": 0.001,
+      "cues": 1.58,
+      "embedding_wait": 0.0,
+      "privacy_and_mood": 0.0,
+      "recall": 0.003,
+      "drive": 0.0,
+      "reflection": 0.0,
+      "candidates": 2.02,
+      "filter": 0.0,
+      "judge": 1.272,
+      "select_and_gate": 0.001,
+      "store": 0.0,
+      "total": 4.877
+    },
+    "after_reply_s": {
+      "encode_memory": 0.117,
+      "reflection": 0.0,
+      "fold_summary": 4.116
+    },
+    "peak_vram_gib": 7.78,
+    "prompt_tokens": 1043,
+    "candidate_tokens": [
+      13,
+      20,
+      24
+    ],
+    "hit_cap": [
+      false,
+      false,
+      false
+    ],
+    "upper": [],
+    "hunch": null,
+    "chosen_by": "quality",
+    "mood": "a bit low, but you keep that to yourself in this conversation",
+    "relation": {
+      "trust": 0.461,
+      "closeness": 0.523,
+      "hurt": 0.15
+    },
+    "privacy": {
+      "categories": [],
+      "explicit": false,
+      "distress": false,
+      "ask": null,
+      "asked": false,
+      "answered": null,
+      "answer": null
+    },
+    "mediated": [],
+    "disclosure": [],
+    "forget": null
+  }
+]
