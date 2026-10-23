@@ -90,6 +90,7 @@ from hunch.pipeline.filter import (
     filter_candidates,
     trim_to_last_sentence,
 )
+from hunch.pipeline.identity import claimed_identity, identity_instruction
 from hunch.pipeline.prompt import (
     NOT_ENGLISH_INSTRUCTION,
     RECALL_COVERS_INSTRUCTION,
@@ -294,6 +295,10 @@ class TurnPipeline:
         query_vec = embed_future.result() if embed_future is not None else None
         timer.lap("embedding_wait")
 
+        # 3a. identity claim (Berk, Phase 6): a claimed name never switches the chat's owner.
+        claimed = claimed_identity(text, session.user)
+        if claimed is not None:
+            instructions.append(identity_instruction(session.user, claimed))
         # 3b. user "forget" (Berk, Phase 5): suppress the targets, close their turns, and let the
         # reply close the topic. The working memory is read again without the closed turns.
         request = detect_forget_request(text)
@@ -425,6 +430,7 @@ class TurnPipeline:
             RecalledLine(
                 age_label((now - a.scored.memory.created_at) / SECONDS_PER_DAY),
                 a.scored.memory.summary,
+                source=_speaker(a.scored.memory.owner_user, session.user),
             )
             for a in result.upper
         ]
@@ -992,6 +998,11 @@ class TurnPipeline:
                 msgs, self._greedy(SUMMARY_MAX_NEW_TOKENS)
             ).text.strip()
             session.summarized_upto = fold[-1].turn_index
+
+
+def _speaker(owner: str, user: str) -> str:
+    """The name shown for a recalled line: empty for this person's own memories."""
+    return "" if owner == user else owner.capitalize()
 
 
 def gated_weight(similarity: float | None, min_similarity: float) -> float:
